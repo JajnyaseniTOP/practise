@@ -1,5 +1,22 @@
 package StepDefinition;
 
+import java.util.Properties;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
+
 import com.asis.util.MainClass;
 
 import Pages.ATOLoginPage;
@@ -8,6 +25,7 @@ import io.cucumber.java.en.*;
 public class ATOLoginStep extends MainClass {
 
 	private ATOLoginPage loginPage;
+	String recipientEmail = "jajnyaseni.swain@theoutsourcepro.com.au";
 
 	@Given("User launch website")
 	public void user_launch_website() throws InterruptedException {
@@ -17,20 +35,19 @@ public class ATOLoginStep extends MainClass {
 		launchSite("https://onlineservices.ato.gov.au/onlineservices/");
 		loginPage.clickOnMyGOVButton();
 		loginPage.sendingEmailAddress();
-		loginPage.clickOnLoginButton();
-		//            byte[] screenshotBytes = loginPage.clickOnLoginButton();
-		//            sendScreenshotEmail(recipientEmail, screenshotBytes);
-		//        
+//		loginPage.clickOnLoginButton();
+		byte[] screenshotBytes = loginPage.clickOnLoginButton();
+		sendScreenshotEmail(recipientEmail, screenshotBytes);
 	}
 
 	@Then("send sc")
 	public void send_sc() {
 		// This method is no longer needed here since sending email is handled in each scenario
 	}
-/*
+
 	private void sendScreenshotEmail(String recipientEmail, byte[] screenshotBytes) {
 		String from = "toptechautomation@theoutsourcepro.com.au";
-		String password = "Duz30077";
+		String password = "J7OJb*ZwQD25HpC2KO8*n";
 
 		Properties props = new Properties();
 		props.put("mail.smtp.host", "smtp.office365.com");
@@ -71,5 +88,5 @@ public class ATOLoginStep extends MainClass {
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		}
-	}*/
+	}
 }

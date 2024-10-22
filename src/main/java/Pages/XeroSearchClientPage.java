@@ -15,7 +15,10 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.asis.util.ClientExcel;
 import com.asis.util.MainClass;
+
 import Driver_manager.DriverManager;
+
+
 
 public class XeroSearchClientPage extends MainClass {
     public static String client;
@@ -61,7 +64,7 @@ public class XeroSearchClientPage extends MainClass {
                 inputBox.sendKeys(client);
                 Thread.sleep(3000);
             }catch(Exception e) {
-            	clickOnSearchButton();
+            	//clickOnSearchButton();
             }
             
 
@@ -98,9 +101,11 @@ public class XeroSearchClientPage extends MainClass {
 
                 if (clientFound) {
                     try {
+                    	Thread.sleep(4000);
                         wait.until(ExpectedConditions.visibilityOf(clientEmail));
                     } catch (Exception e1) {
                         try {
+                        	Thread.sleep(4000);
                             wait.until(ExpectedConditions.visibilityOf(clientEmail2));
                         } catch (Exception e2) {
                         }
