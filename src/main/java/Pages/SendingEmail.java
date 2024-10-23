@@ -27,8 +27,8 @@ public class SendingEmail {
 
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
-                Cell emailCell = row.getCell(6);   // Column 5 for Email ID
-                Cell fileCell = row.getCell(7);    // Column 6 for the file name (subject and attachment)
+                Cell emailCell = row.getCell(6);   
+                Cell fileCell = row.getCell(7);   
 
                 if (emailCell != null && fileCell != null) {
                     String recipientEmail = emailCell.getStringCellValue();
