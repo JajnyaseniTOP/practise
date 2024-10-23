@@ -78,10 +78,30 @@ public class SendingEmail {
             message.setFrom(new InternetAddress(fromEmail));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject(subject);  // Use file name from Column 6 as the subject
+            
+            String emialbody = "<html>" +
+                    "<head>" +
+                    "<style>" +
+                    "body { font-family: Arial, sans-serif; }" +
+                    "</style>" +
+                    "</head>" +
+                    "<body>" +
+                    "<p>This is a default email body.</p>" +
+                    "<p style='font-size: 14px; color: #333;'>Best regards,</p>" +
+                    "<p style='font-size: 14px; color: #333;'>The Outsource Pro Team</p>" +
+                    "<div style='display: flex; justify-content: space-between; align-items: center; margin-top: 20px;'>" +
+                     "<div style='text-align: right;'>" +
+                    "</div></div>" +
+                    "</body>" +
+                    "</html>";
 
+            
+            
+            
+            
             // Set the email body
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
-            mimeBodyPart.setContent(body, "text/plain");
+            mimeBodyPart.setContent(emialbody, "text/plain");
 
             // Attachment part
             MimeBodyPart attachmentPart = new MimeBodyPart();

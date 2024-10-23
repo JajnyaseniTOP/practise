@@ -234,14 +234,10 @@ public class ClientExcel extends MainClass{
 	}
 
 	/*====================Replace special character===================================*/
-
 	private static String replaceSpecialCharacters(String subject) {
-		if (subject.contains("/") || subject.contains("\\")) {
-			subject = subject.replace("/", "or").replace("\\", "or");
-		}
-		return subject;
+	    // Replace all special characters with a space
+	    return subject.replaceAll("[\\\\/:*?\"<>|]", " ");
 	}
-
 
 	/*====================Read PDF File Names from Column 7===================================*/
 
