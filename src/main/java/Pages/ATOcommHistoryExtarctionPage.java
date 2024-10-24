@@ -45,7 +45,7 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 
     private void setDownloadDirectory() {
         if (isServerEnvironment()) {
-            this.downloadDir = "/var/lib/jenkins/workspace/ATOEmail/downloads";
+            this.downloadDir = "/ATOEmail/downloads";
         } else {
             this.downloadDir = System.getProperty("user.home") + "/Downloads";
         }
