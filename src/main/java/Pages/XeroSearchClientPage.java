@@ -130,7 +130,7 @@ public class XeroSearchClientPage extends MainClass {
 						}
 					}
 
-					// if client code is visible 
+					// check if client code is visible 
 					try {
 						wait.until(ExpectedConditions.visibilityOf(clientCode));
 						if (clientCode.isDisplayed()) {

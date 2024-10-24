@@ -101,7 +101,7 @@ public class SendingEmail {
             
             // Set the email body
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
-            mimeBodyPart.setContent(emialbody, "text/plain");
+            mimeBodyPart.setContent(emialbody, "text/html");
 
             // Attachment part
             MimeBodyPart attachmentPart = new MimeBodyPart();
