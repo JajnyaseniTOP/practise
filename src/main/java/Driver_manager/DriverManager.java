@@ -10,7 +10,7 @@ import java.io.File;
 
 public class DriverManager {
 
-    public static WebDriver driver;
+    private static WebDriver driver;
 
     public static void setDriver(String browser) {
         // Get the Jenkins workspace directory
@@ -39,7 +39,7 @@ public class DriverManager {
             // Set download path for Firefox
             options.addPreference("browser.download.dir", downloadPath);
             options.addPreference("browser.download.folderList", 2); // 2 means use custom download directory
-            options.addPreference("browser.helperApps.neverAsk.saveToDisk", "application/pdf,application/octet-stream"); // Adjust MIME types as needed
+            options.addPreference("browser.helperApps.neverAsk.saveToDisk", "application/pdf,application/octet-stream");
 
             driver = new FirefoxDriver(options);
         }

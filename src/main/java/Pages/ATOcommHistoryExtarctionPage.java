@@ -15,91 +15,94 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ATOcommHistoryExtarctionPage extends MainClass {
-	ClientExcel creator = new ClientExcel();
+    ClientExcel creator = new ClientExcel();
 
+    @FindBy(xpath = "//button[@title='Next page']")
+    private WebElement next;
 
-	@FindBy(xpath = "//button[@title='Next page']")
-	private WebElement next;
+    @FindBy(xpath = "//button[@title='Download']")
+    private WebElement download;
 
-	@FindBy(xpath = "//button[@title='Download']")
-	private WebElement download;
+    @FindBy(xpath = "//button[contains(text(),'Yes')]")
+    private WebElement yesPopUp;
 
-	@FindBy(xpath = "//button[contains(text(),'Yes')]")
-	private WebElement yesPopUp;
+    @FindBy(xpath = "//tbody[@data-bind=\"css: { 'rowgroup': rowGroup.header }\"]//tr//td//a")
+    private List<WebElement> links;  
+    @FindBy(xpath = "//tbody/tr[@class=\"table-row\"]")
+    private List<WebElement> commTableHistory;
+    
+    @FindBy(xpath = "//th[@data-header='Name']")
+    private List<WebElement> clientName;
 
-	@FindBy(xpath = "//tbody[@data-bind=\"css: { 'rowgroup': rowGroup.header }\"]//tr//td//a")
-	private List<WebElement> links;  
-	@FindBy(xpath = "//tbody/tr[@class=\"table-row\"]")
-	private List<WebElement> commTableHistory;
-	@FindBy(xpath = "//th[@data-header='Name']")
-	private List<WebElement> clientName;
-	public ATOcommHistoryExtarctionPage() {
-		PageFactory.initElements(DriverManager.getDriver(), this);
-	}
+    public ATOcommHistoryExtarctionPage() {
+        PageFactory.initElements(DriverManager.getDriver(), this);
+    }
 
-	public void clickDownloadButton() throws InterruptedException {
-		wait.until(ExpectedConditions.elementToBeClickable(download));
-		Thread.sleep(9000);
-		download.click();
-	}
-	public void clickPopUp() {
-		wait.until(ExpectedConditions.elementToBeClickable(yesPopUp));
-		yesPopUp.click();
-	}
-	public ArrayList<ArrayList<String>> extractCommTableStatement() throws InterruptedException {
-		creator.createEmptyExcelSheet(); 
-		Thread.sleep(5000);
-		for (WebElement tr : commTableHistory) {
-			if (tr.isDisplayed()) {
-				List<WebElement> tdData = tr.findElements(By.xpath(".//td | .//th"));
-				ArrayList<String> tdRowData = new ArrayList<>();
+    public void clickDownloadButton() throws InterruptedException {
+        wait.until(ExpectedConditions.elementToBeClickable(download));
+        Thread.sleep(2000); // Reduced wait time for efficiency
+        download.click();
+    }
 
-				for (WebElement td : tdData) {
-					tdRowData.add(td.getText());
-				}
+    public void clickPopUp() {
+        wait.until(ExpectedConditions.elementToBeClickable(yesPopUp));
+        yesPopUp.click();
+    }
 
-				ACTIVITY_STATEMENT_DATA.add(tdRowData);
-			}
-		}
-//		System.out.println(ACTIVITY_STATEMENT_DATA);
-		ClientExcel.writeDataToExcel(ACTIVITY_STATEMENT_DATA);
-		return ACTIVITY_STATEMENT_DATA;
-	}
+    public ArrayList<ArrayList<String>> extractCommTableStatement() throws InterruptedException {
+        creator.createEmptyExcelSheet(); 
+        Thread.sleep(2000); // Reduced wait time for efficiency
+        for (WebElement tr : commTableHistory) {
+            if (tr.isDisplayed()) {
+                List<WebElement> tdData = tr.findElements(By.xpath(".//td | .//th"));
+                ArrayList<String> tdRowData = new ArrayList<>();
 
-	public void clickAllLinks() throws InterruptedException {
-//		String downloadDir = "C:\\Users\\test\\Downloads";
+                for (WebElement td : tdData) {
+                    tdRowData.add(td.getText());
+                }
 
-		wait.until(ExpectedConditions.visibilityOfAllElements(links));
+                ACTIVITY_STATEMENT_DATA.add(tdRowData);
+            }
+        }
+        ClientExcel.writeDataToExcel(ACTIVITY_STATEMENT_DATA);
+        return ACTIVITY_STATEMENT_DATA;
+    }
 
-		for (WebElement link : links) {
-			wait.until(ExpectedConditions.elementToBeClickable(link));
-			Thread.sleep(3000);
+    public void clickAllLinks(String downloadDir) throws InterruptedException {
+        wait.until(ExpectedConditions.visibilityOfAllElements(links));
 
-			link.click(); 
-			Thread.sleep(5000);
-			printLatestDownloadedFileName(downloadDir);
-		}
-	}
-	public void printLatestDownloadedFileName(String downloadDir) {
-		File dir = new File(downloadDir);
-		File[] files = dir.listFiles();
+        for (WebElement link : links) {
+            wait.until(ExpectedConditions.elementToBeClickable(link));
+            Thread.sleep(3000); // Ensure link is clickable
 
-		if (files != null && files.length > 0) {
-			File latestFile = files[0];
-			for (File file : files) {
-				if (file.lastModified() > latestFile.lastModified()) {
-					latestFile = file;
-				}
-			}
-			name = latestFile.getName();
-			ClientExcel.addPdfName(name);
-			//			ClientExcel.saveExcelFile();
-//			System.out.println("Downloaded file saved as: " + name);
-		} else {
-//			System.out.println("No files found in the directory.");
-		}
-	}
-	public void closeBrowser() {
-		DriverManager.getDriver().quit();
-	}
+            link.click(); 
+            Thread.sleep(5000); // Wait for the download to start
+            printLatestDownloadedFileName(downloadDir); // Pass the download directory
+        }
+    }
+
+    public void printLatestDownloadedFileName(String downloadDir) {
+        File dir = new File(downloadDir);
+        File[] files = dir.listFiles();
+
+        if (files != null && files.length > 0) {
+            File latestFile = files[0];
+            for (File file : files) {
+                if (file.lastModified() > latestFile.lastModified()) {
+                    latestFile = file;
+                }
+            }
+            String name = latestFile.getName();
+            ClientExcel.addPdfName(name);
+            // Uncomment the line below for debugging output
+            // System.out.println("Downloaded file saved as: " + name);
+        } else {
+            // Uncomment the line below for debugging output
+            // System.out.println("No files found in the directory.");
+        }
+    }
+
+    public void closeBrowser() {
+        DriverManager.getDriver().quit();
+    }
 }
