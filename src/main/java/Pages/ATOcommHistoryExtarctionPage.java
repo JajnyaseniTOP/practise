@@ -12,8 +12,10 @@ import Driver_manager.DriverManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ATOcommHistoryExtarctionPage extends MainClass {
+    private static final Logger LOGGER = Logger.getLogger(ATOcommHistoryExtarctionPage.class.getName());
     ClientExcel creator = new ClientExcel();
     private String downloadDir; // Directory where files are downloaded
 
@@ -37,34 +39,48 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 
     public ATOcommHistoryExtarctionPage() {
         PageFactory.initElements(DriverManager.getDriver(), this);
-        setDownloadDirectory(); // Set the download directory based on environment
+        setDownloadDirectory();
+        LOGGER.info("Download Directory set to: " + downloadDir);
     }
 
-    // Method to set download directory based on local/server environment
     private void setDownloadDirectory() {
         if (isServerEnvironment()) {
-            // On the server (e.g., Jenkins), configure a specific path
             this.downloadDir = "/var/lib/jenkins/workspace/ATOEmail/downloads";
         } else {
-            // Local system download path
             this.downloadDir = System.getProperty("user.home") + "/Downloads";
+        }
+        
+        // Create directory if it doesn't exist
+        File dir = new File(downloadDir);
+        if (!dir.exists()) {
+            boolean created = dir.mkdirs();
+            if (created) {
+                LOGGER.info("Created download directory: " + downloadDir);
+            } else {
+                LOGGER.warning("Failed to create download directory: " + downloadDir);
+            }
         }
     }
 
     public void clickDownloadButton() throws InterruptedException {
         wait.until(ExpectedConditions.elementToBeClickable(download));
+        LOGGER.info("Clicking download button");
         Thread.sleep(5000);  // Adjusted for server performance
         download.click();
+        LOGGER.info("Download button clicked");
     }
 
     public void clickPopUp() {
         wait.until(ExpectedConditions.elementToBeClickable(yesPopUp));
+        LOGGER.info("Clicking popup");
         yesPopUp.click();
+        LOGGER.info("Popup clicked");
     }
 
     public ArrayList<ArrayList<String>> extractCommTableStatement() throws InterruptedException {
         creator.createEmptyExcelSheet(); 
         Thread.sleep(5000);
+        LOGGER.info("Extracting communication table statement");
         for (WebElement tr : commTableHistory) {
             if (tr.isDisplayed()) {
                 List<WebElement> tdData = tr.findElements(By.xpath(".//td | .//th"));
@@ -78,23 +94,25 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
             }
         }
         ClientExcel.writeDataToExcel(ACTIVITY_STATEMENT_DATA);
+        LOGGER.info("Data extracted and written to Excel");
         return ACTIVITY_STATEMENT_DATA;
     }
 
     public void clickAllLinks() throws InterruptedException {
         wait.until(ExpectedConditions.visibilityOfAllElements(links));
+        LOGGER.info("Clicking all links");
 
         for (WebElement link : links) {
             wait.until(ExpectedConditions.elementToBeClickable(link));
             Thread.sleep(3000);
 
+            LOGGER.info("Clicking link: " + link.getText());
             link.click(); 
             Thread.sleep(5000);
             printLatestDownloadedFileName();
         }
     }
 
-    // Print the latest downloaded file name based on last modified date
     public void printLatestDownloadedFileName() {
         File dir = new File(downloadDir);
         File[] files = dir.listFiles();
@@ -107,35 +125,52 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
                 }
             }
             String name = latestFile.getName();
-            System.out.println("Latest file: " + name);  // Log file name for Jenkins visibility
+            LOGGER.info("Latest downloaded file: " + name);
             ClientExcel.addPdfName(name);
         } else {
-            System.out.println("No files found in directory: " + downloadDir);  // Log for Jenkins
+            LOGGER.warning("No files found in directory: " + downloadDir);
         }
     }
 
-    // Method to wait for file download to complete
     public void waitForFileDownload(String fileName, int timeout) throws InterruptedException {
         File dir = new File(downloadDir);
         int waited = 0;
         while (waited < timeout) {
             File[] files = dir.listFiles((d, name) -> name.equals(fileName));
             if (files != null && files.length > 0) {
-                break; // File found
+                LOGGER.info("File downloaded: " + fileName);
+                break;
             }
-            Thread.sleep(1000); // Wait 1 second before checking again
+            Thread.sleep(1000);
             waited += 1000;
+        }
+        if (waited >= timeout) {
+            LOGGER.warning("Timeout waiting for file download: " + fileName);
         }
     }
 
     public void closeBrowser() {
+        LOGGER.info("Closing browser");
         DriverManager.getDriver().quit();
     }
 
-    // This is a mock method to simulate checking the environment
     private boolean isServerEnvironment() {
-        // Add your logic to check if this is running on a server, e.g., Jenkins environment
         String env = System.getenv("ENVIRONMENT");
+        LOGGER.info("Current environment: " + (env != null ? env : "Not set"));
         return "server".equals(env);
+    }
+
+    // Additional method to check download directory contents
+    public void checkDownloadDirectory() {
+        File dir = new File(downloadDir);
+        File[] files = dir.listFiles();
+        if (files != null) {
+            LOGGER.info("Files in download directory:");
+            for (File file : files) {
+                LOGGER.info(file.getName());
+            }
+        } else {
+            LOGGER.warning("Unable to list files in download directory or directory is empty");
+        }
     }
 }
