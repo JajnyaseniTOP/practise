@@ -14,9 +14,8 @@ public class DriverManager {
 
     public static void setDriver(String browser) {
         // Get the Jenkins workspace directory
-        String downloadPath = System.getProperty("jenkins.home") + "/workspace/ATOEmail/downloads";
-        String downloadPath1 = System.getenv("WORKSPACE");
-        System.out.println("downloadPath1: "+ downloadPath1);
+        String downloadPath = System.getenv("WORKSPACE") + "/downloads";
+       
 
         if (browser.equalsIgnoreCase("Chrome")) {
             ChromeOptions options = new ChromeOptions();
@@ -25,7 +24,7 @@ public class DriverManager {
 
             // Set download path for Chrome
             options.setExperimentalOption("prefs", new java.util.HashMap<String, Object>() {{
-                put("download.default_directory", downloadPath1);
+                put("download.default_directory", downloadPath);
                 put("download.prompt_for_download", false);
                 put("download.directory_upgrade", true);
                 put("safebrowsing.enabled", true);
