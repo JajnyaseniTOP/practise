@@ -25,7 +25,7 @@ public class DriverManager {
 
             // Set download path for Chrome
             options.setExperimentalOption("prefs", new java.util.HashMap<String, Object>() {{
-                put("download.default_directory", downloadPath);
+                put("download.default_directory", downloadPath1);
                 put("download.prompt_for_download", false);
                 put("download.directory_upgrade", true);
                 put("safebrowsing.enabled", true);
