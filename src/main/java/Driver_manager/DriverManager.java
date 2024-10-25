@@ -15,6 +15,8 @@ public class DriverManager {
     public static void setDriver(String browser) {
         // Get the Jenkins workspace directory
         String downloadPath = System.getProperty("jenkins.home") + "/workspace/ATOEmail/downloads";
+        String downloadPath1 = System.getenv("WORKSPACE");
+        System.out.println("downloadPath1: "+ downloadPath1);
 
         if (browser.equalsIgnoreCase("Chrome")) {
             ChromeOptions options = new ChromeOptions();
