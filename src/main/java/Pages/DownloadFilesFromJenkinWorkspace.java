@@ -15,7 +15,7 @@ public class DownloadFilesFromJenkinWorkspace {
 			Path sourceFilePath = Paths.get(downloadPath, "5741603971488.pdf");
 
 			// Destination file in local directory
-			Path destinationFilePath = Paths.get("C:\\Users\\Public", sourceFilePath.getFileName().toString());
+			Path destinationFilePath = Paths.get("C:/Users/Public/", sourceFilePath.getFileName().toString());
 
 			// Create directories if they do not exist
 			Files.createDirectories(destinationFilePath.getParent());
