@@ -13,9 +13,10 @@ public class DownloadFilesFromJenkinWorkspace {
 		try {
 			// Source file in Jenkins workspace
 			Path sourceFilePath = Paths.get(downloadPath, "5741603971488.pdf");
+			System.out.println("sourcepath: "+ sourceFilePath);
 
 			// Destination file in local directory
-			Path destinationFilePath = Paths.get("C:/Users/Public/", sourceFilePath.getFileName().toString());
+			Path destinationFilePath = Paths.get("C:/Downloads/", sourceFilePath.getFileName().toString());
 
 			// Create directories if they do not exist
 			Files.createDirectories(destinationFilePath.getParent());
