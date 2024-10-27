@@ -6,6 +6,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
+import com.asis.util.MainClass;
+
 import java.io.File;
 
 public class DriverManager {
@@ -14,7 +16,8 @@ public class DriverManager {
 
     public static void setDriver(String browser) {
         // Get the Jenkins workspace directory
-        String downloadPath = System.getenv("WORKSPACE") + "/downloads";
+        String downloadPath = MainClass.downloadDir;
+        //System.getenv("WORKSPACE") + "/downloads";
        
 
         if (browser.equalsIgnoreCase("Chrome")) {
