@@ -277,7 +277,7 @@ public class ClientExcel extends MainClass{
 	/*====================Renaming the PDF file===================================*/
 
 	public static void renamePdfFilesInDownloads(String downloadDir) {
-		ArrayList<String> pdfFileNames = ClientExcel.readPdfFileNamesFromColumn8(filePath);
+		ArrayList<String> pdfFileNames = ClientExcel.readPdfFilePathFromColumn8(filePath);
 		ArrayList<String> fileNamesColumn7 = ClientExcel.readFileNamesFromColumn7(filePath); 
 
 		if (pdfFileNames.size() != fileNamesColumn7.size()) {
@@ -330,7 +330,7 @@ public class ClientExcel extends MainClass{
 
 	/*====================Read PDF File Names from Column 8===================================*/
 
-	public static ArrayList<String> readPdfFileNamesFromColumn8(String filePath) {
+	public static ArrayList<String> readPdfFilePathFromColumn8(String filePath) {
 		ArrayList<String> pdfFileNames = new ArrayList<>();
 
 		try (FileInputStream fis = new FileInputStream(new File(filePath));
@@ -364,7 +364,7 @@ public class ClientExcel extends MainClass{
 			String subject = subjectColumnData.get(i).trim();
 
 			if (subject.toLowerCase().startsWith("notice of assessment")) {
-				String correspondingValue = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i+1).trim();
+				String correspondingValue = ClientExcel.readPdfFilePathFromColumn8(filePath).get(i+1).trim();
 
 				String cellFromColumn0 = firstColumnData.get(i).trim();
 

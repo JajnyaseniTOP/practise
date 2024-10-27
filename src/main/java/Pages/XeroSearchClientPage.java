@@ -168,7 +168,7 @@ public class XeroSearchClientPage extends MainClass {
 	}
 
 	public void renameAndMovePdfFilesToDownloadsFolder(String downloadDir) {
-		ArrayList<String> pdfFileNames = ClientExcel.readPdfFileNamesFromColumn8(filePath);
+		ArrayList<String> pdfFileNames = ClientExcel.readPdfFilePathFromColumn8(filePath);
 		ArrayList<String> fileNamesColumn7 = ClientExcel.readFileNamesFromColumn7(filePath);
 
 		if (pdfFileNames.size() != fileNamesColumn7.size()) {

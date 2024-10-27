@@ -16,8 +16,8 @@ public class DriverManager {
 
     public static void setDriver(String browser) {
         // Get the Jenkins workspace directory
-        String downloadPath = MainClass.downloadDir;
-        //System.getenv("WORKSPACE") + "/downloads";
+        String downloadPath = System.getenv("WORKSPACE") + "/downloads";
+        
        
 
         if (browser.equalsIgnoreCase("Chrome")) {
