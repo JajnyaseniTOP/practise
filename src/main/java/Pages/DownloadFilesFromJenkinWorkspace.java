@@ -16,7 +16,7 @@ public class DownloadFilesFromJenkinWorkspace {
 			System.out.println("sourcepath: "+ sourceFilePath);
 
 			// Destination file in local directory
-			Path destinationFilePath = Paths.get("C:/Users/Public", sourceFilePath.getFileName().toString());
+			Path destinationFilePath = Paths.get("C:/Users/Jajnyaseni TOP/Downloads", sourceFilePath.getFileName().toString());
 
 			// Create directories if they do not exist
 			Files.createDirectories(destinationFilePath.getParent());
