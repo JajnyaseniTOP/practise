@@ -33,7 +33,7 @@ public class ATOSelectingDatePage extends MainClass{
 	@FindBy(xpath="//option[contains(text(),'100')]")
 	private WebElement pages100;
     LocalDate currentDate = LocalDate.now();
-    LocalDate previousDate = currentDate.minusDays(8);
+    LocalDate previousDate = currentDate.minusDays(9);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     String formattedDate = previousDate.format(formatter);
 	
