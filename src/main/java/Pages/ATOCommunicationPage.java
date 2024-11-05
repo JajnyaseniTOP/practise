@@ -1,5 +1,6 @@
 package Pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
@@ -22,9 +23,15 @@ public class ATOCommunicationPage extends MainClass{
 		PageFactory.initElements(DriverManager.getDriver(), this); 
 	}
 	public void clickCommButton() {
-		wait.until(ExpectedConditions.elementToBeClickable(communication));
-		communication.click();
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(communication));
+			communication.click();
+		}catch(Exception e) {
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='atoo-ahp-atomastermenu-001-3']")));
+			communication.click();
+		}
 	}
+	
 	public void clickCommHistoryButton() {
 		wait.until(ExpectedConditions.elementToBeClickable(commHistory));
 		commHistory.click();
