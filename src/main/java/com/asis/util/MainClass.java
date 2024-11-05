@@ -13,7 +13,7 @@ import Driver_manager.DriverManager;
 public class MainClass {
 	public WebDriver driver;
 	
-	public static String downloadDir = System.getenv("WORKSPACE") + "/downloads";
+	public static String downloadDir = "C:\\Users\\Jajnyaseni TOP\\Downloads";
 	
 	
 	public static String newFilePath ;

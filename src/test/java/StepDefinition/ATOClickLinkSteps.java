@@ -5,23 +5,23 @@ import io.cucumber.java.en.*;
 
 public class ATOClickLinkSteps {
 
-    private ATOcommHistoryExtarctionPage filePage = new ATOcommHistoryExtarctionPage();
-    private String downloadDir = System.getProperty("jenkins.home") + "/workspace/ATOEmail/downloads"; // Set the correct download directory path
+	public ATOcommHistoryExtarctionPage filePage = new ATOcommHistoryExtarctionPage();
+	
+	@Given("The user navigates through 100 pages")
+	public void user_click_on_pages() throws InterruptedException {
+		filePage.clickDownloadButton();
+		
+	}
 
-    @Given("The user navigates through 100 pages")
-    public void user_click_on_pages() throws InterruptedException {
-        filePage.clickDownloadButton();
-    }
+	@When("The user clicks on the download button and handles the download pop-up")
+	public void user_have_list_of_link_having_notice_of_assessment() {
+		filePage.clickPopUp();
+	}
 
-    @When("The user clicks on the download button and handles the download pop-up")
-    public void user_have_list_of_link_having_notice_of_assessment() {
-        filePage.clickPopUp();
-    }
-
-    @Then("The user clicks on each link in the table to download the corresponding files")
-    public void user_click_on_list_of_link_having_notice_of_assessment() throws InterruptedException {
-        filePage.extractCommTableStatement();
-        filePage.clickAllLinks(downloadDir);
-        filePage.closeBrowser();
-    }
+	@Then("The user clicks on each link in the table to download the corresponding files")
+	public void user_click_on_list_of_link_having_notice_of_assessment() throws InterruptedException {
+		filePage.extractCommTableStatement();
+		filePage.clickAllLinks();
+		filePage.closeBrowser();
+	}
 }
