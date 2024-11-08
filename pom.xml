@@ -122,37 +122,10 @@
 			
         <!-- Maven Jar Plugin to ensure main class is set -->
         <!-- Regular jar creation -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>3.2.0</version>
-            <executions>
-                <execution>
-                    <goals>
-                        <goal>jar</goal> <!-- Create main JAR -->
-                    </goals>
-                    <phase>package</phase>
-                </execution>
-            </executions>
-        </plugin>
+        
 
         <!-- Test JAR plugin -->
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>3.2.0</version>
-            <executions>
-                <execution>
-                    <goals>
-                        <goal>test-jar</goal> <!-- Create test JAR -->
-                    </goals>
-                    <phase>test-compile</phase> <!-- Bind this to test-compile phase -->
-                    <configuration>
-                        <classifier>tests</classifier> <!-- Classifier to separate this artifact -->
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
+       
 			
 			
 			
