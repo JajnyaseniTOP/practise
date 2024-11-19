@@ -14,9 +14,9 @@ import Driver_manager.DriverManager;
 public class MainClass {
 	public WebDriver driver;
 	
-	//public static String downloadDir = "C:\\Users\\Jajnyaseni TOP\\Downloads";
+	public static String downloadDir = "C:\\Users\\Jajnyaseni TOP\\Downloads";
 	
-	public static String downloadDir =System.getProperty("user.home")+File.separator+"Downloads";
+	//public static String downloadDir =System.getProperty("user.dir") + File.separator + "Downloads";
 	public static String newFilePath ;
 
 	static ClientExcel clientExcel = new ClientExcel();

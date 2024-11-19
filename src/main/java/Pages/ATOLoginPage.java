@@ -12,8 +12,8 @@ import com.asis.util.MainClass;
 import Driver_manager.DriverManager;
 
 public class ATOLoginPage extends MainClass{	
-		private byte[] screenshotBytes;
-	@FindBy(xpath="//a[@id='btn-myGovID']")
+	private byte[] screenshotBytes;
+	@FindBy(xpath="//span[contains(text(),'Continue with Digital ID')]")
 	private WebElement myGOV;
 	@FindBy(xpath= "//input[@type='email']")
 	private WebElement emailAddress;
