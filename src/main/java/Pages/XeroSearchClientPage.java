@@ -85,6 +85,11 @@ public class XeroSearchClientPage extends MainClass {
 						clientFound = true;
 						break;
 					}
+					else if(ele.getText().toLowerCase().trim().contains(client.toLowerCase().trim())) {
+						ele.click();
+						clientFound = true;
+						break;
+					}
 				}
 
 				if (!clientFound && client.contains(".")) {
@@ -148,14 +153,14 @@ public class XeroSearchClientPage extends MainClass {
 						clickOnSearchButton();
 					} else {
 						ClientExcel.addClientData("client code not found", "client email not found");
-						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
+						ClientExcel.writeCombinedDataToExcel("null", subject);
 						ClientExcel.saveExcelFile();
 						clickOnSearchButton();
 					}
 				} else {
 					Thread.sleep(3000);
 					ClientExcel.addClientData("client name not found", "client name not found");
-					ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
+					ClientExcel.writeCombinedDataToExcel("null", subject);
 					ClientExcel.saveExcelFile();
 				}
 
@@ -168,7 +173,7 @@ public class XeroSearchClientPage extends MainClass {
 	}
 
 	public void renameAndMovePdfFilesToDownloadsFolder(String downloadDir) {
-		ArrayList<String> pdfFileNames = ClientExcel.readPdfFilePathFromColumn8(filePath);
+		ArrayList<String> pdfFileNames = ClientExcel.readPdfFileNamesFromColumn8(filePath);
 		ArrayList<String> fileNamesColumn7 = ClientExcel.readFileNamesFromColumn7(filePath);
 
 		if (pdfFileNames.size() != fileNamesColumn7.size()) {

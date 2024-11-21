@@ -146,14 +146,14 @@ public class TaxReturnPage extends MainClass {
 				clickSearchButton(clientName);
 				try {
 					clickAddButton();
-					String pdfFileName = ClientExcel.readPdfFilePathFromColumn8(filePath).get(i).trim();
+					String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
 					searchAndExtractPdfData(filePath,downloadDir,pdfFileName);
 					Thread.sleep(10000);
 					clickCancelButton();
 					
 				}
 				catch(Exception e) {
-					String pdfFileName = ClientExcel.readPdfFilePathFromColumn8(filePath).get(i + 1).trim();
+					String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i + 1).trim();
 
 				}
 			}

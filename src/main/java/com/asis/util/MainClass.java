@@ -29,7 +29,7 @@ public class MainClass {
 	public static List<String> clientCodes = new ArrayList<>();
 	public static List<String> clientEmails = new ArrayList<>();
 	public static ArrayList<String> subjectColumnData = ClientExcel.readSubjectColumn(filePath);
-	public static ArrayList<String> pdfFileNames = ClientExcel.readPdfFilePathFromColumn8(filePath);
+	public static ArrayList<String> pdfFileNames = ClientExcel.readPdfFileNamesFromColumn8(filePath);
 	public static ArrayList<String> fileNamesColumn7 = ClientExcel.readFileNamesFromColumn7(filePath);
 
 	public static String ATO_USER_NAME="";

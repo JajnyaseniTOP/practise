@@ -1,4 +1,3 @@
-
 package com.asis.util;
 import java.io.File;
 import java.io.FileInputStream;
@@ -95,6 +94,14 @@ public class ClientExcel extends MainClass{
 				if (length > 2 && clientName.charAt(length - 2) == ' ' 
 						&& Character.isLetter(clientName.charAt(length - 1))) {
 					clientName = clientName.substring(0, length - 2);
+				}
+				else if(length<=2) {
+					clientName = clientName.substring(0);
+					System.out.println("this is a two_charcter_string"+ clientName);
+				}
+				else {
+					clientName = clientName.substring(0, length - 1);
+					System.out.println("this is eleminated string "+ clientName);
 				}
 				clientName = formatCommaSeparatedName(clientName);
 				clientName = capitalizeName(clientName);
@@ -234,10 +241,14 @@ public class ClientExcel extends MainClass{
 	}
 
 	/*====================Replace special character===================================*/
+
 	private static String replaceSpecialCharacters(String subject) {
-	    // Replace all special characters with a space
-	    return subject.replaceAll("[\\\\/:*?\"<>|]", " ");
+		if (subject.contains("/") || subject.contains("\\")) {
+			subject = subject.replace("/", "or").replace("\\", "or");
+		}
+		return subject;
 	}
+
 
 	/*====================Read PDF File Names from Column 7===================================*/
 
@@ -277,7 +288,7 @@ public class ClientExcel extends MainClass{
 	/*====================Renaming the PDF file===================================*/
 
 	public static void renamePdfFilesInDownloads(String downloadDir) {
-		ArrayList<String> pdfFileNames = ClientExcel.readPdfFilePathFromColumn8(filePath);
+		ArrayList<String> pdfFileNames = ClientExcel.readPdfFileNamesFromColumn8(filePath);
 		ArrayList<String> fileNamesColumn7 = ClientExcel.readFileNamesFromColumn7(filePath); 
 
 		if (pdfFileNames.size() != fileNamesColumn7.size()) {
@@ -330,7 +341,7 @@ public class ClientExcel extends MainClass{
 
 	/*====================Read PDF File Names from Column 8===================================*/
 
-	public static ArrayList<String> readPdfFilePathFromColumn8(String filePath) {
+	public static ArrayList<String> readPdfFileNamesFromColumn8(String filePath) {
 		ArrayList<String> pdfFileNames = new ArrayList<>();
 
 		try (FileInputStream fis = new FileInputStream(new File(filePath));
@@ -364,7 +375,7 @@ public class ClientExcel extends MainClass{
 			String subject = subjectColumnData.get(i).trim();
 
 			if (subject.toLowerCase().startsWith("notice of assessment")) {
-				String correspondingValue = ClientExcel.readPdfFilePathFromColumn8(filePath).get(i+1).trim();
+				String correspondingValue = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i+1).trim();
 
 				String cellFromColumn0 = firstColumnData.get(i).trim();
 
@@ -444,20 +455,5 @@ public class ClientExcel extends MainClass{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/*====================Main Method===================================*/
-
-	public static void main(String[] args) {
-//				readSubjectColumn(filePath);
-				clientNamesRemoval();
-		//				readFileNamesFromColumn7(filePath);
-		//		checkNoticeOfAssessmentAndPrintIndex(filePath);
-		//		readPdfFileNamesFromColumn8(filePath);
-
-		//		readSubjectColumn(filePath);
-		//		renamePdfFilesInDownloads(downloadDir);
-		//		readFileNamesFromColumn7(filePath);
-		//		checkNoticeOfAssessment(filePath, downloadDir);
 	}
 }
