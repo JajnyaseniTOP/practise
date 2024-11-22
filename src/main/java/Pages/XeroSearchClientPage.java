@@ -91,6 +91,7 @@ public class XeroSearchClientPage extends MainClass {
 						break;
 					}
 				}
+			
 
 				if (!clientFound && client.contains(".")) {
 					String clientWithoutDot = client.replace(".", "").trim();
@@ -103,6 +104,11 @@ public class XeroSearchClientPage extends MainClass {
 						elements = DriverManager.getDriver().findElements(By.xpath("//a"));
 						for (WebElement ele : elements) {
 							if (ele.getText().trim().equalsIgnoreCase(clientWithoutDot)) {
+								ele.click();
+								clientFound = true;
+								break;
+							}
+							else if(ele.getText().toLowerCase().trim().contains(clientWithoutDot.toLowerCase().trim())) {
 								ele.click();
 								clientFound = true;
 								break;
