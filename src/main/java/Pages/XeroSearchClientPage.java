@@ -178,7 +178,7 @@ public class XeroSearchClientPage extends MainClass {
 		}
 	}
 
-	public void renameAndMovePdfFilesToDownloadsFolder(String downloadDir) {
+	public void renameAndMovePdfFilesToDownloadsFolder(String downloadDir){
 		ArrayList<String> pdfFileNames = ClientExcel.readPdfFileNamesFromColumn8(filePath);
 		ArrayList<String> fileNamesColumn7 = ClientExcel.readFileNamesFromColumn7(filePath);
 
@@ -187,7 +187,7 @@ public class XeroSearchClientPage extends MainClass {
 			return;
 		}
 
-		File downloadsFolder = new File(downloadDir + File.separator + "Downloads");
+		File downloadsFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate);
 		if (!downloadsFolder.exists()) {
 			boolean created = downloadsFolder.mkdir();
 			if (created) {

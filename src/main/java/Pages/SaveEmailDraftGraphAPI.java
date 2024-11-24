@@ -40,19 +40,20 @@ public class SaveEmailDraftGraphAPI extends MainClass{
 					Cell emailCell = row.getCell(6); 
 					Cell fileNameCell = row.getCell(7);
 					Cell subjectNameCell = row.getCell(2);
-
+					
 					if (emailCell != null && fileNameCell != null) {
 						String email = emailCell.getStringCellValue().trim();
 						String fileName = fileNameCell.getStringCellValue().trim();
+						String subject = fileName;  
 						String subjectName = subjectNameCell.getStringCellValue();
-						String subject = fileName;
 						String subName = subjectName;
+						
 						if (isValidEmail(email)) {
 							String filePathToSearch = searchFileWithCorrectExtension(downloadsDir, File.separator + fileName);
 
 							File fileToAttach = new File(filePathToSearch);
 							if (fileToAttach.exists()) {
-								saveEmailAsDraft(email, subject, filePathToSearch, downloadsDir, subName); 
+								saveEmailAsDraft(email, subject, filePathToSearch, downloadsDir,subName); 
 							} else {
 								System.err.println("File not found: " + fileToAttach.getAbsolutePath());
 							}
@@ -78,7 +79,7 @@ public class SaveEmailDraftGraphAPI extends MainClass{
 	}
 
 	private String searchFileWithCorrectExtension(String downloadsDir, String fileName) {
-		File folder = new File(downloadsDir + File.separator + "Downloads");
+		File folder = new File(downloadsDir + File.separator + "Email_Files_" + currentDate);
 		File[] files = folder.listFiles();
 
 		if (files != null) {
@@ -92,8 +93,8 @@ public class SaveEmailDraftGraphAPI extends MainClass{
 			}
 		}
 
-		File pdfFile = new File(downloadsDir + File.separator + "Downloads" + File.separator + fileName + ".pdf");
-		File htmlFile = new File(downloadsDir + File.separator + "Downloads" + File.separator + fileName + ".html");
+		File pdfFile = new File(downloadsDir + File.separator + "Email_Files_" + currentDate + File.separator + fileName + ".pdf");
+		File htmlFile = new File(downloadsDir + File.separator + "Email_Files_" + currentDate + File.separator + fileName + ".html");
 
 		if (pdfFile.exists()) {
 			return pdfFile.getAbsolutePath();
@@ -101,7 +102,7 @@ public class SaveEmailDraftGraphAPI extends MainClass{
 			return htmlFile.getAbsolutePath();
 		}
 
-		return downloadsDir + File.separator + "Downloads" + File.separator + fileName + ".pdf";
+		return downloadsDir + File.separator + "Email_Files_" + currentDate + File.separator + fileName + ".pdf";
 	}
 
 
@@ -109,86 +110,107 @@ public class SaveEmailDraftGraphAPI extends MainClass{
 	private static boolean isValidEmail(String email) {
 		return email != null && email.contains("@") && !email.contains(" ") && !email.isEmpty();
 	}
-	private static void saveEmailAsDraft(String email, String subject, String attachmentPath, String downloadsDir, String subName) {
-	    Properties properties = new Properties();
-	    properties.put("mail.smtp.host", SMTP_HOST);
-	    properties.put("mail.smtp.port", SMTP_PORT);
-	    properties.put("mail.smtp.auth", "true");
-	    properties.put("mail.smtp.starttls.enable", "true");
 
-	    Session session = Session.getInstance(properties, new Authenticator() {
-	        protected PasswordAuthentication getPasswordAuthentication() {
-	            return new PasswordAuthentication(USERNAME, PASSWORD);
-	        }
-	    });
+	private static void saveEmailAsDraft(String email, String subject, String attachmentPath, String downloadsDir,String subName) {
 
-	    try {
-	        MimeMessage message = new MimeMessage(session);
-	        message.setFrom(new InternetAddress(USERNAME));
-	        message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
-	        message.setSubject(subject);
+		Properties properties = new Properties();
+		properties.put("mail.smtp.host", SMTP_HOST);
+		properties.put("mail.smtp.port", SMTP_PORT);
+		properties.put("mail.smtp.auth", "true");
+		properties.put("mail.smtp.starttls.enable", "true");
 
-	        Multipart multipart = new MimeMultipart();
+		Session session = Session.getInstance(properties, new Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(USERNAME, PASSWORD);
+			}
+		});
 
-	        BodyPart bodyPart = new MimeBodyPart();
-	        String emailBody = getEmailBodyForSubject(subName); // Get email body based on the subject
-	        bodyPart.setText(emailBody);
-	        multipart.addBodyPart(bodyPart);
+		try {
+			
+		
+			MimeMessage message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(USERNAME));
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+			message.setSubject(subject);
 
-	        if (attachmentPath != null && !attachmentPath.isEmpty()) {
-	            File attachmentFile = new File(attachmentPath);
-	            if (attachmentFile.exists()) {
-	                MimeBodyPart attachmentPart = new MimeBodyPart();
-	                attachmentPart.attachFile(attachmentFile);
-	                multipart.addBodyPart(attachmentPart);
-	            }
-	        }
+			Multipart multipart = new MimeMultipart();
+			
+			// Attach inline images (e.g., 'notice_of_assessment' and 'signature')
+			MimeBodyPart noticeImagePart = new MimeBodyPart();
+			noticeImagePart.attachFile("C:\\Users\\Jajnyaseni TOP\\eclipse-workspace\\notice_of_assessment.png"); // Replace with actual path
+			noticeImagePart.setContentID("<notice_of_assessment>");
+			noticeImagePart.setDisposition(MimeBodyPart.INLINE);
+			multipart.addBodyPart(noticeImagePart);
 
-	        message.setContent(multipart);
+			MimeBodyPart signatureImagePart = new MimeBodyPart();
+			signatureImagePart.attachFile("C:\\Users\\Jajnyaseni TOP\\eclipse-workspace\\signature.png"); // Replace with actual path
+			signatureImagePart.setContentID("<signature>");
+			signatureImagePart.setDisposition(MimeBodyPart.INLINE);
+			multipart.addBodyPart(signatureImagePart);
 
-	        File draftsDir = new File(downloadsDir + File.separator + "Downloads" + File.separator + "drafts");
-	        if (!draftsDir.exists()) {
-	            draftsDir.mkdirs();
-	        }
+			BodyPart bodyPart = new MimeBodyPart();
+			String emailBody = getEmailBodyForSubject(subName); // Get email body based on the subject
+			bodyPart.setContent(emailBody,"text/html; charset=utf-8");
+			multipart.addBodyPart(bodyPart);
 
-	        String draftPath = draftsDir.getAbsolutePath() + File.separator + subject + ".eml";
+			if (attachmentPath != null && !attachmentPath.isEmpty()) {
+				File attachmentFile = new File(attachmentPath);
+				if (attachmentFile.exists()) {
+					MimeBodyPart attachmentPart = new MimeBodyPart();
+					attachmentPart.attachFile(attachmentFile);
+					multipart.addBodyPart(attachmentPart);
+				} else {
+				}
+			}
 
-	        try (FileOutputStream fos = new FileOutputStream(draftPath)) {
-	            message.writeTo(fos);
-	        }
+			message.setContent(multipart);
+			File draftsDir = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator +"Draft_Folder_" + currentDate);
+			if (!draftsDir.exists()) {
+				draftsDir.mkdirs(); 
+			}
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+			String draftPath = draftsDir.getAbsolutePath() + File.separator + subject + ".eml";
+
+			try (FileOutputStream fos = new FileOutputStream(draftPath)) {
+				message.writeTo(fos);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace(); 
+		}
 	}
-
+	
 	// Method to get the email body based on the subject
-	private static String getEmailBodyForSubject(String subject) {
-	    switch (subject) {
-	        case "Confirming your payment plan":
+	private static String getEmailBodyForSubject(String subName) {
+	    switch (subName) {
+	        case "Debt - Overdue reminder":
 	        	return 	"<html>" +
+	    				"<head>" +
+        					"<style>" +
+        						"body { font-family: Arial, sans-serif; }" +
+        					"</style>" +
+        				"</head>" +
                 		"<body>" +
-                		"<img src='cid:notice_of_assessment' style='width:100%;height:auto;'>" +
-                		"<p>MyGov</p>" +
-                        "<p>MyGov is an online portal for a range of Government services. Where you have registered for a MyGov account and have linked your account to the ATO online services, the ATO will automatically send your amended assessment notice (and any other ATO correspondence) to that account. Please ensure that the preferences in your MyGov are set to notify you when mail has been received in that inbox.</p>" +
-                        "<p>You should check your MyGov inbox and ensure that the amended assessment agrees with the estimate we have advised. If the amount differs, please contact us to discuss.</p>" +
-                        "<p>If you have not already registered for MyGov, it is a good idea to register and connect to the ATO’s online services. With an increasing number of scams and identity thefts, MyGov is a way of authenticating your status with the regulators in real time and authenticating communication from them. To register, go to <a href='https://my.gov.au'>https://my.gov.au</a>.</p>" +
-                        "<p>Thank you for the opportunity to work with you. A tax invoice for our fees relating to this matter is enclosed.</p>" +
-                        "<p>If we can assist you with any information on this matter or can assist you in any other way, please do not hesitate to contact us by phoning 08 94307888 or via e-mail to admin@gwcapitalgroup.com.au.</p>"+
-                		"<img src='cid:signature' style='width:100%;height:auto;'>" +
+                			"<img src='cid:notice_of_assessment' style='width:100%;  height:auto;'>" +
+                			"<p>MyGov</p>" +
+	                        "<p>MyGov is an online portal for a range of Government services. Where you have registered for a MyGov account and have linked your account to the ATO online services, the ATO will automatically send your amended assessment notice (and any other ATO correspondence) to that account. Please ensure that the preferences in your MyGov are set to notify you when mail has been received in that inbox.</p>" +
+	                        "<p>You should check your MyGov inbox and ensure that the amended assessment agrees with the estimate we have advised. If the amount differs, please contact us to discuss.</p>" +
+	                        "<p>If you have not already registered for MyGov, it is a good idea to register and connect to the ATO’s online services. With an increasing number of scams and identity thefts, MyGov is a way of authenticating your status with the regulators in real time and authenticating communication from them. To register, go to <a href='https://my.gov.au'>https://my.gov.au</a>.</p>" +
+	                        "<p>Thank you for the opportunity to work with you. A tax invoice for our fees relating to this matter is enclosed.</p>" +
+	                        "<p>If we can assist you with any information on this matter or can assist you in any other way, please do not hesitate to contact us by phoning 08 94307888 or via e-mail to admin@gwcapitalgroup.com.au.</p>"+
+	                		"<img src='cid:signature' style='width:100%;  height:auto;'>" +
                 		"</body>" +
                 		"</html>";
+	        
 	        	
-	        case "Statement of account - Payment slip":
+	        case "Payment plan reminder":
 	            return "Please find attached your statement of account along with the payment slip for your records.";
-	        case "Superannuation - Excess non-concessional contributions - Determination":
+	        case "Lodgment-Overdue-Reminder":
 	            return "This is to notify you regarding excess non-concessional contributions in your superannuation account. See attached for details.";
 	        case "New PAYG instalment - Individual / Consolidated group member":
 	            return "Your new PAYG instalment details are available. Please review the attached document for further instructions.";
-	        case "Notice of assessment - Individual or Trust - EFT refund / Payment due":
+	        case "Registration cancellation - PAYG withholding and branch":
 	            return "Please find your notice of assessment attached. It includes information regarding your EFT refund or payment due.";
-	        case "Income tax - Individual - Tax receipt":
-	            return "Your tax receipt for the recent income tax filing is attached. Please keep it for your records.";
 	        case "Statement of account - Possible refund":
 	            return "Attached is your statement of account which indicates a possible refund. Please review it at your convenience.";
 	        case "Lodgment-Overdue-Final warning":
@@ -201,7 +223,7 @@ public class SaveEmailDraftGraphAPI extends MainClass{
 	            return "Please find the attached document.";
 	    }
 	}
-
+	
 	public void closeBrowserXero() {
 		DriverManager.getDriver().quit();
 	}
