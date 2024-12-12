@@ -22,6 +22,7 @@ public class ClientExcel extends MainClass{
 	private static int currentRowNum = 1;
 	private static int currentRowNum2 = 1;
 	private static int currentRowNum3 = 1;
+	private static int currentRowNum4 = 1;
 
 	/*====================Creation of Empty Excel Sheet===================================*/
 
@@ -29,7 +30,7 @@ public class ClientExcel extends MainClass{
 		workbook = new HSSFWorkbook();
 		sheet = workbook.createSheet("Client Data");
 
-		String[] headers = { "Name", "Client ID", "Subject", "Channel", "Issue Date", "Client Code", "Client Email ID", "File Name", "PDF File" };
+		String[] headers = {"Name", "Client ID", "Subject", "Channel", "Issue Date", "Client Code", "Client Email ID", "File Name", "PDF File","Internal Team"};
 
 		Row headerRow = sheet.createRow(0); 
 		for (int i = 0; i < headers.length; i++) {
@@ -145,7 +146,7 @@ public class ClientExcel extends MainClass{
 
 	/*====================Adding the client code and email into excel sheet===================================*/
 
-	public static void addClientData(String clientCode, String clientEmail) {
+	public static void addClientData(String clientCode, String clientEmail, String internalTeam) {
 		if (sheet != null) {
 			Row row = sheet.getRow(currentRowNum);
 			if (row == null) {
@@ -153,10 +154,12 @@ public class ClientExcel extends MainClass{
 			}
 
 			Cell codeCell = row.createCell(5); 
-			Cell emailCell = row.createCell(6); 
+			Cell emailCell = row.createCell(6);
+			Cell internalteamCell = row.createCell(9);
+			
 			codeCell.setCellValue(clientCode); 
 			emailCell.setCellValue(clientEmail); 
-
+			internalteamCell.setCellValue(internalTeam);
 			currentRowNum++;
 		}
 	}
@@ -456,4 +459,23 @@ public class ClientExcel extends MainClass{
 			e.printStackTrace();
 		}
 	}
+
+//	public static void addInternalTeam(String internal_team) {
+//		
+//			if (sheet != null) {
+//				Row row = sheet.getRow(currentRowNum4);
+//				if (row == null) {
+//					row = sheet.createRow(currentRowNum4);
+//				}
+//
+//				Cell codeCell = row.createCell(9); 
+//				codeCell.setCellValue(internal_team); 
+//				
+//				saveExcelFile();
+//				currentRowNum++;
+//			
+//		}
+//
+//		
+//	}
 }

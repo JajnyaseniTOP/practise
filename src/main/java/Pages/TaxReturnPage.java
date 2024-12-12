@@ -124,46 +124,90 @@ public class TaxReturnPage extends MainClass {
 		}
 	}
 
-
+//
+//	public static void processAllNoticesOfAssessment(String filePath, String downloadDir) {
+//		ClientExcel.clientNamesRemoval();
+////		System.out.println("client name in tax method before " + clientNames.size());
+//		subjectColumnData = ClientExcel.readSubjectColumn(filePath);
+//		boolean found = false; 
+//
+//		for (int i = 0; i < subjectColumnData.size(); i++) {
+//			String subject = subjectColumnData.get(i).trim();
+//
+//			if (subject.toLowerCase().startsWith("notice of assessment")) {
+//				found = true; 
+//
+//				String clientName = clientNames.get(i).trim();
+////				System.out.println("Processing Client: " + clientName);
+//
+//				clickTaxButton();
+//				clickReturnsButton();
+//				clickFilledButton();
+//				clickSearchButton(clientName);
+//				try {
+//					clickAddButton();
+//					String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
+//					searchAndExtractPdfData(filePath,downloadDir,pdfFileName);
+//					Thread.sleep(10000);
+//					clickCancelButton();
+//					
+//				}
+//				catch(Exception e) {
+//					String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i + 1).trim();
+//
+//				}
+//			}
+//		}
+//		if (!found) {
+////			System.out.println("No 'Notice of Assessment' found in the subject column.");
+//		}
+////		System.out.println("client name in tax method after " + clientNames.size());
+////		clientNames.clear();
+//	}
+	
+	
+	
 	public static void processAllNoticesOfAssessment(String filePath, String downloadDir) {
-		ClientExcel.clientNamesRemoval();
+	    ClientExcel.clientNamesRemoval();
 //		System.out.println("client name in tax method before " + clientNames.size());
-		subjectColumnData = ClientExcel.readSubjectColumn(filePath);
-		boolean found = false; 
+	    subjectColumnData = ClientExcel.readSubjectColumn(filePath);
+	    boolean found = false; 
 
-		for (int i = 0; i < subjectColumnData.size(); i++) {
-			String subject = subjectColumnData.get(i).trim();
+	    for (int i = 0; i < subjectColumnData.size(); i++) {
+	        String subject = subjectColumnData.get(i).trim();
 
-			if (subject.toLowerCase().startsWith("notice of assessment")) {
-				found = true; 
+	        if (subject.toLowerCase().startsWith("notice of assessment")) {
+	            found = true; 
 
-				String clientName = clientNames.get(i).trim();
+	            String clientName = clientNames.get(i).trim();
 //				System.out.println("Processing Client: " + clientName);
-
-				clickTaxButton();
-				clickReturnsButton();
-				clickFilledButton();
-				clickSearchButton(clientName);
-				try {
-					clickAddButton();
-					String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
-					searchAndExtractPdfData(filePath,downloadDir,pdfFileName);
-					Thread.sleep(10000);
-					clickCancelButton();
-					
-				}
-				catch(Exception e) {
-					String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i + 1).trim();
-
-				}
-			}
-		}
-		if (!found) {
-//			System.out.println("No 'Notice of Assessment' found in the subject column.");
-		}
-//		System.out.println("client name in tax method after " + clientNames.size());
-//		clientNames.clear();
+	            clickTaxButton();
+	            clickReturnsButton();
+	            clickFilledButton();
+	            clickSearchButton(clientName);
+	            try {
+	                clickAddButton();
+	                String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
+	                searchAndExtractPdfData(filePath, downloadDir, pdfFileName);
+	                Thread.sleep(10000);
+	                clickCancelButton();
+	            } catch (Exception e) {
+	                // Check if i + 1 is within bounds before accessing clientNames
+	                if (i + 1 < clientNames.size()) {
+	                    String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i + 1).trim();
+	                    // Handle the situation if needed
+	                } else {
+	                    // Handle the case where i + 1 is out of bounds
+	                    System.out.println("Index " + (i + 1) + " is out of bounds.");
+	                }
+	            }
+	        }
+	    }
+	    if (!found) {
+	        // System.out.println("No 'Notice of Assessment' found in the subject column.");
+	    }
 	}
+
 
 	
 	public static HashMap<String, String> readPdfFile(String pdfFilePath) {

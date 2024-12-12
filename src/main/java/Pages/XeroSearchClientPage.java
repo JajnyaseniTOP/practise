@@ -25,6 +25,7 @@ public class XeroSearchClientPage extends MainClass {
 	public static String subject;
 	public String emailText = null;
 	public String clientCodeText = null;
+	public String internal_team=null;
 
 	@FindBy(xpath = "//button[@title='GlobalSearch']//div[@role='presentation']//*[name()='svg']")
 	WebElement searchButton;
@@ -40,6 +41,9 @@ public class XeroSearchClientPage extends MainClass {
 
 	@FindBy(xpath = "//span[@class='value u-email']")
 	WebElement clientEmail2;
+	
+	@FindBy(xpath = "//div[contains(@class, 'form-item') and .//div[text()='Internal Team']]//div[@class='value']/span")
+	WebElement internalTeam;
 
 	public XeroSearchClientPage() {
 		PageFactory.initElements(DriverManager.getDriver(), this);
@@ -140,6 +144,7 @@ public class XeroSearchClientPage extends MainClass {
 							System.out.println("Client email is not there.");
 						}
 					}
+					
 
 					// check if client code is visible 
 					try {
@@ -151,26 +156,51 @@ public class XeroSearchClientPage extends MainClass {
 					// if client code is not visible
 					catch (Exception e) {
 						System.out.println("Client code is not there.");
+					}
+					
+					// check if internal team is visible 
+					try {
+						wait.until(ExpectedConditions.visibilityOf(internalTeam));
+						if (internalTeam.isDisplayed()) {
+							internal_team = internalTeam.getText().trim();
+						}
+					}
+					// if internal team is not visible
+					catch (Exception e) {
+						System.out.println("Internal team is not there.");
 					}	
+					
+					
 
-					if (emailText != null && clientCodeText != "-") {
-						ClientExcel.addClientData(clientCodeText, emailText);
+
+					if (emailText != null && clientCodeText != "-" && internal_team != null){
+						ClientExcel.addClientData(clientCodeText, emailText,internal_team);
 						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
 						clickOnSearchButton();
-					} else {
-						ClientExcel.addClientData("client code not found", "client email not found");
+						
+					} 
+					else if(emailText != null && clientCodeText != "-" && internal_team == null){
+						ClientExcel.addClientData(clientCodeText, emailText,"no internalTeam");
+						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
+						clickOnSearchButton();
+						
+					}
+					else {
+						ClientExcel.addClientData("client code not found", "client email not found","no teamName");
 						ClientExcel.writeCombinedDataToExcel("null", subject);
 						ClientExcel.saveExcelFile();
 						clickOnSearchButton();
 					}
+					
 				} else {
 					Thread.sleep(3000);
-					ClientExcel.addClientData("client name not found", "client name not found");
+					ClientExcel.addClientData("client name not found", "client name not found","no teamName");
 					ClientExcel.writeCombinedDataToExcel("null", subject);
 					ClientExcel.saveExcelFile();
 				}
-
-			} 
+				
+				
+		} 
 			// if client name is not visible on the sear directory
 			catch (Exception e) {
 				e.printStackTrace();
