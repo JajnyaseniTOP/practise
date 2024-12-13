@@ -460,22 +460,28 @@ public class ClientExcel extends MainClass{
 		}
 	}
 
-//	public static void addInternalTeam(String internal_team) {
-//		
-//			if (sheet != null) {
-//				Row row = sheet.getRow(currentRowNum4);
-//				if (row == null) {
-//					row = sheet.createRow(currentRowNum4);
-//				}
-//
-//				Cell codeCell = row.createCell(9); 
-//				codeCell.setCellValue(internal_team); 
-//				
-//				saveExcelFile();
-//				currentRowNum++;
-//			
-//		}
-//
-//		
-//	}
+	public static ArrayList<String> readTeamNamesFromColumn9(String filepath) {
+		ArrayList<String> internalTeamNames = new ArrayList<>();
+		try (FileInputStream fis = new FileInputStream(new File(filePath));
+				Workbook workbook = WorkbookFactory.create(fis)) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+			for (Row row : sheet) {
+				Cell cell = row.getCell(9); 
+				if (cell != null && cell.getCellType() == CellType.STRING) {
+					internalTeamNames.add(cell.getStringCellValue());
+				}
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		internalTeamNames.remove(0);
+
+		return internalTeamNames;
+		
+	}
+	
+	
+	
 }

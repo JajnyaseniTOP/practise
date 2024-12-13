@@ -24,6 +24,7 @@ public class XeroSearchClientSteps extends MainClass {
 //		search.checkNoticeOfAssessment(filePath,downloadDir);
 		
 	}
+	
 
 	@Then("I should see the client code")
 	public void i_should_see_the_client_code() {
