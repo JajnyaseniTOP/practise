@@ -58,10 +58,12 @@ public class XeroSearchClientPage extends MainClass {
 		ClientExcel.readSubjectColumn(filePath);
 		System.out.println("client names " + clientNames.size());
 		System.out.println("subject data " + subjectColumnData.size());
-
+		
+		
 		for (int i = 0; i < clientNames.size(); i++) {
 			client = clientNames.get(i);
 			subject = subjectColumnData.get(i);
+			
 			Thread.sleep(3000);
 
 			// if search button will work
@@ -176,6 +178,7 @@ public class XeroSearchClientPage extends MainClass {
 					if (emailText != null && clientCodeText != "-" && internal_team != null){
 						ClientExcel.addClientData(clientCodeText, emailText,internal_team);
 						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
+					
 						clickOnSearchButton();
 						
 					} 
@@ -239,7 +242,7 @@ public class XeroSearchClientPage extends MainClass {
  
 	            String currentExtension = getFileExtension(pdfFile);
  
-	            if (cnt < fileNamesColumn7.size()) {
+	            if (cnt < fileNamesColumn7.size()){
 	                String newFileName = fileNamesColumn7.get(cnt) + "." + currentExtension;
 	                String newFilePath = downloadDir + File.separator + newFileName;
 	                File renamedFile = new File(newFilePath);  //at this line the file is renaming

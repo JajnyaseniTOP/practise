@@ -6,9 +6,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -22,7 +26,7 @@ public class ClientExcel extends MainClass{
 	private static int currentRowNum = 1;
 	private static int currentRowNum2 = 1;
 	private static int currentRowNum3 = 1;
-	private static int currentRowNum4 = 1;
+	//public Set<String> uniqueSubject = new HashSet<String>();
 
 	/*====================Creation of Empty Excel Sheet===================================*/
 
@@ -183,23 +187,42 @@ public class ClientExcel extends MainClass{
 		}
 	}
 	/*====================Writing the Combined data of client name and client code into column of excel===================================*/
-
-	public static void writeCombinedDataToExcel(String clientName, String clientCode) {
-		if (sheet != null) {
-			Row row = sheet.getRow(currentRowNum2); 
-			if (row == null) {
-				row = sheet.createRow(currentRowNum2);
-			}
-
-			String combinedData = clientName + " - " + clientCode;
-
-			Cell combinedCell = row.createCell(7);
-			combinedCell.setCellValue(combinedData);
-			saveExcelFile();
-			currentRowNum2++;
+	
+	
+	static List<String> uniqueName = new ArrayList<String>();
+	public static void writeCombinedDataToExcel(String clientCodeText, String subject) {
+	if (sheet != null) {
+		Row row = sheet.getRow(currentRowNum2); 
+		if (row == null) {
+			row = sheet.createRow(currentRowNum2);
 		}
+		
+		String combinedData = clientCodeText + " - " + subject;
+		if(uniqueName.contains(combinedData)) {
+			int count=1;
+			for(int i=0;i<uniqueName.size();i++){
+				String fileName = combinedData+"_new"+count;
+				if(!uniqueName.contains(fileName)){
+					combinedData = fileName;
+					uniqueName.add(combinedData);
+					break;
+				}else {
+					count++;
+				}
+			}
+		}else {
+			uniqueName.add(combinedData);
+		}
+		System.out.println("fileName = " + combinedData);
+		Cell combinedCell = row.createCell(7);
+		combinedCell.setCellValue(combinedData);
+		saveExcelFile();
+		currentRowNum2++;
 	}
+}
 
+	
+	
 	/*====================Adding the PDF name into excel sheet===================================*/
 
 	public static void addPdfName(String name) {
@@ -481,6 +504,59 @@ public class ClientExcel extends MainClass{
 		return internalTeamNames;
 		
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+public static void writeUniqueDataToExcel() {
+    if (sheet != null) {
+        Map<String, Integer> nameCountMap = new HashMap<>(); // To track counts of duplicate names
+        int lastRowNum = sheet.getLastRowNum(); // Get the last row with data
+
+        for (int rowNum = 0; rowNum <= lastRowNum; rowNum++) {
+            Row row = sheet.getRow(rowNum);
+            if (row != null) {
+                
+                Cell sourceCell = row.getCell(7);
+                if (sourceCell != null) {
+                    String originalName = sourceCell.getStringCellValue();
+
+                    // Generate a unique name
+                    String uniqueName = getUniqueName(nameCountMap, originalName);
+
+                    
+                    Cell targetCell = row.createCell(10); 
+                    targetCell.setCellValue(uniqueName);
+                }
+            }
+        }
+
+        // Save the changes to the Excel file
+        saveExcelFile();
+    }
+}
+
+private static String getUniqueName(Map<String, Integer> nameCountMap, String originalName) {
+    if (originalName == null || originalName.trim().isEmpty()) {
+        originalName = "null"; // Handle null or empty filenames
+    }
+    
+    String uniqueName = originalName;
+    if (nameCountMap.containsKey(originalName)) {
+        int count = nameCountMap.get(originalName) + 1;
+        uniqueName = originalName + "_new" + count; // Rename duplicate with _new+count
+        nameCountMap.put(originalName, count);
+    } else {
+        nameCountMap.put(originalName, 0); // First occurrence
+    }
+    return uniqueName;
+}
 	
 	
 	

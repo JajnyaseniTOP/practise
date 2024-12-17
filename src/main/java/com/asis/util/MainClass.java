@@ -15,7 +15,7 @@ import Driver_manager.DriverManager;
 public class MainClass {
 	public WebDriver driver;
 	public static String currentDate = LocalDate.now().toString();
-	public static String downloadDir = "D:" + File.separator + "ATO Email files"+ File.separator;
+	public static String downloadDir = "C:" + File.separator + "ATO Email files"+ File.separator;
 	
 	//public static String downloadDir =System.getProperty("user.dir") + File.separator + "Downloads";
 	public static String newFilePath ;
