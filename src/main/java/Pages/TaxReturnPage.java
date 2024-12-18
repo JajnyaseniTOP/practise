@@ -192,14 +192,7 @@ public class TaxReturnPage extends MainClass {
 	                Thread.sleep(10000);
 	                clickCancelButton();
 	            } catch (Exception e) {
-	                // Check if i + 1 is within bounds before accessing clientNames
-	                if (i + 1 < clientNames.size()) {
-	                    String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i + 1).trim();
-	                    // Handle the situation if needed
-	                } else {
-	                    // Handle the case where i + 1 is out of bounds
-	                    System.out.println("Index " + (i + 1) + " is out of bounds.");
-	                }
+	                
 	            }
 	        }
 	    }

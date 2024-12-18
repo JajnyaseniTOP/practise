@@ -70,12 +70,22 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 		wait.until(ExpectedConditions.visibilityOfAllElements(links));
 
 		for (WebElement link : links) {
-			wait.until(ExpectedConditions.elementToBeClickable(link));
-			Thread.sleep(3000);
+			try {
+				wait.until(ExpectedConditions.elementToBeClickable(link));
+				Thread.sleep(3000);
 
-			link.click(); 
-			Thread.sleep(5000);
-			printLatestDownloadedFileName(downloadDir);
+				link.click(); 
+				Thread.sleep(5000);
+				printLatestDownloadedFileName(downloadDir);
+			}catch(Exception e) {
+				wait.until(ExpectedConditions.elementToBeClickable(link));
+				Thread.sleep(3000);
+
+				link.click(); 
+				Thread.sleep(5000);
+				printLatestDownloadedFileName(downloadDir);
+			}
+		
 		}
 	}
 	public void printLatestDownloadedFileName(String downloadDir) {

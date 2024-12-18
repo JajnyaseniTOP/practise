@@ -20,7 +20,7 @@ import Driver_manager.DriverManager;
 
 
 
-public class XeroSearchClientPage extends MainClass {
+public class XeroSearchClientPageAsis extends MainClass {
 	public static String client;
 	public static String subject;
 	public String emailText = null;
@@ -45,7 +45,7 @@ public class XeroSearchClientPage extends MainClass {
 	@FindBy(xpath = "//div[contains(@class, 'form-item') and .//div[text()='Internal Team']]//div[@class='value']/span")
 	WebElement internalTeam;
 
-	public XeroSearchClientPage() {
+	public XeroSearchClientPageAsis() {
 		PageFactory.initElements(DriverManager.getDriver(), this);
 	}
 
@@ -79,85 +79,54 @@ public class XeroSearchClientPage extends MainClass {
 				inputBox.sendKeys(client);
 				Thread.sleep(3000);
 			}
-			
-			
-			
 
 			// try to find the client if client name visible click 
 			try {
 				List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
 				boolean clientFound = false;
-				
+
 				for (WebElement ele : elements) {
-				    String elementText = ele.getText();
-				    String editedWebElementText=elementText.toLowerCase().trim();
-				    System.out.println("Raw element text: '" + elementText);
-				    System.out.println("Processed element text: '" + elementText.toLowerCase().trim());
-				    System.out.println("Client: '" + client.toLowerCase().trim());
-				    
-				    if (elementText.trim().equalsIgnoreCase(client.trim())) {
-				        System.out.println("Match found in equalsIgnoreCase condition.");
-				        Thread.sleep(2000);
-				        ele.click();
-				        clientFound = true;
-				        break;
-				    } else if (elementText.toLowerCase().trim().contains(client.toLowerCase().trim())) {
-				        System.out.println("Match found in contains condition.");
-				        Thread.sleep(2000);
-				        ele.click();
-				        clientFound = true;
-				        break;
-				    } else {
-				    	if(editedWebElementText.contains(" & ")){
-				    		System.out.println("yes it contains ' & ' ");
-				    		String removeAndfrmText = editedWebElementText.replaceAll("\\s*&\\s*", "&");
-				    		
-				    		System.out.println("Text after removing spaces around '&': " + removeAndfrmText);
-				    	    System.out.println("Client to match: " + client.toLowerCase().trim());
-				    	    
-				    		if(removeAndfrmText.contains(client.toLowerCase().trim())) {
-				    			Thread.sleep(2000);
-						        ele.click();
-						        clientFound = true;
-						        break;
-				    		}
-				    	}else {
-				    		System.out.println("No match found for this element.");
-				    	}
-				        
-				    }
+					if (ele.getText().trim().equalsIgnoreCase(client.trim()) ||
+							ele.getText().toLowerCase().trim().contains(client.toLowerCase().trim())) {
+						ele.click();
+						clientFound = true;
+						break;
+					}
 				}
-
-
 			
 
+				if (!clientFound) {
+					clientFound = retryWithModifiedClientName(client);
+
+					if (!clientFound) {
+						System.out.println("Client not found: " + client);
+//						ClientExcel.addClientData("client name not found", "client name not found");
+//						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
+						ClientExcel.saveExcelFile();
+					}
+
+				}
+				
+				
+				
 				if (!clientFound && client.contains(".")) {
 					String clientWithoutDot = client.replace(".", "").trim();
+					inputBox.clear();
+					inputBox.sendKeys(clientWithoutDot);
+					Thread.sleep(3000);
 
-					// if client have . in their name 
-					try {
-						inputBox.clear();
-						inputBox.sendKeys(clientWithoutDot);
-						Thread.sleep(3000);
-						elements = DriverManager.getDriver().findElements(By.xpath("//a"));
-						for (WebElement ele : elements) {
-							if (ele.getText().trim().equalsIgnoreCase(clientWithoutDot)) {
-								ele.click();
-								clientFound = true;
-								break;
-							}
-							else if(ele.getText().toLowerCase().trim().contains(clientWithoutDot.toLowerCase().trim())) {
-								ele.click();
-								clientFound = true;
-								break;
-							}
+					elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+					for (WebElement ele : elements) {
+						if (ele.getText().trim().equalsIgnoreCase(clientWithoutDot)) {
+							ele.click();
+							clientFound = true;
+							break;
 						}
 					}
-					// if client dont have . in their name 
-					catch(Exception e) {
-						clickOnSearchButton();
-					}
 				}
+				
+				
+				
 				//client found
 				if (clientFound) {
 					//extract email of that client using i xpath
@@ -210,12 +179,11 @@ public class XeroSearchClientPage extends MainClass {
 					if (emailText != null && clientCodeText != "-" && internal_team != null){
 						ClientExcel.addClientData(clientCodeText, emailText, internal_team);
 						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
-					
 						clickOnSearchButton();
 						
 					} 
 					else if(emailText != null && clientCodeText != "-" && internal_team == null){
-						ClientExcel.addClientData(clientCodeText, emailText, "no teamName");
+						ClientExcel.addClientData(clientCodeText, emailText, "no internalTeam");
 						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
 						clickOnSearchButton();
 						
@@ -242,16 +210,44 @@ public class XeroSearchClientPage extends MainClass {
 			}
 		}
 	}
+	
+	
+	public boolean retryWithModifiedClientName(String originalClient) throws InterruptedException {
+		boolean clientFound = false;
 
-	private String normalizeText(String text) {
-		if (text == null) return "";
-	    return text.replace("\u00A0", " ")       // Replace non-breaking spaces
-	               .replaceAll("&amp;", "&")     // Replace encoded ampersand
-	               .replaceAll("\\s+", " ")      // Normalize multiple spaces
-	               .replaceAll("[^\\p{Print}]", "") // Remove non-printable characters
-	               .trim()                       // Trim leading/trailing spaces
-	               .toLowerCase(); 
-		
+		if (originalClient.contains(".")) {
+			String clientWithoutDot = originalClient.replace(".", "").trim();
+			inputBox.clear();
+			inputBox.sendKeys(clientWithoutDot);
+			Thread.sleep(3000);
+
+			List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+			for (WebElement ele : elements) {
+				if (ele.getText().trim().equalsIgnoreCase(clientWithoutDot)) {
+					ele.click();
+					clientFound = true;
+					break;
+				}
+			}
+		}
+
+		if (!clientFound && originalClient.length() > 1) {
+			String shortenedClient = originalClient.substring(0, originalClient.length() - 1);
+			inputBox.clear();
+			inputBox.sendKeys(shortenedClient);
+			Thread.sleep(3000);
+
+			List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+			for (WebElement ele : elements) {
+				if (ele.getText().trim().equalsIgnoreCase(shortenedClient)) {
+					ele.click();
+					clientFound = true;
+					break;
+				}
+			}
+		}
+
+		return clientFound;
 	}
 
 	public void renameAndMovePdfFilesToDownloadsFolder(String downloadDir){
@@ -322,8 +318,7 @@ public class XeroSearchClientPage extends MainClass {
 	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "Rowan");
 	                        break;
 	                    default:
-	                    	 targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "Others");
-		                        break;
+	                        targetFolder = downloadsFolder; // Use the default folder
 	                }
  
  

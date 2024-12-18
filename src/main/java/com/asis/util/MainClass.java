@@ -13,6 +13,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import Driver_manager.DriverManager;
 
 public class MainClass {
+	
+	public MainClass() {
+        this.driver = DriverManager.getDriver(); // Ensure DriverManager.getDriver() returns a valid WebDriver instance
+    }
 	public WebDriver driver;
 	public static String currentDate = LocalDate.now().toString();
 	public static String downloadDir = "C:" + File.separator + "ATO Email files"+ File.separator;
