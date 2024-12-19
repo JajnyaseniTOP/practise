@@ -1,7 +1,9 @@
 package Pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -27,8 +29,11 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 	@FindBy(xpath = "//button[contains(text(),'Yes')]")
 	private WebElement yesPopUp;
 
-	@FindBy(xpath = "//tbody[@data-bind=\"css: { 'rowgroup': rowGroup.header }\"]//tr//td//a")
-	private List<WebElement> links;  
+	@FindBy(xpath = "//table//tr//td[position()=2]//a")
+	private List<WebElement> links; 
+	
+	//table//tr//td[position()=2]//a
+	
 	@FindBy(xpath = "//tbody/tr[@class=\"table-row\"]")
 	private List<WebElement> commTableHistory;
 	@FindBy(xpath = "//th[@data-header='Name']")
@@ -65,29 +70,68 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 		return ACTIVITY_STATEMENT_DATA;
 	}
 
-	public void clickAllLinks() throws InterruptedException {
+	public void clickAllLinks() {
+	    for (int i = 0; i < links.size(); i++) {
+	        try {
+	            WebElement link = links.get(i); // Fetch the current link dynamically
 
-		wait.until(ExpectedConditions.visibilityOfAllElements(links));
+	            // Scroll into view to ensure visibility
+	            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", link);
 
-		for (WebElement link : links) {
-			try {
-				wait.until(ExpectedConditions.elementToBeClickable(link));
-				Thread.sleep(3000);
+	            // Explicit wait for visibility and clickability
+	            wait.until(ExpectedConditions.visibilityOf(link));
+	            wait.until(ExpectedConditions.elementToBeClickable(link));
 
-				link.click(); 
-				Thread.sleep(5000);
-				printLatestDownloadedFileName(downloadDir);
-			}catch(Exception e) {
-				wait.until(ExpectedConditions.elementToBeClickable(link));
-				Thread.sleep(3000);
+	            // Try clicking using Actions
+	            Actions actions = new Actions(driver);
+	            actions.moveToElement(link).pause(500).click().perform();
+	            System.out.println("Clicked using Actions: " + link.getText());
 
-				link.click(); 
-				Thread.sleep(5000);
-				printLatestDownloadedFileName(downloadDir);
-			}
-		
-		}
+	            // Wait for download completion and print file name
+	            waitForDownloadCompletion();
+	            printLatestDownloadedFileName(downloadDir);
+
+	        } catch (Exception e) {
+	            System.err.println("Actions click failed for: " + links.get(i).getText());
+	            fallbackToJavaScriptClick(links.get(i));
+	        }
+
+	        // Small pause to ensure all actions complete before moving to the next link
+	        pause(3000);
+	    }
 	}
+
+	// Fallback to JavaScript click
+	private void fallbackToJavaScriptClick(WebElement element) {
+	    try {
+	        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+	        System.out.println("Clicked using JavaScript: " + element.getText());
+
+	        // Wait for download completion and print file name
+	        waitForDownloadCompletion();
+	        printLatestDownloadedFileName(downloadDir);
+
+	    } catch (Exception e) {
+	        System.err.println("JavaScript click also failed for: " + element.getText() + " Error: " + e.getMessage());
+	    }
+	}
+
+	// Custom wait method for download completion
+	private void waitForDownloadCompletion() throws InterruptedException {
+	    Thread.sleep(3000); // Simulate file download wait; adjust timing or use proper checks
+	}
+
+	// Pause method for reusability
+	private void pause(int milliseconds) {
+	    try {
+	        Thread.sleep(milliseconds);
+	    } catch (InterruptedException e) {
+	        Thread.currentThread().interrupt();
+	    }
+	}
+
+
+
 	public void printLatestDownloadedFileName(String downloadDir) {
 		File dir = new File(downloadDir);
 		File[] files = dir.listFiles();
