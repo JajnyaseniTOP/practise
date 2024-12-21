@@ -1,6 +1,7 @@
 package TestRunners;
 
 import org.junit.runner.RunWith;
+import io.cucumber.core.cli.Main;
 
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
@@ -23,6 +24,9 @@ import io.cucumber.junit.CucumberOptions;
 	plugin = {"pretty"}
 		)
 
-public class TestRunner { 
+public class TestRunner {
 	//Leca, Christopher
+	public static void main(String[] args) {
+        Main.main(args);
+    }
 }
