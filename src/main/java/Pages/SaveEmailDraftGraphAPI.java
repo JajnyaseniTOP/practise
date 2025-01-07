@@ -116,12 +116,26 @@ public class SaveEmailDraftGraphAPI extends MainClass {
             message.setSubject(subject);
 
             Multipart multipart = new MimeMultipart();
-
+            
+         // Set the email body with the provided template
+            String emailBody = "Dear «      »,\n\n" +
+                "Hope you are well. Please see attached, correspondence from the Australian Taxation Office.\n\n" +
+                "It is important, you read it.\n\n" +
+                "1. If you have already actioned this or paid this account, please keep this letter only for your record.\n" +
+                "2. If an action needs to be taken, please take so in line with the letter attached.\n" +
+                "3. If you have any queries or need assistance, please email us at correspodence@fortunaadvisors.com.au or direct to your client manager.\n\n" +
+                "Kind Regards,\n" +
+                "Natalie Nicolaou\n" +
+                "Administrator";
+            
+            
+            
+            
             BodyPart bodyPart = new MimeBodyPart();
-            bodyPart.setText("Please find the attached document.");
+            bodyPart.setText(emailBody);
             multipart.addBodyPart(bodyPart);
 
-            if (attachmentPath != null && !attachmentPath.isEmpty()) {
+            if (attachmentPath != null && !attachmentPath.isEmpty()){
                 File attachmentFile = new File(attachmentPath);
                 if (attachmentFile.exists()) {
                     MimeBodyPart attachmentPart = new MimeBodyPart();
