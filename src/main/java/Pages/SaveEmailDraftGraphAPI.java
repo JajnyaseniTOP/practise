@@ -48,10 +48,14 @@ public class SaveEmailDraftGraphAPI extends MainClass {
                 if (row != null) {
                     Cell emailCell = row.getCell(6);
                     Cell fileNameCell = row.getCell(7);
+                    Cell emailRcvrName = row.getCell(0);
 
                     if (emailCell != null && fileNameCell != null) {
                         String email = emailCell.getStringCellValue().trim();
                         String fileName = fileNameCell.getStringCellValue().trim();
+                        String emailRcvr = emailRcvrName.getStringCellValue().trim();
+                        String[] nameParts = emailRcvr.split("\\s+"); // Split the name by whitespace
+                        String emailScndWrd = (nameParts.length > 1) ? nameParts[1] : nameParts[0];
                         String subject = fileName;
                         String teamName = teamNames.get(rowIndex - 1).trim();
 
@@ -60,7 +64,7 @@ public class SaveEmailDraftGraphAPI extends MainClass {
 
                             File fileToAttach = new File(filePathToSearch);
                             if (fileToAttach.exists()) {
-                                saveEmailAsDraft(email, subject, filePathToSearch, downloadsDir, teamName);
+                                saveEmailAsDraft(email, subject, filePathToSearch, downloadsDir, teamName,emailScndWrd);
                             } else {
                                 System.err.println("File not found: " + fileToAttach.getAbsolutePath());
                             }
@@ -96,7 +100,7 @@ public class SaveEmailDraftGraphAPI extends MainClass {
         return email != null && email.contains("@") && !email.contains(" ") && !email.isEmpty();
     }
 
-    private static void saveEmailAsDraft(String email, String subject, String attachmentPath, String downloadsDir, String teamName) {
+    private static void saveEmailAsDraft(String email, String subject, String attachmentPath, String downloadsDir, String teamName, String emailRcvrNm) {
         Properties properties = new Properties();
         properties.put("mail.smtp.host", SMTP_HOST);
         properties.put("mail.smtp.port", SMTP_PORT);
@@ -118,7 +122,7 @@ public class SaveEmailDraftGraphAPI extends MainClass {
             Multipart multipart = new MimeMultipart();
             
          // Set the email body with the provided template
-            String emailBody = "Dear «      »,\n\n" +
+            String emailBody = "Dear " + emailRcvrNm + " ,\n\n" +
                 "Hope you are well. Please see attached, correspondence from the Australian Taxation Office.\n\n" +
                 "It is important, you read it.\n\n" +
                 "1. If you have already actioned this or paid this account, please keep this letter only for your record.\n" +
@@ -127,8 +131,6 @@ public class SaveEmailDraftGraphAPI extends MainClass {
                 "Kind Regards,\n" +
                 "Natalie Nicolaou\n" +
                 "Administrator";
-            
-            
             
             
             BodyPart bodyPart = new MimeBodyPart();
@@ -175,7 +177,7 @@ public class SaveEmailDraftGraphAPI extends MainClass {
             case "C1":
                 return "Rebecca";
             case "K":
-                return "Notfowd";
+                return "Not_Found";
             default:
                 return "Others"; // Default folder for undefined team names
         }

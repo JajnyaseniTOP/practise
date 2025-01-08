@@ -15,14 +15,13 @@ public class SendingEmailPage {
     public static void main(String[] args) {
         String excelFilePath = "C:\\Users\\TOP\\Documents\\TestingDocuments.xlsx";
 
-        String dwnldDir_Notfowd = "C:/ATO Email files/Email_Files_2025-01-07/Notfowd";
+        String dwnldDir_Notfowd = "C:/ATO Email files/Email_Files_2025-01-07/Not_Found";
         String dwnldDir_Rowan = "C:/ATO Email files/Email_Files_2025-01-07/Rowan";
         String dwnldDir_Rebecca = "C:/ATO Email files/Email_Files_2025-01-07/Rebecca";
         String dwnldDir_Slain = "C:/ATO Email files/Email_Files_2025-01-07/Slain";
 
         String fromEmail = "toptechautomation@theoutsourcepro.com.au";
         String password = "J7OJb*ZwQD25HpC2KO8*n";
-        String body = "Dear «      »,\n\nHope you are well. Please see attached, correspondence from the Australian Taxation Office.\n\nIt is important, you read it.\n\n1. If you have already actioned this or paid this account, please keep this letter only for your record.\n\n2. If an action needs to be taken, please take so in line with the letter attached.\n\n3. If you have any queries or need assistance, please email us at correspodence@fortunaadvisors.com.au or direct to your client manager.\n\nKind Regards, \nNatalie Nicolaou\nAdministrator";
 
         try {
             FileInputStream file = new FileInputStream(excelFilePath);
@@ -34,11 +33,23 @@ public class SendingEmailPage {
                 Cell emailCell = row.getCell(6);   // Column 6 for Email ID
                 Cell fileCell = row.getCell(7);    // Column 7 for the file name (subject and attachment)
                 Cell internalTeamCell = row.getCell(9); // Column 9 for internal team info
+                Cell nameCell = row.getCell(0);    // Column 0 for the name to replace «      »
 
-                if (emailCell != null && fileCell != null && internalTeamCell != null) {
+                if (emailCell != null && fileCell != null && internalTeamCell != null && nameCell != null) {
                     String recipientEmail = emailCell.getStringCellValue();
                     String fileName = fileCell.getStringCellValue();
                     String internalTeam = internalTeamCell.getStringCellValue().trim();  // Get internal team info
+                    String recipientName = nameCell.getStringCellValue().trim();  // Retrieve name from column 0
+                    String[] nameParts = recipientName.split("\\s+"); // Split the name by whitespace
+                    String emailScndWrd = (nameParts.length > 1) ? nameParts[1] : nameParts[0];
+
+                    String body = "Dear " + emailScndWrd + ",\n\n" +
+                            "Hope you are well. Please see attached, correspondence from the Australian Taxation Office.\n\n" +
+                            "It is important, you read it.\n\n" +
+                            "1. If you have already actioned this or paid this account, please keep this letter only for your record.\n\n" +
+                            "2. If an action needs to be taken, please take so in line with the letter attached.\n\n" +
+                            "3. If you have any queries or need assistance, please email us at correspodence@fortunaadvisors.com.au or direct to your client manager.\n\n" +
+                            "Kind Regards, \nNatalie Nicolaou\nAdministrator";
 
                     String downloadDir = getDownloadDir(internalTeam, dwnldDir_Slain, dwnldDir_Rowan, dwnldDir_Rebecca, dwnldDir_Notfowd);
                     if (downloadDir != null) {
