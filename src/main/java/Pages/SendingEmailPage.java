@@ -7,6 +7,8 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +25,24 @@ public class SendingEmailPage {
         String fromEmail = "toptechautomation@theoutsourcepro.com.au";
         String password = "J7OJb*ZwQD25HpC2KO8*n";
 
+        // Define the list of specific content to check
+        List<String> validContents = Arrays.asList(
+                "Notification of a mistake in your income tax return",
+                "Penalty warning - Lodgment",
+                "Lodgment-Overdue-Final warning",
+                "Taxable payments annual report - Second reminder to lodge",
+                "ABN - Application refused",
+                "ABN - Cancellation advice",
+                "Debt - Referral notification - Debt collection agency",
+                "Registration confirmation - Fuel tax credit",
+                "Lodgment-Overdue-Lodge now",
+                "ABN - Registered, replaced or reinstated",
+                "Failure to lodge Activity Statement or GST Payment Slip",
+                "Penalty notification - Failure to lodge",
+                "Lodgment-Overdue-Reminder",
+                "Confirming your payment plan"
+        );
+
         try {
             FileInputStream file = new FileInputStream(excelFilePath);
             Workbook workbook = new XSSFWorkbook(file);
@@ -33,47 +53,75 @@ public class SendingEmailPage {
                 Cell emailCell = row.getCell(6);   // Column 6 for Email ID
                 Cell fileCell = row.getCell(7);    // Column 7 for the file name (subject and attachment)
                 Cell internalTeamCell = row.getCell(9); // Column 9 for internal team info
-                Cell nameCell = row.getCell(0);    // Column 0 for the name to replace «      »
+                Cell nameCell = row.getCell(0);    // Column 0 for the name to replace
+                Cell contentCell = row.getCell(2); // Column 2 for the content
 
-                if (emailCell != null && fileCell != null && internalTeamCell != null && nameCell != null) {
+                if (emailCell != null && fileCell != null && internalTeamCell != null && nameCell != null && contentCell != null) {
                     String recipientEmail = emailCell.getStringCellValue();
                     String fileName = fileCell.getStringCellValue();
-                    String internalTeam = internalTeamCell.getStringCellValue().trim();  // Get internal team info
-                    String recipientName = nameCell.getStringCellValue().trim();  // Retrieve name from column 0
-                    String[] nameParts = recipientName.split("\\s+"); // Split the name by whitespace
-                    String emailScndWrd = (nameParts.length > 1) ? nameParts[1] : nameParts[0];
+                    String internalTeam = internalTeamCell.getStringCellValue().trim();
+                    String recipientName = nameCell.getStringCellValue().trim();
+                    String content = contentCell.getStringCellValue().trim();
 
-                    String body = "Dear " + emailScndWrd + ",\n\n" +
-                            "Hope you are well. Please see attached, correspondence from the Australian Taxation Office.\n\n" +
-                            "It is important, you read it.\n\n" +
-                            "1. If you have already actioned this or paid this account, please keep this letter only for your record.\n\n" +
-                            "2. If an action needs to be taken, please take so in line with the letter attached.\n\n" +
-                            "3. If you have any queries or need assistance, please email us at correspodence@fortunaadvisors.com.au or direct to your client manager.\n\n" +
-                            "Kind Regards, \nNatalie Nicolaou\nAdministrator";
+                    if (validContents.contains(content)) {
+                        // Determine CC email based on internal team
+                        String ccEmail = null;
+                        switch (internalTeam) {
+                            case "A":
+                            case "A1":
+                                ccEmail = "asis.kaur@theoutsourcepro.com.au";
+                                break;
+                            case "B":
+                            case "B1":
+                                ccEmail = "narsingh@theoutsourcepro.com.au";
+                                break;
+                            case "C":
+                            case "C1":
+                                ccEmail = "vinod.gaddirala@theoutsourcepro.com.au";
+                                break;
+                            case "K":
+                                ccEmail = "jajnyaseni.swain@theoutsourcepro.com.au";
+                                break;
+                            default:
+                                ccEmail = null; // Ignore other internal team names
+                                break;
+                        }
 
-                    String downloadDir = getDownloadDir(internalTeam, dwnldDir_Slain, dwnldDir_Rowan, dwnldDir_Rebecca, dwnldDir_Notfowd);
-                    if (downloadDir != null) {
-                        String fileExtension = getFileExtension(fileName, downloadDir);  // Get file extension dynamically
-                        if (!fileExtension.isEmpty()) {
-                            File attachment = new File(downloadDir, fileName + fileExtension);
+                        // Extract the second word of the recipient's name
+                        String[] nameParts = recipientName.split("\\s+");
+                        String emailScndWrd = (nameParts.length > 1) ? nameParts[1] : nameParts[0];
 
-                            // Check if the file exists before proceeding with email sending
-                            if (attachment.exists()) {
-                                if (validateEmail(recipientEmail)) {
-                                    sendEmail(fromEmail, password, recipientEmail, fileName, body, attachment);
+                        String body = "Dear " + emailScndWrd + ",\n\n" +
+                                "Hope you are well. Please see attached, correspondence from the Australian Taxation Office.\n\n" +
+                                "It is important, you read it.\n\n" +
+                                "1. If you have already actioned this or paid this account, please keep this letter only for your record.\n\n" +
+                                "2. If an action needs to be taken, please take so in line with the letter attached.\n\n" +
+                                "3. If you have any queries or need assistance, please email us at correspodence@fortunaadvisors.com.au or direct to your client manager.\n\n" +
+                                "Kind Regards, \nNatalie Nicolaou\nAdministrator";
+
+                        String downloadDir = getDownloadDir(internalTeam, dwnldDir_Slain, dwnldDir_Rowan, dwnldDir_Rebecca, dwnldDir_Notfowd);
+                        if (downloadDir != null) {
+                            String fileExtension = getFileExtension(fileName, downloadDir);  // Get file extension dynamically
+                            if (!fileExtension.isEmpty()) {
+                                File attachment = new File(downloadDir, fileName + fileExtension);
+
+                                // Check if the file exists before proceeding with email sending
+                                if (attachment.exists()) {
+                                    if (validateEmail(recipientEmail)) {
+                                        sendEmail(fromEmail, password, recipientEmail, fileName, body, attachment, ccEmail);
+                                    } else {
+                                        System.out.println("Invalid email format: " + recipientEmail + ". Skipping...");
+                                    }
                                 } else {
-                                    System.out.println("Invalid email format: " + recipientEmail + ". Skipping...");
+                                    System.out.println("Attachment file not found: " + attachment.getAbsolutePath());
                                 }
                             } else {
-                                System.out.println("Attachment file not found: " + attachment.getAbsolutePath());
+                                System.out.println("No valid file found for: " + fileName + " in directory: " + downloadDir);
                             }
                         } else {
-                            System.out.println("No valid file found for: " + fileName + " in directory: " + downloadDir);
+                            System.out.println("Invalid internal team value: " + internalTeam + " at row " + i + ". Skipping...");
                         }
-                    } else {
-                        System.out.println("Invalid internal team value: " + internalTeam + " at row " + i + ". Skipping...");
                     }
-
                 }
             }
             workbook.close();
@@ -83,7 +131,6 @@ public class SendingEmailPage {
         }
     }
 
-    // Email validation method
     public static boolean validateEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         Pattern pattern = Pattern.compile(emailRegex);
@@ -91,7 +138,6 @@ public class SendingEmailPage {
         return matcher.matches();
     }
 
-    // Method to get the download directory based on internal team
     public static String getDownloadDir(String internalTeam, String dwnldDir_Slain, String dwnldDir_Rowan, String dwnldDir_Rebecca, String dwnldDir_Notfowd) {
         switch (internalTeam) {
             case "A":
@@ -106,63 +152,58 @@ public class SendingEmailPage {
             case "K":
                 return dwnldDir_Notfowd;
             default:
-                return null;  // Return null if internal team does not match expected values
+                return null;
         }
     }
 
-    // Method to retrieve file extension dynamically
     public static String getFileExtension(String fileName, String directoryPath) {
         File directory = new File(directoryPath);
         if (directory.isDirectory()) {
             for (File file : directory.listFiles()) {
                 if (file.getName().startsWith(fileName)) {
-                    return file.getName().substring(file.getName().lastIndexOf(".")); // Return the extension
+                    return file.getName().substring(file.getName().lastIndexOf("."));
                 }
             }
         }
-        return ""; // If no valid extension found, return empty
+        return "";
     }
 
-    // Updated sendEmail method to handle attachment properly
-    public static void sendEmail(String fromEmail, String password, String toEmail, String subject, String body, File attachment) {
+    public static void sendEmail(String fromEmail, String password, String toEmail, String subject, String body, File attachment, String ccEmail) {
         try {
-            // Set up the email properties
             Properties properties = new Properties();
             properties.put("mail.smtp.host", "smtp.office365.com");
             properties.put("mail.smtp.port", "587");
             properties.put("mail.smtp.auth", "true");
             properties.put("mail.smtp.starttls.enable", "true");
 
-            // Create session with authentication
             Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(fromEmail, password);
                 }
             });
 
-            // Create a new email message
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(fromEmail));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+
+            if (ccEmail != null) {
+                message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccEmail));
+            }
+
             message.setSubject(subject);
 
-            // Create body part for the email text
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
             mimeBodyPart.setText(body);
 
-            // Create body part for the attachment
             MimeBodyPart attachmentPart = new MimeBodyPart();
             attachmentPart.attachFile(attachment);
 
-            // Create a multipart message to hold both the text and the attachment
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(mimeBodyPart);
             multipart.addBodyPart(attachmentPart);
 
-            // Set the multipart message as the content of the email
             message.setContent(multipart);
 
-            // Send the email
             Transport.send(message);
             System.out.println("Email sent successfully to " + toEmail + " with subject: " + subject);
 

@@ -89,6 +89,7 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 
 	            // Wait for download completion and print file name
 	            waitForDownloadCompletion();
+	       
 	            printLatestDownloadedFileName(downloadDir);
 
 	        } catch (Exception e) {
@@ -132,7 +133,8 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 
 
 
-	public void printLatestDownloadedFileName(String downloadDir) {
+	public void printLatestDownloadedFileName(String downloadDir) throws InterruptedException {
+	    Thread.sleep(3000);
 		File dir = new File(downloadDir);
 		File[] files = dir.listFiles();
 
