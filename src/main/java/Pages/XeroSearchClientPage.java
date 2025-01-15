@@ -307,19 +307,19 @@ public class XeroSearchClientPage extends MainClass {
 	                    File targetFolder;
 	                    switch (teamName) {
 	                    case "K":
-	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "Not_Found");
+	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "K-Lindy");
 	                        break;
 	                    case "C":
 	                    case "C1":
-	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "Rebecca");
+	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "C-Rebecca");
 	                        break;
 	                    case "A1":
 	                    case "A":
-	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "Slain");
+	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "A-Sian");
 	                        break;
 	                    case "B":
 	                    case "B1":
-	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "Rowan");
+	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "B-Rowan");
 	                        break;
 	                    default:
 	                    	 targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "Others");

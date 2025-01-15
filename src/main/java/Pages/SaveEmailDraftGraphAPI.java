@@ -169,15 +169,15 @@ public class SaveEmailDraftGraphAPI extends MainClass {
         switch (teamName) {
             case "A":
             case "A1":
-                return "Slain";
+                return "A-Sian";
             case "B":
             case "B1":
-                return "Rowan";
+                return "B-Rowan";
             case "C":
             case "C1":
-                return "Rebecca";
+                return "C-Rebecca";
             case "K":
-                return "Not_Found";
+                return "K-Lindy";
             default:
                 return "Others"; // Default folder for undefined team names
         }
