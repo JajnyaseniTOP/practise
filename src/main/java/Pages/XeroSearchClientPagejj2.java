@@ -21,7 +21,7 @@ import Driver_manager.DriverManager;
 
 
 
-public class XeroSearchClientPage extends MainClass {
+public class XeroSearchClientPagejj2 extends MainClass {
 	public static String client;
 	public static String subject;
 	public String emailText = null;
@@ -55,7 +55,7 @@ public class XeroSearchClientPage extends MainClass {
 	@FindBy(xpath = "//input[@id='ctl00_PageContent_btnAction_60fb5410-fab7-45b1-8755-711948782a78']")
 	WebElement clickConnect;
 
-	public XeroSearchClientPage() {
+	public XeroSearchClientPagejj2() {
 		PageFactory.initElements(DriverManager.getDriver(), this);
 	}
 
@@ -150,6 +150,9 @@ public class XeroSearchClientPage extends MainClass {
 				    }
 				}
 
+
+			
+
 				if (!clientFound && client.contains(".")) {
 					String clientWithoutDot = client.replace(".", "").trim();
 
@@ -177,7 +180,9 @@ public class XeroSearchClientPage extends MainClass {
 						clickOnSearchButton();
 					}
 				}
-				
+				if(clientFound==false) {
+					
+				}
 				//client found
 				if (clientFound==true) {
 					//extract email of that client using i xpath
@@ -195,7 +200,6 @@ public class XeroSearchClientPage extends MainClass {
 							emailText = clientEmail2.getText().trim();
 
 						} catch (Exception e2) {
-							 emailText = "no email found";
 							System.out.println("Client email is not there.");
 						}
 					}
@@ -210,7 +214,6 @@ public class XeroSearchClientPage extends MainClass {
 					}
 					// if client code is not visible
 					catch (Exception e) {
-						clientCodeText = clientCode.getText().trim();
 						System.out.println("Client code is not there.");
 					}
 					
@@ -223,33 +226,31 @@ public class XeroSearchClientPage extends MainClass {
 					}
 					// if internal team is not visible
 					catch (Exception e) {
-						internal_team = "no teamName";
 						System.out.println("Internal team is not there.");
 					}	
 					
-					ClientExcel.addClientData(clientCodeText, emailText, internal_team);
-					ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
-					clickOnSearchButton();
+					
 
-//					if (emailText != null && clientCodeText != "-" && internal_team != null){
-//						ClientExcel.addClientData(clientCodeText, emailText, internal_team);
-//						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
-//					
-//						clickOnSearchButton();
-//						
-//					} 
-//					else if(emailText != null && clientCodeText != "-" && internal_team == null){
-//						ClientExcel.addClientData(clientCodeText, emailText, "no teamName");
-//						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
-//						clickOnSearchButton();
-//						
-//					}
-//					else {
-//						ClientExcel.addClientData("client code not found", "client email not found","no teamName");
-//						ClientExcel.writeCombinedDataToExcel("null", subject);
-//						ClientExcel.saveExcelFile();
-//						clickOnSearchButton();
-//					}
+
+					if (emailText != null && clientCodeText != "-" && internal_team != null){
+						ClientExcel.addClientData(clientCodeText, emailText, internal_team);
+						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
+					
+						clickOnSearchButton();
+						
+					} 
+					else if(emailText != null && clientCodeText != "-" && internal_team == null){
+						ClientExcel.addClientData(clientCodeText, emailText, "no teamName");
+						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
+						clickOnSearchButton();
+						
+					}
+					else {
+						ClientExcel.addClientData("client code not found", "client email not found","no teamName");
+						ClientExcel.writeCombinedDataToExcel("null", subject);
+						ClientExcel.saveExcelFile();
+						clickOnSearchButton();
+					}
 					
 				} else {
 					Thread.sleep(3000);
@@ -276,7 +277,7 @@ public class XeroSearchClientPage extends MainClass {
 	
 	
 	
-//----------------------------this method for switching the portal--------------------------------------------------------------	
+	
 	
 	public void inputTheClientNameInOthrPortal() throws InterruptedException {
 		Map<Integer, String> tobsrchOnOthrPortal=ClientExcel.readClientsID(filePath);
@@ -450,7 +451,7 @@ public class XeroSearchClientPage extends MainClass {
 						// Write data back to the specific row
 	                    ClientExcel.writeDataToSpecificRow(rowNumber, clientCodeText, emailText, internal_team);
 	                    ClientExcel.writeSubjectDataToExcelForSpecificRow(rowNumber, clientCodeText, subject);
-	                    clickOnSearchButton();
+	
 	
 //						if (emailText != null && clientCodeText != "-" && internal_team != null){
 //							ClientExcel.addClientData(clientCodeText, emailText, internal_team);

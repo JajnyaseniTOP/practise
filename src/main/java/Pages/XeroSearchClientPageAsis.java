@@ -44,6 +44,14 @@ public class XeroSearchClientPageAsis extends MainClass {
 	
 	@FindBy(xpath = "//div[contains(@class, 'form-item') and .//div[text()='Internal Team']]//div[@class='value']/span")
 	WebElement internalTeam;
+	
+	@FindBy(xpath="//div[@class='xnav-appbutton--body']")
+	WebElement switchPortal;
+	
+	@FindBy(xpath="//a[normalize-space()='Portal']")
+	WebElement clickPortal;
+	
+	
 
 	public XeroSearchClientPageAsis() {
 		PageFactory.initElements(DriverManager.getDriver(), this);

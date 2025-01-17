@@ -5,6 +5,7 @@ import com.asis.util.MainClass;
 import Pages.XeroSearchClientPage;
 import Pages.XeroSearchClientPageAsis;
 import io.cucumber.java.en.*;
+
 public class XeroSearchClientSteps extends MainClass {
 
 	private XeroSearchClientPage search = new XeroSearchClientPage();
@@ -16,12 +17,14 @@ public class XeroSearchClientSteps extends MainClass {
 
 	@When("I input the client name")
 	public void i_input_the_client_name() {
-		search.clickOnSearchButton();
+		
+		//search.clickOnSearchButton();
 	}
 
 	@When("I click on the search button")
 	public void i_click_on_the_search_button() throws InterruptedException {
 		search.inputTheClientName();
+		search.inputTheClientNameInOthrPortal();
 //		search.checkNoticeOfAssessment(filePath,downloadDir);
 		
 	}

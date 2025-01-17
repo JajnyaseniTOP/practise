@@ -178,6 +178,8 @@ public class SaveEmailDraftGraphAPI extends MainClass {
                 return "C-Rebecca";
             case "K":
                 return "K-Lindy";
+            case "D":
+            	return "D-Melvyn";
             default:
                 return "Others"; // Default folder for undefined team names
         }

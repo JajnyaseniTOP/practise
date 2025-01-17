@@ -21,7 +21,7 @@ import Driver_manager.DriverManager;
 
 
 
-public class XeroSearchClientPage extends MainClass {
+public class XeroSearchClientPagejj3 extends MainClass {
 	public static String client;
 	public static String subject;
 	public String emailText = null;
@@ -55,7 +55,7 @@ public class XeroSearchClientPage extends MainClass {
 	@FindBy(xpath = "//input[@id='ctl00_PageContent_btnAction_60fb5410-fab7-45b1-8755-711948782a78']")
 	WebElement clickConnect;
 
-	public XeroSearchClientPage() {
+	public XeroSearchClientPagejj3() {
 		PageFactory.initElements(DriverManager.getDriver(), this);
 	}
 
@@ -150,6 +150,9 @@ public class XeroSearchClientPage extends MainClass {
 				    }
 				}
 
+
+			
+
 				if (!clientFound && client.contains(".")) {
 					String clientWithoutDot = client.replace(".", "").trim();
 
@@ -177,7 +180,9 @@ public class XeroSearchClientPage extends MainClass {
 						clickOnSearchButton();
 					}
 				}
-				
+				if(clientFound==false) {
+					
+				}
 				//client found
 				if (clientFound==true) {
 					//extract email of that client using i xpath
@@ -195,7 +200,6 @@ public class XeroSearchClientPage extends MainClass {
 							emailText = clientEmail2.getText().trim();
 
 						} catch (Exception e2) {
-							 emailText = "no email found";
 							System.out.println("Client email is not there.");
 						}
 					}
@@ -210,7 +214,6 @@ public class XeroSearchClientPage extends MainClass {
 					}
 					// if client code is not visible
 					catch (Exception e) {
-						clientCodeText = clientCode.getText().trim();
 						System.out.println("Client code is not there.");
 					}
 					
@@ -223,33 +226,31 @@ public class XeroSearchClientPage extends MainClass {
 					}
 					// if internal team is not visible
 					catch (Exception e) {
-						internal_team = "no teamName";
 						System.out.println("Internal team is not there.");
 					}	
 					
-					ClientExcel.addClientData(clientCodeText, emailText, internal_team);
-					ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
-					clickOnSearchButton();
+					
 
-//					if (emailText != null && clientCodeText != "-" && internal_team != null){
-//						ClientExcel.addClientData(clientCodeText, emailText, internal_team);
-//						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
-//					
-//						clickOnSearchButton();
-//						
-//					} 
-//					else if(emailText != null && clientCodeText != "-" && internal_team == null){
-//						ClientExcel.addClientData(clientCodeText, emailText, "no teamName");
-//						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
-//						clickOnSearchButton();
-//						
-//					}
-//					else {
-//						ClientExcel.addClientData("client code not found", "client email not found","no teamName");
-//						ClientExcel.writeCombinedDataToExcel("null", subject);
-//						ClientExcel.saveExcelFile();
-//						clickOnSearchButton();
-//					}
+
+					if (emailText != null && clientCodeText != "-" && internal_team != null){
+						ClientExcel.addClientData(clientCodeText, emailText, internal_team);
+						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
+					
+						clickOnSearchButton();
+						
+					} 
+					else if(emailText != null && clientCodeText != "-" && internal_team == null){
+						ClientExcel.addClientData(clientCodeText, emailText, "no teamName");
+						ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
+						clickOnSearchButton();
+						
+					}
+					else {
+						ClientExcel.addClientData("client code not found", "client email not found","no teamName");
+						ClientExcel.writeCombinedDataToExcel("null", subject);
+						ClientExcel.saveExcelFile();
+						clickOnSearchButton();
+					}
 					
 				} else {
 					Thread.sleep(3000);
@@ -268,236 +269,132 @@ public class XeroSearchClientPage extends MainClass {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-//----------------------------this method for switching the portal--------------------------------------------------------------	
-	
 	public void inputTheClientNameInOthrPortal() throws InterruptedException {
-		Map<Integer, String> tobsrchOnOthrPortal=ClientExcel.readClientsID(filePath);
-		
-		if(tobsrchOnOthrPortal.size()>0) {
-			System.out.println("client names " + tobsrchOnOthrPortal.size());
-			ClientExcel.readSubjectColumn(filePath);
-			//System.out.println("client names " + clientNames.size());
-			//System.out.println("subject data " + subjectColumnData.size());
-			
-			
-			for (Map.Entry<Integer, String> entry : tobsrchOnOthrPortal.entrySet()) {
-				 int rowNumber = entry.getKey();
-				 client = entry.getValue();
-				 subject = subjectColumnData.get(rowNumber); // Match subject by row number
-				
-				Thread.sleep(3000);
-				
-			
-				try {
-					if(switchPortal.getText().trim().contains("Fortuna Unit Trust t/as Keypoi")) {
-						System.out.println("yes it is in Fortuna Unit Trust t/as Keypoint Accounting... portal");
-						switchPortal.click();
-						clickPortal.click();
-						clickConnect.click();
-						System.out.println("Now it has switched to Fortuna Accountants & Business... portal");
-						clickOnSearchButton();
-					}else {
-						System.out.println("it is already in Fortuna Accountants & Business... portal");
-						clickOnSearchButton();
-					}
-					inputBox.clear();
-					inputBox.sendKeys(client);
-					Thread.sleep(3000);
-				}
-				// if search button will not work
-				catch(Exception e) {
-					clickOnSearchButton();
-					inputBox.clear();
-					inputBox.sendKeys(client);
-					Thread.sleep(3000);
-				}
-				
-				
-				
-	
-				// try to find the client if client name visible click 
-				try {
-					List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
-					boolean clientFound = false;
-					for (WebElement ele : elements) {
-					    String elementText = ele.getText();
-					    String editedWebElementText=elementText.toLowerCase().trim();
-					    System.out.println("Raw element text: '" + elementText);
-					    System.out.println("Processed element text: '" + elementText.toLowerCase().trim());
-					    System.out.println("Client: '" + client.toLowerCase().trim());
-					    
-					    if (elementText.trim().equalsIgnoreCase(client.trim())) {
-					        System.out.println("Match found in equalsIgnoreCase condition.");
-					        Thread.sleep(2000);
-					        ele.click();
-					        clientFound = true;
-					        break;
-					    } else if (elementText.toLowerCase().trim().contains(client.toLowerCase().trim())) {
-					        System.out.println("Match found in contains condition.");
-					        Thread.sleep(2000);
-					        ele.click();
-					        clientFound = true;
-					        break;
-					    } else {
-					    	if(editedWebElementText.contains(" & ")){
-					    		//System.out.println("yes it contains ' & ' ");
-					    		String removeAndfrmText = editedWebElementText.replaceAll("\\s*&\\s*", "&");
-					    		
-					    		//System.out.println("Text after removing spaces around '&': " + removeAndfrmText);
-					    	    //System.out.println("Client to match: " + client.toLowerCase().trim());
-					    	    
-					    		if(removeAndfrmText.contains(client.toLowerCase().trim())) {
-					    			Thread.sleep(2000);
-							        ele.click();
-							        clientFound = true;
-							        break;
-					    		}
-					    	}else {
-					    		System.out.println("No match found for this element.");
-					    	}
-					        
-					    }
-					}
-	
-	
-				
-	
-					if (!clientFound && client.contains(".")) {
-						String clientWithoutDot = client.replace(".", "").trim();
-	
-						// if client have . in their name 
-						try {
-							inputBox.clear();
-							inputBox.sendKeys(clientWithoutDot);
-							Thread.sleep(3000);
-							elements = DriverManager.getDriver().findElements(By.xpath("//a"));
-							for (WebElement ele : elements) {
-								if (ele.getText().trim().equalsIgnoreCase(clientWithoutDot)) {
-									ele.click();
-									clientFound = true;
-									break;
-								}
-								else if(ele.getText().toLowerCase().trim().contains(clientWithoutDot.toLowerCase().trim())) {
-									ele.click();
-									clientFound = true;
-									break;
-								}
-							}
-						}
-						// if client dont have . in their name 
-						catch(Exception e) {
-							clickOnSearchButton();
-						}
-					}
-					
-					//client found
-					if (clientFound==true) {
-						//extract email of that client using i xpath
-						try {
-							Thread.sleep(4000);
-							wait.until(ExpectedConditions.visibilityOf(clientEmail));
-							emailText = clientEmail.getText().trim();
-	
-						} 
-						// if not found use 2 xpath for email
-						catch (Exception e1) {
-							try {
-								Thread.sleep(4000);
-								wait.until(ExpectedConditions.visibilityOf(clientEmail2));
-								emailText = clientEmail2.getText().trim();
-	
-							} catch (Exception e2) {
-								 emailText = "no email found";
-								System.out.println("Client email is not there.");
-							}
-						}
-						
-	
-						// check if client code is visible 
-						try {
-							wait.until(ExpectedConditions.visibilityOf(clientCode));
-							if (clientCode.isDisplayed()) {
-								clientCodeText = clientCode.getText().trim();
-							}
-						}
-						// if client code is not visible
-						catch (Exception e) {
-							clientCodeText = "client code not found";
-							System.out.println("Client code is not there.");
-						}
-						
-						// check if internal team is visible 
-						try {
-							wait.until(ExpectedConditions.visibilityOf(internalTeam));
-							if (internalTeam.isDisplayed()) {
-								internal_team = internalTeam.getText().trim();
-							}
-						}
-						// if internal team is not visible
-						catch (Exception e) {
-							internal_team = "no teamName";
-							System.out.println("Internal team is not there.");
-						}	
-						
-						// Write data back to the specific row
-	                    ClientExcel.writeDataToSpecificRow(rowNumber, clientCodeText, emailText, internal_team);
-	                    ClientExcel.writeSubjectDataToExcelForSpecificRow(rowNumber, clientCodeText, subject);
+	    Map<Integer, String> tobsrchOnOthrPortal = ClientExcel.readClientsID(filePath);
+
+	    if (tobsrchOnOthrPortal.size() > 0) {
+	        System.out.println("client names " + tobsrchOnOthrPortal.size());
+	        ClientExcel.readSubjectColumn(filePath);
+
+	        for (Map.Entry<Integer, String> entry : tobsrchOnOthrPortal.entrySet()) {
+	            int rowNumber = entry.getKey();
+	            String client = entry.getValue();
+	            String subject = subjectColumnData.get(rowNumber); // Match subject by row number
+
+	            Thread.sleep(3000);
+
+	            try {
+	                // Switch portal if necessary
+	                if (switchPortal.getText().trim().contains("Fortuna Unit Trust t/as Keypoi")) {
+	                    System.out.println("Switching portal...");
+	                    switchPortal.click();
+	                    clickPortal.click();
+	                    clickConnect.click();
 	                    clickOnSearchButton();
+	                } else {
+	                    clickOnSearchButton();
+	                }
+
+	                inputBox.clear();
+	                inputBox.sendKeys(client);
+	                Thread.sleep(3000);
+	            } catch (Exception e) {
+	                clickOnSearchButton();
+	                inputBox.clear();
+	                inputBox.sendKeys(client);
+	                Thread.sleep(3000);
+	            }
+
+	            // Search and extract data
+	            try {
+	                List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+	                boolean clientFound = false;
+
+	                for (WebElement ele : elements) {
+	                    String elementText = ele.getText().trim();
+
+	                    if (elementText.equalsIgnoreCase(client.trim())
+	                            || elementText.toLowerCase().trim().contains(client.toLowerCase().trim())) {
+	                        ele.click();
+	                        clientFound = true;
+	                        break;
+	                    }
+	                }
+
+	                // If not found, try removing dots
+	                if (!clientFound && client.contains(".")) {
+	                    String clientWithoutDot = client.replace(".", "").trim();
+	                    inputBox.clear();
+	                    inputBox.sendKeys(clientWithoutDot);
+	                    Thread.sleep(3000);
+
+	                    elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+	                    for (WebElement ele : elements) {
+	                        if (ele.getText().trim().equalsIgnoreCase(clientWithoutDot)
+	                                || ele.getText().toLowerCase().trim().contains(clientWithoutDot.toLowerCase().trim())) {
+	                            ele.click();
+	                            clientFound = true;
+	                            break;
+	                        }
+	                    }
+	                }
+
+	                // If client is found, extract details
+	                if (clientFound) {
+	                    String emailText = null;
+	                    String clientCodeText = null;
+	                    String internal_team = null;
+
+	                    try {
+	                        wait.until(ExpectedConditions.visibilityOf(clientEmail));
+	                        emailText = clientEmail.getText().trim();
+	                    } catch (Exception e) {
+	                        try {
+	                            wait.until(ExpectedConditions.visibilityOf(clientEmail2));
+	                            emailText = clientEmail2.getText().trim();
+	                        } catch (Exception e2) {
+	                            emailText = "no email found";
+	                        }
+	                    }
+
+	                    try {
+	                        wait.until(ExpectedConditions.visibilityOf(clientCode));
+	                        clientCodeText = clientCode.getText().trim();
+	                    } catch (Exception e) {
+	                        clientCodeText = "client code not found";
+	                    }
+
+	                    try {
+	                        wait.until(ExpectedConditions.visibilityOf(internalTeam));
+	                        internal_team = internalTeam.getText().trim();
+	                    } catch (Exception e) {
+	                        internal_team = "no teamName";
+	                    }
+
+	                    // Write data back to the specific row
+	                    ClientExcel.writeDataToSpecificRow(rowNumber, clientCodeText, emailText, internal_team);
+	                } else {
+	                    // If client not found, mark as "not found"
+	                    ClientExcel.writeDataToSpecificRow(rowNumber, "client name not found", "client name not found", "no teamName");
+	                }
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	                ClientExcel.writeDataToSpecificRow(rowNumber, "client name not found", "client name not found", "no teamName");
+	            }
+	        }
+	    }
+	}
+
 	
-//						if (emailText != null && clientCodeText != "-" && internal_team != null){
-//							ClientExcel.addClientData(clientCodeText, emailText, internal_team);
-//							//ClientExcel.writeSubjectDataToExcelForSpecificRow()
-//						
-//							clickOnSearchButton();
-//							
-//						} 
-//						else if(emailText != null && clientCodeText != "-" && internal_team == null){
-//							ClientExcel.addClientData(clientCodeText, emailText, "no teamName");
-//							ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
-//							clickOnSearchButton();
-//							
-//						}
-//						else if(emailText == null && clientCodeText != "-" && internal_team == null) {
-//							ClientExcel.addClientData(clientCodeText, "no email found", "no teamName");
-//							ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
-//							clickOnSearchButton();
-//						}
-//						else if(emailText == null && clientCodeText != "-" && internal_team != null) {
-//							ClientExcel.addClientData(clientCodeText, "no email found",internal_team);
-//							ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
-//							clickOnSearchButton();
-//						}
-//						else {
-//							ClientExcel.addClientData("client code not found", "client email not found","no teamName");
-//							ClientExcel.writeCombinedDataToExcel("null", subject);
-//							ClientExcel.saveExcelFile();
-//							clickOnSearchButton();
-//						}
-						
-					} else {
-						Thread.sleep(3000);
-						ClientExcel.writeDataToSpecificRow(rowNumber, "client name not found", "client name not found", "no teamName");
-	                    ClientExcel.writeSubjectDataToExcelForSpecificRow(rowNumber, "null", subject);
-						ClientExcel.saveExcelFile();
-					}
-					
-					
-			} 
-				// if client name is not visible on the sear directory
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-}
+	
+	
+	
+	
+	
+	
+	
+	
+
 
 	private String normalizeText(String text) {
 		if (text == null) return "";

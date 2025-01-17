@@ -223,6 +223,44 @@ public class ClientExcel extends MainClass{
 
 	
 	
+	public static void writeSubjectDataToExcelForSpecificRow(int rowNumber, String clientCodeText, String subject) {
+	    if (sheet != null) {
+	        Row row = sheet.getRow(rowNumber);
+	        if (row == null) {
+	            row = sheet.createRow(rowNumber);
+	        }
+
+	       
+	        String combinedData = clientCodeText + " - " + subject;
+	        if (uniqueName.contains(combinedData)) {
+	            int count = 1;
+	            while (true) {
+	                String newSubject = combinedData + "_new" + count;
+	                if (!uniqueName.contains(newSubject)) {
+	                	combinedData = newSubject;
+	                    uniqueName.add(combinedData);
+	                    break;
+	                } else {
+	                    count++;
+	                }
+	            }
+	        } else {
+	            uniqueName.add(combinedData);
+	        }
+
+	        System.out.println("Subject = " + combinedData);
+
+	        // Write the subject to Column 2
+	        Cell subjectCell = row.createCell(2); 
+	        subjectCell.setCellValue(combinedData);
+
+	        // Save changes to the file
+	        saveExcelFile();
+	    }
+	}
+
+	
+	
 	/*====================Adding the PDF name into excel sheet===================================*/
 
 	public static void addPdfName(String name) {
@@ -265,6 +303,70 @@ public class ClientExcel extends MainClass{
 //		subjectColumnData.remove(0); 
 		return subjectColumnData;
 	}
+	
+//---------------------------------------------reading column0(client id)----------------------------------------------	
+	 public static Map<Integer, String> readClientsID(String filePath) {
+	        Map<Integer, String> clientData = new HashMap<>();
+
+	        try (FileInputStream fis = new FileInputStream(new File(filePath));
+	             Workbook workbook = WorkbookFactory.create(fis)) {
+
+	            Sheet sheet = workbook.getSheetAt(0);
+	            int rowIndex = 0; // To keep track of the row number
+
+	            for (Row row : sheet) {
+	                Cell cell6 = row.getCell(6);
+	                Cell cell0 = row.getCell(0);
+
+	                if (cell6 != null && cell6.getCellType() == CellType.STRING) {
+	                    String clientsEmailId = cell6.getStringCellValue();
+	                    if (clientsEmailId.equalsIgnoreCase("client name not found")) {
+	                        if (cell0 != null && cell0.getCellType() == CellType.STRING) {
+	                            String clientId = cell0.getStringCellValue();
+	                            clientData.put(rowIndex, clientId); // Store row number and client ID
+	                        }
+	                    }
+	                }
+	                rowIndex++;
+	            }
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+
+	        System.out.println("Total clients with 'client name not found': " + clientData.size());
+	        return clientData;
+	 }
+	 
+	 
+	 public static void writeDataToSpecificRow(int rowNumber, String clientCode, String email, String internalTeam) {
+		    try (FileInputStream fis = new FileInputStream(new File(filePath));
+		         Workbook workbook = WorkbookFactory.create(fis)) {
+
+		        Sheet sheet = workbook.getSheetAt(0);
+		        Row row = sheet.getRow(rowNumber);
+
+		        if (row != null) {
+		            row.createCell(5).setCellValue(clientCode); // Column for client code
+		            row.createCell(6).setCellValue(email); // Column for email
+		            row.createCell(9).setCellValue(internalTeam); // Column for internal team
+		            saveExcelFile();
+		            
+		        }
+
+		        try (FileOutputStream fos = new FileOutputStream(new File(filePath))) {
+		            workbook.write(fos);
+		        }
+		    } catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		    
+		}
+
+	 
+	 
+	 
+	 
+	 
 
 	/*====================Replace special character===================================*/
 

@@ -44,11 +44,20 @@ public class TaxReturnPage extends MainClass {
 	private static WebElement taxableIncome;
 	@FindBy(xpath="//input[@name='PayableRefundable']")
 	private static WebElement payableRefundable;
-
+	
+	@FindBy(xpath="//div[@class='xnav-appbutton--body']")
+	WebElement switchPortal;
+	
+	@FindBy(xpath="//a[normalize-space()='Portal']")
+	WebElement clickPortal;
+	
+	@FindBy(xpath = "//input[@id='ctl00_PageContent_btnAction_60fb5410-fab7-45b1-8755-711948782a78']")
+	WebElement clickConnect;
+	
 	public TaxReturnPage(){
 		PageFactory.initElements(DriverManager.getDriver(), this); 
 	}
-
+	
 	public static void clickTaxButton() {
 		wait.until(ExpectedConditions.elementToBeClickable(tax));
 		tax.click();
