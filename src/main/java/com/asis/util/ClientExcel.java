@@ -251,7 +251,7 @@ public class ClientExcel extends MainClass{
 	        System.out.println("Subject = " + combinedData);
 
 	        // Write the subject to Column 2
-	        Cell subjectCell = row.createCell(2); 
+	        Cell subjectCell = row.createCell(7); 
 	        subjectCell.setCellValue(combinedData);
 
 	        // Save changes to the file

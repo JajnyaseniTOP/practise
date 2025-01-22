@@ -83,7 +83,12 @@ public class XeroSearchClientPage extends MainClass {
 					System.out.println("yes it is in Fortuna Accountants & Business... portal");
 					switchPortal.click();
 					clickPortal.click();
-					clickConnect.click();
+					if(clickConnect.isDisplayed()) {
+						clickConnect.click();
+						System.out.println("it clicked on clickconnect button....");
+						Thread.sleep(2000);
+					}
+					
 					System.out.println("Now it has switched to Fortuna Unit Trust t/as Keypoint Accounting... portal");
 					clickOnSearchButton();
 				}else {
@@ -276,7 +281,7 @@ public class XeroSearchClientPage extends MainClass {
 	
 	
 	
-//----------------------------this method for switching the portal--------------------------------------------------------------	
+//----------------------------this method for switching the portal and search--------------------------------------------------------------	
 	
 	public void inputTheClientNameInOthrPortal() throws InterruptedException {
 		Map<Integer, String> tobsrchOnOthrPortal=ClientExcel.readClientsID(filePath);
@@ -291,7 +296,10 @@ public class XeroSearchClientPage extends MainClass {
 			for (Map.Entry<Integer, String> entry : tobsrchOnOthrPortal.entrySet()) {
 				 int rowNumber = entry.getKey();
 				 client = entry.getValue();
-				 subject = subjectColumnData.get(rowNumber); // Match subject by row number
+				 
+				 if (rowNumber < subjectColumnData.size()) {
+				     subject = subjectColumnData.get(rowNumber);
+				 } 
 				
 				Thread.sleep(3000);
 				
@@ -404,7 +412,11 @@ public class XeroSearchClientPage extends MainClass {
 						try {
 							Thread.sleep(4000);
 							wait.until(ExpectedConditions.visibilityOf(clientEmail));
-							emailText = clientEmail.getText().trim();
+							if(clientEmail.isDisplayed()) {
+								emailText = clientEmail.getText().trim();
+								System.out.println("client Email found in Business portal");
+							}
+							
 	
 						} 
 						// if not found use 2 xpath for email
@@ -412,7 +424,11 @@ public class XeroSearchClientPage extends MainClass {
 							try {
 								Thread.sleep(4000);
 								wait.until(ExpectedConditions.visibilityOf(clientEmail2));
-								emailText = clientEmail2.getText().trim();
+								if(clientEmail.isDisplayed()) {
+									emailText = clientEmail2.getText().trim();
+									System.out.println("client Email found in Business portal");
+								}
+								
 	
 							} catch (Exception e2) {
 								 emailText = "no email found";
