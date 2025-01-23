@@ -19,9 +19,10 @@ public class XeroPractiseManagerSteps {
 	}
 
 	@Then("User switch the tab")
-	public void user_switch_the_tab() {
+	public void user_switch_the_tab() throws InterruptedException {
 		practise.switchingTabs();
 		practise.enterEmailAddress();
 		practise.enterContinue();
+		practise.switchportal();
 	}
 }
