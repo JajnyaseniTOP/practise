@@ -46,18 +46,19 @@ public class XeroSearchClientPageJJ extends MainClass {
 	@FindBy(xpath = "//div[contains(@class, 'form-item') and .//div[text()='Internal Team']]//div[@class='value']/span")
 	WebElement internalTeam;
 	
-	@FindBy(xpath="//div[@class='xnav-appbutton--body']")
-	WebElement switchPortal;
+	@FindBy(xpath="//span[contains(text(),'Fortuna Unit Trust t/as Keypoi…')]")
+	WebElement switchPortal_keypoint;
+	
+	@FindBy(xpath="//span[contains(text(),'Fortuna Accountants & Business…')]")
+	WebElement switchPortal_business;
 	
 	@FindBy(xpath="//a[normalize-space()='Portal']")
 	WebElement clickPortal;
 	
-	@FindBy(xpath = "//input[@id='ctl00_PageContent_btnAction_0c45248f-9eca-42ee-9d48-bcd44e6a7ece']")
+	@FindBy(xpath = "//input[@value='Connect']")
 	WebElement clickConnect;
 	
-	@FindBy(xpath = "//input[@id='ctl00_PageContent_btnAction_60fb5410-fab7-45b1-8755-711948782a78']")
-	WebElement clickConnect_BusinessPortal;
-
+	
 	public XeroSearchClientPageJJ() {
 		PageFactory.initElements(DriverManager.getDriver(), this);
 	}
@@ -80,6 +81,7 @@ public class XeroSearchClientPageJJ extends MainClass {
 
 	        // If search button will work
 	        try {
+	        	
 	            //clickOnSearchButton();
 	            inputBox.clear();
 	            inputBox.sendKeys(client);
@@ -185,14 +187,14 @@ public class XeroSearchClientPageJJ extends MainClass {
 	 */
 	private void searchInSecondaryPortal() throws InterruptedException {
 	    try {
-	        switchPortal.click();
-	        clickPortal.click();
-	        Thread.sleep(2000);
-	        if(clickConnect_BusinessPortal.isDisplayed()) {
-	        	clickConnect_BusinessPortal.click();
-	        }else {
-	        	clickConnect.click();
-	        }
+//	    	switchPortal_keypoint.click();
+//	        clickPortal.click();
+//	        Thread.sleep(2000);
+//	        if(clickConnect_BusinessPortal.isDisplayed()) {
+//	        	clickConnect_BusinessPortal.click();
+//	        }else {
+//	        	clickConnect.click();
+//	        }
 	        
 	        Thread.sleep(5000);
 

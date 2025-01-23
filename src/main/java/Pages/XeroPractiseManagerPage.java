@@ -23,6 +23,18 @@ public class XeroPractiseManagerPage extends MainClass{
 	@FindBy(xpath="//button[contains(text(),'Continue')]")
 	WebElement continues;
 	
+	@FindBy(xpath="//span[contains(text(),'Fortuna Unit Trust t/as Keypoi…')]")
+	WebElement switchPortal_keypoint;
+	
+	@FindBy(xpath="//span[contains(text(),'Fortuna Accountants & Business…')]")
+	WebElement switchPortal_business;
+	
+	@FindBy(xpath = "//input[@value='Connect']")
+	WebElement clickConnect;
+	
+	@FindBy(xpath="//a[normalize-space()='Portal']")
+	WebElement clickPortal;
+	
 	public XeroPractiseManagerPage() {
 		PageFactory.initElements(DriverManager.getDriver(), this);
 	}
@@ -33,6 +45,7 @@ public class XeroPractiseManagerPage extends MainClass{
 	public void clickPractiseManager() {
 		wait.until(ExpectedConditions.elementToBeClickable(practiseManager));
 		practiseManager.click();
+		
 	}
 	public void switchingTabs() {
 		ArrayList<String> tabs = new ArrayList<>(DriverManager.getDriver().getWindowHandles());
@@ -45,5 +58,16 @@ public class XeroPractiseManagerPage extends MainClass{
 	public void enterContinue() {
 		wait.until(ExpectedConditions.elementToBeClickable(continues));
 		continues.click();
+	}
+	
+	public void switchportal() throws InterruptedException {
+		Thread.sleep(3000);
+		try {
+			switchPortal_business.click();
+			clickPortal.click();
+			clickConnect.click();
+		}catch(Exception e) {
+			System.out.println("catch bloclk");
+		}
 	}
 }
