@@ -189,9 +189,10 @@ public class XeroSearchClientPageJJ extends MainClass {
 	        clickPortal.click();
 	        Thread.sleep(2000);
 	        if(clickConnect_BusinessPortal.isDisplayed()) {
-	        	clickConnect_BusinessPortal.click();
+	        	clickConnect_BusinessPortal.click();	
 	        }else {
 	        	clickConnect.click();
+	        	
 	        }
 	        
 	        Thread.sleep(5000);
