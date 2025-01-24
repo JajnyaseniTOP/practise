@@ -42,21 +42,41 @@ public class XeroSearchClientPageJJ extends MainClass {
 
 	@FindBy(xpath = "//span[@class='value u-email']")
 	WebElement clientEmail2;
-	
+
 	@FindBy(xpath = "//div[contains(@class, 'form-item') and .//div[text()='Internal Team']]//div[@class='value']/span")
 	WebElement internalTeam;
-	
+
+	@FindBy(xpath="//span[contains(text(),'Fortuna Unit Trust t/as Keypoi…')]")
+	private static WebElement switchPortal_keypoint;
+	@FindBy(xpath="//span[contains(text(),'Fortuna Accountants & Business…')]")
+	private static WebElement switchPortal_business;
 	@FindBy(xpath="//div[@class='xnav-appbutton--body']")
-	WebElement switchPortal;
-	
+	private static WebElement switchPortal;
 	@FindBy(xpath="//a[normalize-space()='Portal']")
-	WebElement clickPortal;
-	
-	@FindBy(xpath = "//input[@id='ctl00_PageContent_btnAction_0c45248f-9eca-42ee-9d48-bcd44e6a7ece']")
-	WebElement clickConnect;
-	
-	@FindBy(xpath = "//input[@id='ctl00_PageContent_btnAction_60fb5410-fab7-45b1-8755-711948782a78']")
-	WebElement clickConnect_BusinessPortal;
+	private static WebElement clickPortal;
+	@FindBy(xpath = "//input[@value='Connect']")
+	private static WebElement clickConnect;
+
+	public static  void switchportal() throws InterruptedException {
+		Thread.sleep(3000);
+		try {
+			switchPortal_keypoint.click();
+			clickPortal.click();
+			clickConnect.click();
+		}catch(Exception e) {
+			System.out.println("catch block in switchPortal_keypoint");
+		}
+	}
+	public static  void switchportal2() throws InterruptedException {
+		Thread.sleep(3000);
+		try {
+			switchPortal_business.click();
+			clickPortal.click();
+			clickConnect.click();
+		}catch(Exception e) {
+			System.out.println("It is already in keypoint portal");
+		}
+	}
 
 	public XeroSearchClientPageJJ() {
 		PageFactory.initElements(DriverManager.getDriver(), this);
@@ -67,357 +87,351 @@ public class XeroSearchClientPageJJ extends MainClass {
 	}
 
 	public void inputTheClientName() throws InterruptedException {
-	    System.out.println("client names " + clientNames.size());
-	    ClientExcel.readSubjectColumn(filePath);
-	    System.out.println("client names " + clientNames.size());
-	    System.out.println("subject data " + subjectColumnData.size());
+		System.out.println("client names " + clientNames.size());
+		ClientExcel.readSubjectColumn(filePath);
+		System.out.println("client names " + clientNames.size());
+		System.out.println("subject data " + subjectColumnData.size());
 
-	    for (int i = 0; i < clientNames.size(); i++) {
-	        client = clientNames.get(i);
-	        subject = subjectColumnData.get(i);
+		
+		for (int i = 0; i < clientNames.size(); i++) {
+			client = clientNames.get(i);
+			subject = subjectColumnData.get(i);
+			//boolean clientFound;
+			//dsclientFound = false;
+			Thread.sleep(3000);
 
-	        Thread.sleep(3000);
+			// If search button will work
+			try {
+				switchportal2();
+				//clickOnSearchButton();
+				inputBox.clear();
+				inputBox.sendKeys(client);
+				Thread.sleep(3000);
+			}
+			// If search button will not work
+			catch (Exception e) {
+				clickOnSearchButton();
+				inputBox.clear();
+				inputBox.sendKeys(client);
+				Thread.sleep(3000);
+			}
+			
+			 boolean clientFound = false;
+			try {
+				List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
 
-	        // If search button will work
-	        try {
-	            //clickOnSearchButton();
-	            inputBox.clear();
-	            inputBox.sendKeys(client);
-	            Thread.sleep(3000);
-	        }
-	        // If search button will not work
-	        catch (Exception e) {
-	            clickOnSearchButton();
-	            inputBox.clear();
-	            inputBox.sendKeys(client);
-	            Thread.sleep(3000);
-	        }
+				for (WebElement ele : elements) {
+					String elementText = ele.getText();
+					String editedWebElementText = elementText.toLowerCase().trim();
 
-	        boolean clientFound = false;
+					if (elementText.trim().equalsIgnoreCase(client.trim())) {
+						System.out.println("Match found in equalsIgnoreCase condition.");
+						Thread.sleep(3000);
+						ele.click();
+						clientFound = true;
+						break;
+					} else if (editedWebElementText.contains(client.toLowerCase().trim())) {
+						System.out.println("Match found in contains condition.");
+						Thread.sleep(3000);
+						ele.click();
+						clientFound = true;
+						break;
+					} 
+				}
+				
+				if (!clientFound && client.toLowerCase().contains("and")) {
+					clientFound = searchClientWithAnd(client.toLowerCase());
+				}
+				// If client not found and contains a dot
+				if (!clientFound && client.contains(".")) {
+					clientFound = searchClientWithoutDot(client);
+				}
 
-	        // Try to find the client if client name is visible, click
-	        try {
-	            List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+				// If client is found, extract details
+				if (clientFound) {
+					extractClientDetails();
+				} else {
+					// Call handleClientNotFound after both portal searches
+					searchInSecondaryPortal();
+//					if (!clientFound) {
+//						handleClientNotFound(subject);  // Handle after both searches
+//					}
+				}
 
-	            for (WebElement ele : elements) {
-	                String elementText = ele.getText();
-	                String editedWebElementText = elementText.toLowerCase().trim();
-//	                System.out.println("Raw element text: '" + elementText);
-//	                System.out.println("Processed element text: '" + editedWebElementText);
-//	                System.out.println("Client: '" + client.toLowerCase().trim());
-
-	                if (elementText.trim().equalsIgnoreCase(client.trim())) {
-	                    System.out.println("Match found in equalsIgnoreCase condition.");
-	                    Thread.sleep(2000);
-	                    ele.click();
-	                    clientFound = true;
-	                    break;
-	                } else if (editedWebElementText.contains(client.toLowerCase().trim())) {
-	                    System.out.println("Match found in contains condition.");
-	                    Thread.sleep(2000);
-	                    ele.click();
-	                    clientFound = true;
-	                    break;
-	                } else if (editedWebElementText.contains(" & ")) {
-	                    String removeAndFromText = editedWebElementText.replaceAll("\\s*&\\s*", "&");
-	                    if (removeAndFromText.contains(client.toLowerCase().trim())) {
-	                        Thread.sleep(2000);
-	                        ele.click();
-	                        clientFound = true;
-	                        break;
-	                    }
-	                }
-	            }
-
-	            // If client not found and contains a dot
-	            if (!clientFound && client.contains(".")) {
-	                clientFound = searchClientWithoutDot(client);
-	            }
-
-	            // If client is found, extract details
-	            if (clientFound) {
-	                extractClientDetails();
-	            } else {
-	                // Call handleClientNotFound after both portal searches
-	                searchInSecondaryPortal();
-	                if (!clientFound) {
-	                    handleClientNotFound(subject);  // Handle after both searches
-	                }
-	            }
-
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	    }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
-
-	/**
-	 * Searches for a client without dots in their name.
-	 *
-	 * @param clientName The client name with dots.
-	 * @return true if the client was found, false otherwise.
-	 * @throws InterruptedException
-	 */
 	private boolean searchClientWithoutDot(String clientName) throws InterruptedException {
-	    boolean clientFound = false;
-	    String clientWithoutDot = clientName.replace(".", "").trim();
-	    inputBox.clear();
-	    inputBox.sendKeys(clientWithoutDot);
-	    Thread.sleep(3000);
+		boolean clientFound = false;
+		String clientWithoutDot = clientName.replace(".", "").trim();
+		inputBox.clear();
+		inputBox.sendKeys(clientWithoutDot);
+		Thread.sleep(3000);
 
-	    List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
-	    for (WebElement ele : elements) {
-	        String elementText = ele.getText().trim();
-	        if (elementText.equalsIgnoreCase(clientWithoutDot) || elementText.toLowerCase().contains(clientWithoutDot.toLowerCase())) {
-	        	Thread.sleep(2000);
-	            ele.click();
-	            clientFound = true;
-	            break;
-	        }
-	    }
-	    return clientFound;
+		List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+		for (WebElement ele : elements) {
+			String elementText = ele.getText().trim();
+			if (elementText.equalsIgnoreCase(clientWithoutDot) || elementText.toLowerCase().contains(clientWithoutDot.toLowerCase())) {
+				System.out.println(client+" it is found in contains .and replace  method");
+				Thread.sleep(3000);
+				ele.click();
+				clientFound = true;
+				break;
+			}
+		}
+		return clientFound;
 	}
+	
+	private boolean searchClientWithAnd(String clientName) throws InterruptedException {
+		boolean clientFound = false;
+		String clientWithAnd = clientName.replace("and", "&").trim();
+		inputBox.clear();
+		inputBox.sendKeys(clientWithAnd);
+		Thread.sleep(3000);
 
-	/**
-	 * Switches to the secondary portal and applies the same search logic.
-	 *
-	 * @throws InterruptedException
-	 */
+		List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+		for (WebElement ele : elements) {
+			String elementText = ele.getText().trim();
+			if (elementText.equalsIgnoreCase(clientWithAnd) || elementText.toLowerCase().contains(clientWithAnd.toLowerCase())) {
+				System.out.println(client+" it is found in contains and replace with & method");
+				Thread.sleep(3000);
+				ele.click();
+				clientFound = true;
+				break;
+			}
+		}
+		return clientFound;
+	}
 	private void searchInSecondaryPortal() throws InterruptedException {
-	    try {
-	        switchPortal.click();
-	        clickPortal.click();
-	        Thread.sleep(2000);
-	        if(clickConnect_BusinessPortal.isDisplayed()) {
-	        	clickConnect_BusinessPortal.click();
-	        }else {
-	        	clickConnect.click();
-	        }
-	        
-	        Thread.sleep(5000);
+		try {
 
-	        // Reuse the primary search logic for the secondary portal
-	        clickOnSearchButton();
-	        inputBox.clear();
-	        inputBox.sendKeys(client);
-	        Thread.sleep(3000);
+			switchportal();
+			Thread.sleep(5000);
 
-	        boolean clientFound = false;
-	        List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+			// Reuse the primary search logic for the secondary portal
+			clickOnSearchButton();
+			inputBox.clear();
+			inputBox.sendKeys(client);
+			Thread.sleep(3000);
 
-	        for (WebElement ele : elements) {
-	            String elementText = ele.getText().trim();
-	            String editedWebElementText = elementText.toLowerCase().trim();
-	            if (elementText.equalsIgnoreCase(client.trim()) || elementText.toLowerCase().contains(client.toLowerCase().trim())) {
-	            	Thread.sleep(2000);
-	                ele.click();
-	                clientFound = true;
-	                break;
-	            }
-	            else if (editedWebElementText.contains(" & ")) {
-                    String removeAndFromText = editedWebElementText.replaceAll("\\s*&\\s*", "&");
-                    if (removeAndFromText.contains(client.toLowerCase().trim())) {
-                        Thread.sleep(2000);
-                        ele.click();
-                        clientFound = true;
-                        break;
-                    }
-                }
-	        }
+			boolean clientFound = false;
+			List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
 
-	        // If client not found and contains a dot, search without the dot
-	        if (!clientFound && client.contains(".")) {
-	            clientFound = searchClientWithoutDot(client);
-	        }
+			for (WebElement ele : elements) {
+				String elementText = ele.getText().trim();
+				String editedWebElementText = elementText.toLowerCase().trim();
+				if (elementText.equalsIgnoreCase(client.trim()) || elementText.toLowerCase().contains(client.toLowerCase().trim())) {
+					System.out.println(client +"it is found in equalsIgnoreCase or in contains.");
+					Thread.sleep(3000);
+					ele.click();
+					clientFound = true;
+					break;
+				}
+				else if (editedWebElementText.contains(" & ")) {
+					String removeAndFromText = editedWebElementText.replaceAll("\\s*&\\s*", "&");
+					if (removeAndFromText.contains(client.toLowerCase().trim())) {
+						System.out.println(client +"it is found in contain & method");
+						Thread.sleep(3000);
+						ele.click();
+						clientFound = true;
+						break;
+					}
+				}
+			
+				
+			}
+			if (!clientFound && client.toLowerCase().contains("and")) {
+				clientFound = searchClientWithAnd(client.toLowerCase());
+			}
+			// If client not found and contains a dot, search without the dot
+			if (!clientFound && client.contains(".")) {
+				clientFound = searchClientWithoutDot(client);
+			}
 
-	        if (clientFound) {
-	            extractClientDetails();
-	        }
+			if (clientFound) {
+				extractClientDetails();
+			}else {
+				handleClientNotFound(subject);
+			}
 
-	    } catch (Exception e) {
-	        System.out.println("Error switching to the secondary portal.");
-	        e.printStackTrace();
-	    }
+		} catch (Exception e) {
+			System.out.println("Error switching to the secondary portal.");
+			e.printStackTrace();
+		}
 	}
-
-	/**
-	 * Extracts client details like email, client code, and internal team.
-	 */
 	private void extractClientDetails() {
-	    try {
-	        Thread.sleep(4000);
-	        wait.until(ExpectedConditions.visibilityOf(clientEmail));
-	        emailText = clientEmail.getText().trim();
-	    } catch (Exception e1) {
-	        try {
-	            Thread.sleep(4000);
-	            wait.until(ExpectedConditions.visibilityOf(clientEmail2));
-	            emailText = clientEmail2.getText().trim();
-	        } catch (Exception e2) {
-	            emailText = "no email found";
-	            System.out.println("Client email is not there.");
-	        }
-	    }
+		try {
+			Thread.sleep(4000);
+			wait.until(ExpectedConditions.visibilityOf(clientEmail));
+			emailText = clientEmail.getText().trim();
+		} catch (Exception e1) {
+			try {
+				Thread.sleep(4000);
+				wait.until(ExpectedConditions.visibilityOf(clientEmail2));
+				emailText = clientEmail2.getText().trim();
+			} catch (Exception e2) {
+				emailText = "no email found";
+				System.out.println("Client email is not there.");
+			}
+		}
 
-	    try {
-	        wait.until(ExpectedConditions.visibilityOf(clientCode));
-	        if (clientCode.isDisplayed()) {
-	            clientCodeText = clientCode.getText().trim();
-	        }
-	    } catch (Exception e) {
-	        clientCodeText = "no client code";
-	        System.out.println("Client code is not there.");
-	    }
+		try {
+			wait.until(ExpectedConditions.visibilityOf(clientCode));
+			if (clientCode.isDisplayed()) {
+				clientCodeText = clientCode.getText().trim();
+			}
+		} catch (Exception e) {
+			clientCodeText = "no client code";
+			System.out.println("Client code is not there.");
+		}
 
-	    try {
-	        wait.until(ExpectedConditions.visibilityOf(internalTeam));
-	        if (internalTeam.isDisplayed()) {
-	            internal_team = internalTeam.getText().trim();
-	        }
-	    } catch (Exception e) {
-	        internal_team = "no teamName";
-	        System.out.println("Internal team is not there.");
-	    }
+		try {
+			wait.until(ExpectedConditions.visibilityOf(internalTeam));
+			if (internalTeam.isDisplayed()) {
+				internal_team = internalTeam.getText().trim();
+			}
+		} catch (Exception e) {
+			internal_team = "no teamName";
+			System.out.println("Internal team is not there.");
+		}
 
-	    ClientExcel.addClientData(clientCodeText, emailText, internal_team);
-	    ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
-	    clickOnSearchButton();
+		ClientExcel.addClientData(clientCodeText, emailText, internal_team);
+		ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
+		clickOnSearchButton();
 	}
 
-	/**
-	 * Handles cases where a client is not found.
-	 *
-	 * @param subject The subject associated with the client.
-	 */
 	private void handleClientNotFound(String subject) throws InterruptedException {
-	    Thread.sleep(3000);
-	    ClientExcel.addClientData("client name not found", "client name not found", "no teamName");
-	    ClientExcel.writeCombinedDataToExcel("null", subject);
-	    ClientExcel.saveExcelFile();
+		Thread.sleep(3000);
+		ClientExcel.addClientData("client name not found", "client name not found", "no teamName");
+		ClientExcel.writeCombinedDataToExcel("null", subject);
+		ClientExcel.saveExcelFile();
 	}
 
-	
-	
-
-	
-	
-	
 	private String normalizeText(String text) {
 		if (text == null) return "";
-	    return text.replace("\u00A0", " ")       // Replace non-breaking spaces
-	               .replaceAll("&amp;", "&")     // Replace encoded ampersand
-	               .replaceAll("\\s+", " ")      // Normalize multiple spaces
-	               .replaceAll("[^\\p{Print}]", "") // Remove non-printable characters
-	               .trim()                       // Trim leading/trailing spaces
-	               .toLowerCase(); 
-		
+		return text.replace("\u00A0", " ")       // Replace non-breaking spaces
+				.replaceAll("&amp;", "&")     // Replace encoded ampersand
+				.replaceAll("\\s+", " ")      // Normalize multiple spaces
+				.replaceAll("[^\\p{Print}]", "") // Remove non-printable characters
+				.trim()                       // Trim leading/trailing spaces
+				.toLowerCase(); 
+
+	}
+	public static String sanitizeFileName(String fileName) {
+	    // Define a regex pattern to match special characters \ / : * ? " < > |
+	    String specialCharactersPattern = "[\\\\/:*?\"<>|]";
+	    // Replace the special characters with a single space
+	    return fileName.replaceAll(specialCharactersPattern, " ");
 	}
 
-	public void renameAndMovePdfFilesToDownloadsFolder(String downloadDir){
-	    ArrayList<String> pdfFileNames = ClientExcel.readPdfFileNamesFromColumn8(filePath);
-	    ArrayList<String> fileNamesColumn7 = ClientExcel.readFileNamesFromColumn7(filePath);
-	    ArrayList<String> teamNames = ClientExcel.readTeamNamesFromColumn9(filePath);  // Read team names from column 9
- 
-	    if (pdfFileNames.size() != fileNamesColumn7.size() || pdfFileNames.size() != teamNames.size()) {
-	        System.out.println("Mismatch between the file lists or team names.");
-	        return;
-	    }
- 
-	    File downloadsFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate);
-	    if (!downloadsFolder.exists()) {
-	        boolean created = downloadsFolder.mkdir();
-	        if (created) {
-	            System.out.println("Downloads folder created.");
-	        } else {
-	            System.out.println("Failed to create Downloads folder.");
-	            return;
-	        }
-	    }
- 
-	    int cnt = 0;
-	    for (String pdfFileName : pdfFileNames) {
-	        String fullPath = downloadDir + File.separator + pdfFileName.trim();
-	        File pdfFile = new File(fullPath);
- 
-	        if (pdfFile.exists()) {
-	            System.out.println("Found: " + pdfFileName);
- 
-	            String currentExtension = getFileExtension(pdfFile);
- 
-	            if (cnt < fileNamesColumn7.size()){
-	                String newFileName = fileNamesColumn7.get(cnt) + "." + currentExtension;
-	                String newFilePath = downloadDir + File.separator + newFileName;
-	                File renamedFile = new File(newFilePath);  //at this line the file is renaming
-	                
-	                int fileCount = 1;
-	                while (renamedFile.exists()) {
-	                    newFileName = "new_" + fileNamesColumn7.get(cnt) + "_" + fileCount + "." + currentExtension;
-	                    renamedFile = new File(downloadDir + File.separator + newFileName);
-	                    fileCount++;
-	                }
- 
-	                System.out.println("Renaming file to: " + newFileName);
-//----------------------------------------------------------------------------------------------------------------
-	                if (pdfFile.renameTo(renamedFile)) {
-	                    System.out.println("Renamed " + pdfFileName + " to " + newFileName);
- 
-	                    // Determine target folder based on team name
-	                    String teamName = teamNames.get(cnt).trim();
-	                    File targetFolder;
-	                    switch (teamName) {
-	                    case "K":
-	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "K-Lindy");
-	                        break;
-	                    case "C":
-	                    case "C1":
-	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "C-Rebecca");
-	                        break;
-	                    case "A1":
-	                    case "A":
-	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "A-Sian");
-	                        break;
-	                    case "B":
-	                    case "B1":
-	                        targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "B-Rowan");
-	                        break;
-	                    default:
-	                    	 targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "Others");
-		                        break;
-	                }
- 
- 
-	                    // Ensure the target folder exists
-	                    if (!targetFolder.exists()) {
-	                        boolean created = targetFolder.mkdir();
-	                        if (created) {
-	                            System.out.println(targetFolder.getName() + " folder created.");
-	                        } else {
-	                            System.out.println("Failed to create " + targetFolder.getName() + " folder.");
-	                            continue;
-	                        }
-	                    }
- 
-	                    // Move the file to the appropriate folder
-	                    File targetFile = new File(targetFolder + File.separator + newFileName);
-	                    try {
-	                        Files.move(renamedFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-	                        System.out.println("Moved " + newFileName + " to " + targetFolder.getName() + " folder.");
-	                    } catch (IOException e) {
-	                        System.out.println("Failed to move " + newFileName + " to " + targetFolder.getName() + " folder.");
-	                        e.printStackTrace();
-	                    }
-	                } else {
-	                    System.out.println("Failed to rename " + pdfFileName);
-	                }
-	                cnt++;
-	            } else {
-	                System.out.println("Index out of bounds for fileNamesColumn7.");
-	                break;
-	            }
-	        } else {
-	            System.out.println("File not found: " + pdfFileName);
-	        }
-	    }
+	public void renameAndMovePdfFilesToDownloadsFolder(String downloadDir) throws InterruptedException{
+		ArrayList<String> pdfFileNames = ClientExcel.readPdfFileNamesFromColumn8(filePath);
+		ArrayList<String> fileNamesColumn7 = ClientExcel.readFileNamesFromColumn7(filePath);
+		ArrayList<String> teamNames = ClientExcel.readTeamNamesFromColumn9(filePath);  // Read team names from column 9
+
+		if (pdfFileNames.size() != fileNamesColumn7.size() || pdfFileNames.size() != teamNames.size()) {
+			System.out.println("Mismatch between the file lists or team names.");
+			return;
+		}
+
+		File downloadsFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate);
+		if (!downloadsFolder.exists()) {
+			boolean created = downloadsFolder.mkdir();
+			if (created) {
+				System.out.println("Downloads folder created.");
+			} else {
+				System.out.println("Failed to create Downloads folder.");
+				return;
+			}
+		}
+
+		int cnt = 0;
+		for (String pdfFileName : pdfFileNames) {
+			String fullPath = downloadDir + File.separator + pdfFileName.trim();
+			File pdfFile = new File(fullPath);
+			Thread.sleep(3000);
+			if (pdfFile.exists()) {
+				System.out.println("Found: " + pdfFileName);
+
+				String currentExtension = getFileExtension(pdfFile);
+
+				if (cnt < fileNamesColumn7.size()){
+					String newFileName = fileNamesColumn7.get(cnt) + "." + currentExtension;
+					//newFileName = sanitizeFileName(newFileName);
+					String newFilePath = downloadDir + File.separator + newFileName;
+					
+					Thread.sleep(2000);
+					File renamedFile = new File(newFilePath);  //at this line the file is renaming
+
+					int fileCount = 1;
+					while (renamedFile.exists()) {
+						newFileName = "new_" + fileNamesColumn7.get(cnt) + "_" + fileCount + "." + currentExtension;
+						newFileName = sanitizeFileName(newFileName);
+						renamedFile = new File(downloadDir + File.separator + newFileName);
+						fileCount++;
+					}
+
+					System.out.println("Renaming file to: " + newFileName);
+					if (pdfFile.renameTo(renamedFile)) {
+						System.out.println("Renamed " + pdfFileName + " to " + newFileName);
+
+						// Determine target folder based on team name
+						String teamName = teamNames.get(cnt).trim();
+						File targetFolder;
+						switch (teamName) {
+						case "K":
+							targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "K-Lindy");
+							break;
+						case "C":
+						case "C1":
+							targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "C-Rebecca");
+							break;
+						case "A1":
+						case "A":
+							targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "A-Sian");
+							break;
+						case "B":
+						case "B1":
+							targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "B-Rowan");
+							break;
+						default:
+							targetFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate + File.separator + "Others");
+							break;
+						}
+
+						if (!targetFolder.exists()) {
+							boolean created = targetFolder.mkdir();
+							if (created) {
+								System.out.println(targetFolder.getName() + " folder created.");
+							} else {
+								System.out.println("Failed to create " + targetFolder.getName() + " folder.");
+								continue;
+							}
+						}
+
+						// Move the file to the appropriate folder
+						File targetFile = new File(targetFolder + File.separator + newFileName);
+						try {
+							Files.move(renamedFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+							System.out.println("Moved " + newFileName + " to " + targetFolder.getName() + " folder.");
+						} catch (IOException e) {
+							System.out.println("Failed to move " + newFileName + " to " + targetFolder.getName() + " folder.");
+							e.printStackTrace();
+						}
+					} else {
+						System.out.println("Failed to rename " + pdfFileName);
+					}
+					cnt++;
+				} else {
+					System.out.println("Index out of bounds for fileNamesColumn7.");
+					break;
+				}
+			} else {
+				System.out.println("File not found: " + pdfFileName);
+			}
+		}
 	}
 
 

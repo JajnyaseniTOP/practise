@@ -371,8 +371,8 @@ public class ClientExcel extends MainClass{
 	/*====================Replace special character===================================*/
 
 	private static String replaceSpecialCharacters(String subject) {
-		if (subject.contains("/") || subject.contains("\\")) {
-			subject = subject.replace("/", "or").replace("\\", "or");
+		if (subject.contains("/") || subject.contains("\\") || subject.contains(":") || subject.contains("*")|| subject.contains("|")||subject.contains("<")||subject.contains(">")|| subject.contains("?")) {
+			subject = subject.replace("/", "or").replace("\\", "or").replace(":", " ").replace("*", " ").replace("|", " ").replace("<", " ").replace(">", " ").replace("?", " ");
 		}
 		return subject;
 	}

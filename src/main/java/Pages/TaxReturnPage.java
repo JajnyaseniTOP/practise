@@ -41,6 +41,7 @@ public class TaxReturnPage extends MainClass {
 	private static WebElement taxableIncome;
 	@FindBy(xpath="//input[@name='PayableRefundable']")
 	private static WebElement payableRefundable;
+	
 	@FindBy(xpath="//span[contains(text(),'Fortuna Unit Trust t/as Keypoi…')]")
 	private static WebElement switchPortal_keypoint;
 	@FindBy(xpath="//span[contains(text(),'Fortuna Accountants & Business…')]")
