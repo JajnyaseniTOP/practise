@@ -16,11 +16,11 @@ import java.util.regex.Pattern;
 public class SendingEmailPage {
     public static void main(String[] args) {
         String excelFilePath = "C:\\Users\\TOP\\Documents\\TestingDocuments.xlsx";
-
-        String dwnldDir_Notfowd = "C:/ATO Email files/Email_Files_2025-01-07/Not_Found";
-        String dwnldDir_Rowan = "C:/ATO Email files/Email_Files_2025-01-07/Rowan";
-        String dwnldDir_Rebecca = "C:/ATO Email files/Email_Files_2025-01-07/Rebecca";
-        String dwnldDir_Slain = "C:/ATO Email files/Email_Files_2025-01-07/Slain";
+        String dwnldDir_Lindy = "C:/ATO Email files/Email_Files_2025-01-07/K-Lindy";
+        String dwnldDir_Rowan = "C:/ATO Email files/Email_Files_2025-01-07/B-Rowan";
+        String dwnldDir_Rebecca = "C:/ATO Email files/Email_Files_2025-01-07/C-Rebecca";
+        String dwnldDir_Slain = "C:/ATO Email files/Email_Files_2025-01-07/A-Sian";
+        String dwnldDir_Melvin = "C:/ATO Email files/Email_Files_2025-01-07/D-Melvin";
 
         String fromEmail = "toptechautomation@theoutsourcepro.com.au";
         String password = "J7OJb*ZwQD25HpC2KO8*n";
@@ -82,6 +82,9 @@ public class SendingEmailPage {
                             case "K":
                                 ccEmail = "jajnyaseni.swain@theoutsourcepro.com.au";
                                 break;
+                            case "D":
+                                ccEmail = "jajnyaseni.swain@theoutsourcepro.com.au";
+                                break;
                             default:
                                 ccEmail = null; // Ignore other internal team names
                                 break;
@@ -99,7 +102,7 @@ public class SendingEmailPage {
                                 "3. If you have any queries or need assistance, please email us at correspodence@fortunaadvisors.com.au or direct to your client manager.\n\n" +
                                 "Kind Regards, \nNatalie Nicolaou\nAdministrator";
 
-                        String downloadDir = getDownloadDir(internalTeam, dwnldDir_Slain, dwnldDir_Rowan, dwnldDir_Rebecca, dwnldDir_Notfowd);
+                        String downloadDir = getDownloadDir(internalTeam, dwnldDir_Slain, dwnldDir_Rowan, dwnldDir_Rebecca, dwnldDir_Lindy,dwnldDir_Melvin);
                         if (downloadDir != null) {
                             String fileExtension = getFileExtension(fileName, downloadDir);  // Get file extension dynamically
                             if (!fileExtension.isEmpty()) {
@@ -138,7 +141,7 @@ public class SendingEmailPage {
         return matcher.matches();
     }
 
-    public static String getDownloadDir(String internalTeam, String dwnldDir_Slain, String dwnldDir_Rowan, String dwnldDir_Rebecca, String dwnldDir_Notfowd) {
+    public static String getDownloadDir(String internalTeam, String dwnldDir_Slain, String dwnldDir_Rowan, String dwnldDir_Rebecca, String dwnldDir_Lindy,String dwnldDir_Melvin) {
         switch (internalTeam) {
             case "A":
             case "A1":
@@ -150,7 +153,9 @@ public class SendingEmailPage {
             case "C1":
                 return dwnldDir_Rebecca;
             case "K":
-                return dwnldDir_Notfowd;
+                return dwnldDir_Lindy;
+            case "D":
+                return dwnldDir_Melvin;   
             default:
                 return null;
         }
