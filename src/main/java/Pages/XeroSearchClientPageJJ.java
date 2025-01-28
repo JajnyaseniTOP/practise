@@ -39,9 +39,16 @@ public class XeroSearchClientPageJJ extends MainClass {
 
 	@FindBy(xpath = "//div[@class='panel-item']//span[contains(text(), 'Email')]/following-sibling::span/a")
 	WebElement clientEmail;
-
-	@FindBy(xpath = "//span[@class='value u-email']")
+	   
+	//    //span[@class='value u-email']
+	@FindBy(xpath = "//div[@class='panel-item contact h-card']//span[@class='value u-email']//a[@href and @href!='mailto:']")
 	WebElement clientEmail2;
+	
+	@FindBy(xpath = "a[contains(text(), 'For ATO mails')]")
+	WebElement forAtoEmail;
+	
+	@FindBy(xpath = "//a[contains(text(), 'For ATO mails')]/following::div[@class='body'][1]")
+	WebElement clientEmail3;
 
 	@FindBy(xpath = "//div[contains(@class, 'form-item') and .//div[text()='Internal Team']]//div[@class='value']/span")
 	WebElement internalTeam;
@@ -272,8 +279,13 @@ public class XeroSearchClientPageJJ extends MainClass {
 				wait.until(ExpectedConditions.visibilityOf(clientEmail2));
 				emailText = clientEmail2.getText().trim();
 			} catch (Exception e2) {
-				emailText = "no email found";
-				System.out.println("Client email is not there.");
+				try{
+					wait.until(ExpectedConditions.visibilityOf(forAtoEmail));
+					emailText = clientEmail3.getText().trim();
+				}catch(Exception e3) {
+					emailText = "no email found";
+					System.out.println("Client email is not there.");
+				}
 			}
 		}
 
