@@ -64,7 +64,7 @@ public class ClientExcel extends MainClass{
 	/*====================Read Of First Column===================================*/
 
 	public static ArrayList<String> readFirstColumn(String filePath) {
-		ArrayList<String> firstColumnData = new ArrayList<>();
+		//ArrayList<String> firstColumnData = new ArrayList<>();
 
 		try (FileInputStream fis = new FileInputStream(new File(filePath));
 				Workbook workbook = WorkbookFactory.create(fis)) {
@@ -72,9 +72,34 @@ public class ClientExcel extends MainClass{
 			Sheet sheet = workbook.getSheetAt(0);
 			for (Row row : sheet) {
 				Cell cell = row.getCell(0); 
-				if (cell != null && cell.getCellType() == CellType.STRING) {
-					firstColumnData.add(cell.getStringCellValue());
-				}
+				String cleanedValue = cell.getStringCellValue().replaceAll("[^0-9]", "");
+                if (!cleanedValue.isEmpty()) {  // Avoid adding empty values
+                    client_ID.add(cleanedValue);
+                }
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		client_ID.remove(0);
+		System.out.println("First colm data " + client_ID);
+		
+		return client_ID;
+	} 
+	
+	public static ArrayList<String> readSecondColumn(String filePath) {
+		ArrayList<String> firstColumnData = new ArrayList<>();
+
+		try (FileInputStream fis = new FileInputStream(new File(filePath));
+				Workbook workbook = WorkbookFactory.create(fis)) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+			for (Row row : sheet) {
+				Cell cell = row.getCell(1); 
+				String cleanedValue = cell.getStringCellValue().replaceAll("[^0-9]", "");
+                if (!cleanedValue.isEmpty()) {  // Avoid adding empty values
+                	System.out.println("client Id: "+cleanedValue);
+                    client_ID.add(cleanedValue);
+                }
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

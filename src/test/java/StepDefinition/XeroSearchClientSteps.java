@@ -2,9 +2,7 @@ package StepDefinition;
 
 import com.asis.util.MainClass;
 
-import Pages.XeroSearchClientPage;
-import Pages.XeroSearchClientPageAsis;
-import Pages.XeroSearchClientPageJJ;
+
 import Pages.XeroSearchClientPageJJRenew;
 import io.cucumber.java.en.*;
 

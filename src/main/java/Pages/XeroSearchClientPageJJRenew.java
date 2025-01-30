@@ -19,8 +19,6 @@ import com.asis.util.MainClass;
 
 import Driver_manager.DriverManager;
 
-
-
 public class XeroSearchClientPageJJRenew extends MainClass {
 	public static String client;
 	public static String clientRealName;
@@ -100,7 +98,7 @@ public class XeroSearchClientPageJJRenew extends MainClass {
 		ClientExcel.readSubjectColumn(filePath);
 //		System.out.println("client names " + clientNames.size());
 //		System.out.println("subject data " + subjectColumnData.size());
-
+		ClientExcel.readSecondColumn(filePath);
 		
 		for (int i = 0; i < clientNames.size(); i++) {
 			client = clientNames.get(i);
