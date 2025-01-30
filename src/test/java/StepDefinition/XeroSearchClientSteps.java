@@ -5,11 +5,12 @@ import com.asis.util.MainClass;
 import Pages.XeroSearchClientPage;
 import Pages.XeroSearchClientPageAsis;
 import Pages.XeroSearchClientPageJJ;
+import Pages.XeroSearchClientPageJJRenew;
 import io.cucumber.java.en.*;
 
 public class XeroSearchClientSteps extends MainClass {
 
-	private XeroSearchClientPageJJ search = new XeroSearchClientPageJJ();
+	private XeroSearchClientPageJJRenew search = new XeroSearchClientPageJJRenew();
 
 	@Given("I am on the Xero search client page")
 	public void i_am_on_the_Xero_search_client_page() {

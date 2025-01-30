@@ -121,6 +121,8 @@ public class ClientExcel extends MainClass{
 		System.out.println("Client name size" + clientNames.size());
 //		clientNames.remove(0);
 	}
+	
+	
 
 	/*====================Formating of the client name data===================================*/
 
@@ -165,6 +167,7 @@ public class ClientExcel extends MainClass{
 			emailCell.setCellValue(clientEmail); 
 			internalteamCell.setCellValue(internalTeam);
 			currentRowNum++;
+			
 		}
 	}
 
