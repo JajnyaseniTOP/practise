@@ -85,7 +85,7 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 	            // Try clicking using Actions
 	            Actions actions = new Actions(driver);
 	            actions.moveToElement(link).pause(500).click().perform();
-	            System.out.println("Clicked using Actions: " + link.getText());
+	            //System.out.println("Clicked using Actions: " + link.getText());
 
 	            // Wait for download completion and print file name
 	            waitForDownloadCompletion();
@@ -93,7 +93,7 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 	            printLatestDownloadedFileName(downloadDir);
 
 	        } catch (Exception e) {
-	            System.err.println("Actions click failed for: " + links.get(i).getText());
+	            //System.err.println("Actions click failed for: " + links.get(i).getText());
 	            fallbackToJavaScriptClick(links.get(i));
 	        }
 
@@ -106,14 +106,14 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 	private void fallbackToJavaScriptClick(WebElement element) {
 	    try {
 	        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-	        System.out.println("Clicked using JavaScript: " + element.getText());
+	        //System.out.println("Clicked using JavaScript: " + element.getText());
 
 	        // Wait for download completion and print file name
 	        waitForDownloadCompletion();
 	        printLatestDownloadedFileName(downloadDir);
 
 	    } catch (Exception e) {
-	        System.err.println("JavaScript click also failed for: " + element.getText() + " Error: " + e.getMessage());
+	        //System.err.println("JavaScript click also failed for: " + element.getText() + " Error: " + e.getMessage());
 	    }
 	}
 

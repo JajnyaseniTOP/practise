@@ -60,7 +60,7 @@ public class TaxReturnPage extends MainClass {
 			clickPortal.click();
 			clickConnect.click();
 		}catch(Exception e) {
-			System.out.println("catch block in switchPortal_keypoint");
+			//System.out.println("catch block in switchPortal_keypoint");
 		}
 	}
 	public static  void switchportal2() throws InterruptedException {
@@ -70,7 +70,7 @@ public class TaxReturnPage extends MainClass {
 			clickPortal.click();
 			clickConnect.click();
 		}catch(Exception e) {
-			System.out.println("catch bloclk switchPortal_business");
+			//System.out.println("catch bloclk switchPortal_business");
 		}
 	}
 

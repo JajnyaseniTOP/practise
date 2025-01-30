@@ -67,7 +67,7 @@ public class XeroPractiseManagerPage extends MainClass{
 			clickPortal.click();
 			clickConnect.click();
 		}catch(Exception e) {
-			System.out.println("catch bloclk");
+			//System.out.println("catch bloclk");
 		}
 	}
 }

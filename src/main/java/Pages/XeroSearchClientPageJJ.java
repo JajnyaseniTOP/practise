@@ -71,7 +71,7 @@ public class XeroSearchClientPageJJ extends MainClass {
 			clickPortal.click();
 			clickConnect.click();
 		}catch(Exception e) {
-			System.out.println("catch block in switchPortal_keypoint");
+			//System.out.println("catch block in switchPortal_keypoint");
 		}
 	}
 	public static  void switchportal2() throws InterruptedException {
@@ -81,7 +81,7 @@ public class XeroSearchClientPageJJ extends MainClass {
 			clickPortal.click();
 			clickConnect.click();
 		}catch(Exception e) {
-			System.out.println("It is already in keypoint portal");
+			//System.out.println("It is already in keypoint portal");
 		}
 	}
 
@@ -94,10 +94,10 @@ public class XeroSearchClientPageJJ extends MainClass {
 	}
 
 	public void inputTheClientName() throws InterruptedException {
-		System.out.println("client names " + clientNames.size());
+		//System.out.println("client names " + clientNames.size());
 		ClientExcel.readSubjectColumn(filePath);
-		System.out.println("client names " + clientNames.size());
-		System.out.println("subject data " + subjectColumnData.size());
+//		System.out.println("client names " + clientNames.size());
+//		System.out.println("subject data " + subjectColumnData.size());
 
 		
 		for (int i = 0; i < clientNames.size(); i++) {
@@ -150,10 +150,12 @@ public class XeroSearchClientPageJJ extends MainClass {
 					clientFound = searchClientWithAnd(client.toLowerCase());
 				}
 				// If client not found and contains a dot
-				if (!clientFound && client.contains(".")) {
+				if (!clientFound && client.contains(".")){
 					clientFound = searchClientWithoutDot(client);
 				}
-
+				if(!clientFound) {
+					clientFound = searchClientByTrimming(client.toLowerCase());
+				}
 				// If client is found, extract details
 				if (clientFound) {
 					extractClientDetails();
@@ -169,6 +171,41 @@ public class XeroSearchClientPageJJ extends MainClass {
 				e.printStackTrace();
 			}
 		}
+	}
+	private boolean searchClientByTrimming(String clientName) throws InterruptedException {
+	    boolean clientFound = false;
+	    int lastSpaceIndex = clientName.lastIndexOf(" ");
+	    if (lastSpaceIndex == -1) {
+	        return false; // No words to trim
+	    }
+	    String modifiedClientName = clientName.substring(0, lastSpaceIndex).trim();
+	    
+	    while (!modifiedClientName.isEmpty()) {
+	        inputBox.clear();
+	        inputBox.sendKeys(modifiedClientName);
+	        Thread.sleep(3000);
+	        
+	        List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+	        for (WebElement ele : elements) {
+	            String elementText = ele.getText().trim();
+	            if (elementText.equalsIgnoreCase(clientName) || elementText.toLowerCase().contains(clientName.toLowerCase())) {
+	                System.out.println(modifiedClientName + " found by trimming words.");
+	                Thread.sleep(3000);
+	                ele.click();
+	                clientFound = true;
+	                return clientFound;
+	            }
+	        }
+	        
+	        // Remove the last word and retry
+	        lastSpaceIndex = modifiedClientName.lastIndexOf(" ");
+	        if (lastSpaceIndex == -1) {
+	            break; // No more words to remove
+	        }
+	        modifiedClientName = modifiedClientName.substring(0, lastSpaceIndex).trim();
+	    }
+	    
+	    return clientFound;
 	}
 	private boolean searchClientWithoutDot(String clientName) throws InterruptedException {
 		boolean clientFound = false;
@@ -230,7 +267,7 @@ public class XeroSearchClientPageJJ extends MainClass {
 				String elementText = ele.getText().trim();
 				String editedWebElementText = elementText.toLowerCase().trim();
 				if (elementText.equalsIgnoreCase(client.trim()) || elementText.toLowerCase().contains(client.toLowerCase().trim())) {
-					System.out.println(client +"it is found in equalsIgnoreCase or in contains.");
+					//System.out.println(client +"it is found in equalsIgnoreCase or in contains.");
 					Thread.sleep(3000);
 					ele.click();
 					clientFound = true;
@@ -239,7 +276,7 @@ public class XeroSearchClientPageJJ extends MainClass {
 				else if (editedWebElementText.contains(" & ")) {
 					String removeAndFromText = editedWebElementText.replaceAll("\\s*&\\s*", "&");
 					if (removeAndFromText.contains(client.toLowerCase().trim())) {
-						System.out.println(client +"it is found in contain & method");
+						//System.out.println(client +"it is found in contain & method");
 						Thread.sleep(3000);
 						ele.click();
 						clientFound = true;
@@ -256,7 +293,9 @@ public class XeroSearchClientPageJJ extends MainClass {
 			if (!clientFound && client.contains(".")) {
 				clientFound = searchClientWithoutDot(client);
 			}
-
+			if(!clientFound) {
+				clientFound = searchClientByTrimming(client.toLowerCase());
+			}
 			if (clientFound) {
 				extractClientDetails();
 			}else {
@@ -264,7 +303,7 @@ public class XeroSearchClientPageJJ extends MainClass {
 			}
 
 		} catch (Exception e) {
-			System.out.println("Error switching to the secondary portal.");
+			//System.out.println("Error switching to the secondary portal.");
 			e.printStackTrace();
 		}
 	}
@@ -284,7 +323,7 @@ public class XeroSearchClientPageJJ extends MainClass {
 					emailText = clientEmail3.getText().trim();
 				}catch(Exception e3) {
 					emailText = "no email found";
-					System.out.println("Client email is not there.");
+					//System.out.println("Client email is not there.");
 				}
 			}
 		}
@@ -296,7 +335,7 @@ public class XeroSearchClientPageJJ extends MainClass {
 			}
 		} catch (Exception e) {
 			clientCodeText = "no client code";
-			System.out.println("Client code is not there.");
+			//System.out.println("Client code is not there.");
 		}
 
 		try {
@@ -306,7 +345,7 @@ public class XeroSearchClientPageJJ extends MainClass {
 			}
 		} catch (Exception e) {
 			internal_team = "no teamName";
-			System.out.println("Internal team is not there.");
+			//System.out.println("Internal team is not there.");
 		}
 
 		ClientExcel.addClientData(clientCodeText, emailText, internal_team);
@@ -344,7 +383,7 @@ public class XeroSearchClientPageJJ extends MainClass {
 		ArrayList<String> teamNames = ClientExcel.readTeamNamesFromColumn9(filePath);  // Read team names from column 9
 
 		if (pdfFileNames.size() != fileNamesColumn7.size() || pdfFileNames.size() != teamNames.size()) {
-			System.out.println("Mismatch between the file lists or team names.");
+			//System.out.println("Mismatch between the file lists or team names.");
 			return;
 		}
 
@@ -352,9 +391,9 @@ public class XeroSearchClientPageJJ extends MainClass {
 		if (!downloadsFolder.exists()) {
 			boolean created = downloadsFolder.mkdir();
 			if (created) {
-				System.out.println("Downloads folder created.");
+				//System.out.println("Downloads folder created.");
 			} else {
-				System.out.println("Failed to create Downloads folder.");
+				//System.out.println("Failed to create Downloads folder.");
 				return;
 			}
 		}
@@ -365,7 +404,7 @@ public class XeroSearchClientPageJJ extends MainClass {
 			File pdfFile = new File(fullPath);
 			Thread.sleep(3000);
 			if (pdfFile.exists()) {
-				System.out.println("Found: " + pdfFileName);
+				//System.out.println("Found: " + pdfFileName);
 
 				String currentExtension = getFileExtension(pdfFile);
 
@@ -385,9 +424,9 @@ public class XeroSearchClientPageJJ extends MainClass {
 						fileCount++;
 					}
 
-					System.out.println("Renaming file to: " + newFileName);
+					//System.out.println("Renaming file to: " + newFileName);
 					if (pdfFile.renameTo(renamedFile)) {
-						System.out.println("Renamed " + pdfFileName + " to " + newFileName);
+						//System.out.println("Renamed " + pdfFileName + " to " + newFileName);
 
 						// Determine target folder based on team name
 						String teamName = teamNames.get(cnt).trim();
@@ -416,9 +455,9 @@ public class XeroSearchClientPageJJ extends MainClass {
 						if (!targetFolder.exists()) {
 							boolean created = targetFolder.mkdir();
 							if (created) {
-								System.out.println(targetFolder.getName() + " folder created.");
+								//System.out.println(targetFolder.getName() + " folder created.");
 							} else {
-								System.out.println("Failed to create " + targetFolder.getName() + " folder.");
+								//System.out.println("Failed to create " + targetFolder.getName() + " folder.");
 								continue;
 							}
 						}
@@ -427,21 +466,21 @@ public class XeroSearchClientPageJJ extends MainClass {
 						File targetFile = new File(targetFolder + File.separator + newFileName);
 						try {
 							Files.move(renamedFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-							System.out.println("Moved " + newFileName + " to " + targetFolder.getName() + " folder.");
+							//System.out.println("Moved " + newFileName + " to " + targetFolder.getName() + " folder.");
 						} catch (IOException e) {
-							System.out.println("Failed to move " + newFileName + " to " + targetFolder.getName() + " folder.");
+							//System.out.println("Failed to move " + newFileName + " to " + targetFolder.getName() + " folder.");
 							e.printStackTrace();
 						}
 					} else {
-						System.out.println("Failed to rename " + pdfFileName);
+						//System.out.println("Failed to rename " + pdfFileName);
 					}
 					cnt++;
 				} else {
-					System.out.println("Index out of bounds for fileNamesColumn7.");
+					//System.out.println("Index out of bounds for fileNamesColumn7.");
 					break;
 				}
 			} else {
-				System.out.println("File not found: " + pdfFileName);
+				//System.out.println("File not found: " + pdfFileName);
 			}
 		}
 	}

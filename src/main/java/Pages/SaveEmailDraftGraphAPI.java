@@ -53,12 +53,29 @@ public class SaveEmailDraftGraphAPI extends MainClass {
                     if (emailCell != null && fileNameCell != null) {
                         String email = emailCell.getStringCellValue().trim();
                         String fileName = fileNameCell.getStringCellValue().trim();
-                        String emailRcvr = emailRcvrName.getStringCellValue().trim();
-                        String[] nameParts = emailRcvr.split("\\s+"); // Split the name by whitespace
-                        String emailScndWrd = (nameParts.length > 1) ? nameParts[1] : nameParts[0];
                         String subject = fileName;
                         String teamName = teamNames.get(rowIndex - 1).trim();
+                        
+                        String emailRcvr = emailRcvrName.getStringCellValue().trim();
+                        //String[] nameParts = emailRcvr.split("\\s+"); // Split the name by whitespace
+                        //String emailScndWrd = (nameParts.length > 1) ? nameParts[1] : nameParts[0];
+                        
+                        //String emailRcvr = emailRcvrName.getStringCellValue().trim();
 
+                        String emailScndWrd="";
+                        if (emailRcvr.toLowerCase().contains("trust")) {
+                            emailScndWrd = "Trustee(s)\n" + emailRcvr; 
+                        }
+                        else if(emailRcvr.toLowerCase().contains("pty ltd")) {
+                            emailScndWrd = "Director(s)\n" + emailRcvr; 
+                        }
+                        else if (emailRcvr.contains(",")) {
+                            // Extract all words after the comma
+                            emailScndWrd = emailRcvr.substring(emailRcvr.indexOf(",") + 1).trim();
+                        } 
+                        
+                        
+                   
                         if (isValidEmail(email)) {
                             String filePathToSearch = searchFileInSubfolders(mainFolder, fileName);
 
@@ -66,10 +83,10 @@ public class SaveEmailDraftGraphAPI extends MainClass {
                             if (fileToAttach.exists()) {
                                 saveEmailAsDraft(email, subject, filePathToSearch, downloadsDir, teamName,emailScndWrd);
                             } else {
-                                System.err.println("File not found: " + fileToAttach.getAbsolutePath());
+                                //System.err.println("File not found: " + fileToAttach.getAbsolutePath());
                             }
                         } else {
-                            System.err.println("Invalid or missing email address for row " + rowIndex);
+                            //System.err.println("Invalid or missing email address for row " + rowIndex);
                         }
                     }
                 }
