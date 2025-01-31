@@ -1,16 +1,12 @@
 package StepDefinition;
 
 import com.asis.util.MainClass;
-
-import Pages.XeroSearchClientPage;
-import Pages.XeroSearchClientPageAsis;
-import Pages.XeroSearchClientPageJJ;
-import Pages.XeroSearchClientPageJJRenew;
+import Pages.XeroSearchingTFN;
 import io.cucumber.java.en.*;
 
 public class XeroSearchClientSteps extends MainClass {
 
-	private XeroSearchClientPageJJRenew search = new XeroSearchClientPageJJRenew();
+	private XeroSearchingTFN search = new XeroSearchingTFN();
 
 	@Given("I am on the Xero search client page")
 	public void i_am_on_the_Xero_search_client_page() {
@@ -20,12 +16,12 @@ public class XeroSearchClientSteps extends MainClass {
 	@When("I input the client name")
 	public void i_input_the_client_name() {
 
-		search.clickOnSearchButton();
+		//search.clickOnSearchButton();
 	}
 
 	@When("I click on the search button")
 	public void i_click_on_the_search_button() throws InterruptedException {
-		search.inputTheClientName();
+		search.inputTheClientNameTFN();
 		Thread.sleep(2000);
 		//search.inputTheClientNameInOthrPortal();
 		//		search.checkNoticeOfAssessment(filePath,downloadDir);

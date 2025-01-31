@@ -183,7 +183,7 @@ public class SaveEmailDraftGraphAPI extends MainClass {
     }
 
     private static String determineTeamFolder(String teamName) {
-        switch (teamName) {
+        switch (teamName) { 
             case "A":
             case "A1":
                 return "A-Sian";
@@ -198,7 +198,7 @@ public class SaveEmailDraftGraphAPI extends MainClass {
             case "D":
             	return "D-Melvyn";
             default:
-                return "NoInternalTeam"; // Default folder for undefined team names
+            	 return "Others"; // Default folder for undefined team names
         }
     }
 

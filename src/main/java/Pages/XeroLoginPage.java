@@ -30,14 +30,14 @@ public class XeroLoginPage extends MainClass{
 	public void getPageTitle() {
 	}
 	public void enterUserId() {
-        wait.until(ExpectedConditions.elementToBeClickable(Emailaddress));
-        Emailaddress.sendKeys(XERO_USER_NAME);
-    }
+		wait.until(ExpectedConditions.elementToBeClickable(Emailaddress));
+		Emailaddress.sendKeys("accountant2@fortunaadvisors.com.au");
+	}
 
-    public void enterPassword() {
-        wait.until(ExpectedConditions.elementToBeClickable(Password));
-        Password.sendKeys(XERO_PASSWORD);
-    }
+	public void enterPassword() {
+		wait.until(ExpectedConditions.elementToBeClickable(Password));
+		Password.sendKeys("User123456@");
+	}
 	public void clickLoginButton() {
 		wait.until(ExpectedConditions.elementToBeClickable(loginButton));
 		loginButton.click();

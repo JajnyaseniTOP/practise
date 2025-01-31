@@ -61,17 +61,18 @@ public class ClientExcel extends MainClass{
 		saveExcelFile();
 		return data;
 	}
-	/*====================Read Of First Column===================================*/
 
+	/*====================Read Of First Column===================================*/
+	 
 	public static ArrayList<String> readFirstColumn(String filePath) {
 		ArrayList<String> firstColumnData = new ArrayList<>();
-
+ 
 		try (FileInputStream fis = new FileInputStream(new File(filePath));
 				Workbook workbook = WorkbookFactory.create(fis)) {
-
+ 
 			Sheet sheet = workbook.getSheetAt(0);
 			for (Row row : sheet) {
-				Cell cell = row.getCell(0); 
+				Cell cell = row.getCell(0);
 				if (cell != null && cell.getCellType() == CellType.STRING) {
 					firstColumnData.add(cell.getStringCellValue());
 				}
@@ -83,6 +84,29 @@ public class ClientExcel extends MainClass{
 		System.out.println("First colm data " + firstColumnData.size());
 		
 		return firstColumnData;
+	}
+	
+	public static ArrayList<String> readSecondColumn(String filePath) {
+		ArrayList<String> secondColumnData = new ArrayList<>();
+		try (FileInputStream fis = new FileInputStream(new File(filePath));
+				Workbook workbook = WorkbookFactory.create(fis)) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+			for (Row row : sheet) {
+				Cell cell = row.getCell(1); 
+				String cleanedValue = cell.getStringCellValue().replaceAll("[^0-9]", "");
+                if (!cleanedValue.isEmpty()) {  
+                	System.out.println("client Id: "+ cleanedValue);
+                	secondColumnData.add(cleanedValue);
+                }
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//secondColumnData.remove(0);
+		System.out.println("First colm data " + secondColumnData.size());
+		
+		return secondColumnData;
 	} 
 
 	/*====================Removal of Last character of client name ===================================*/
