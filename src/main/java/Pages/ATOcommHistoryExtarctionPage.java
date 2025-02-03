@@ -90,7 +90,7 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 	            // Wait for download completion and print file name
 	            waitForDownloadCompletion();
 	       
-	            printLatestDownloadedFileName(downloadDir);
+	            printLatestDownloadedFileName(downloadDirK);
 
 	        } catch (Exception e) {
 	            //System.err.println("Actions click failed for: " + links.get(i).getText());
@@ -110,7 +110,7 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 
 	        // Wait for download completion and print file name
 	        waitForDownloadCompletion();
-	        printLatestDownloadedFileName(downloadDir);
+	        printLatestDownloadedFileName(downloadDirK);
 
 	    } catch (Exception e) {
 	        //System.err.println("JavaScript click also failed for: " + element.getText() + " Error: " + e.getMessage());

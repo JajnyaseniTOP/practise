@@ -1,3 +1,4 @@
+
 package com.asis.util;
 
 import java.io.File;
@@ -19,7 +20,9 @@ public class MainClass {
     }
 	public WebDriver driver;
 	public static String currentDate = LocalDate.now().toString();
-	public static String downloadDir = "C:" + File.separator + "ATO Email files"+ File.separator;
+	public static String downloadDirD = "D:" + File.separator + "ATO Email files"+ File.separator;
+	public static String downloadDirK = "K:" + File.separator + "ATO Email files"+ File.separator;
+//	public static String downloadDir = "C:" + File.separator + "ATO Email files"+ File.separator;
 	
 	//public static String downloadDir =System.getProperty("user.dir") + File.separator + "Downloads";
 	public static String newFilePath ;
@@ -30,10 +33,14 @@ public class MainClass {
 
 	public static ArrayList<String> firstColumn = ClientExcel.readFirstColumn(filePath);
 	public static ArrayList<String> firstColumn_realName = ClientExcel.readFirstColumn(filePath);
+	
+
 	public static ArrayList<String> clientNames = new ArrayList<>();
 	public static ArrayList<String> fileNames = new ArrayList<>();
 	public static List<String> clientCodes = new ArrayList<>();
 	public static List<String> clientEmails = new ArrayList<>();
+	//public static ArrayList<String> client_ID = new ArrayList<>();
+	
 	public static ArrayList<String> subjectColumnData = ClientExcel.readSubjectColumn(filePath);
 	public static ArrayList<String> pdfFileNames = ClientExcel.readPdfFileNamesFromColumn8(filePath);
 	public static ArrayList<String> fileNamesColumn7 = ClientExcel.readFileNamesFromColumn7(filePath);

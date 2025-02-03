@@ -10,7 +10,7 @@ public class XeroTaxReturnSteps  extends MainClass{
 	TaxReturnPage tax = new TaxReturnPage();
 	@Given("the system processes each client with Notice of Assessment")
 	public void the_system_processes_each_client_with_notice_of_assessment() throws InterruptedException {
-		TaxReturnPage.processAllNoticesOfAssessment(filePath,downloadDir);
+		TaxReturnPage.processAllNoticesOfAssessment(filePath,downloadDirK);
 	}
 
 	@Then("it should extract the Date of Issue, ATO Reference, Taxable Income, and Result Amount from the PDF")

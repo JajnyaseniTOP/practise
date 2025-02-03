@@ -53,7 +53,7 @@ public class XeroPractiseManagerPage extends MainClass{
 	}
 	public void enterEmailAddress() {
 		wait.until(ExpectedConditions.elementToBeClickable(emailAdd));
-		emailAdd.sendKeys(XERO_USER_NAME);
+		emailAdd.sendKeys("accountant2@fortunaadvisors.com.au");
 	}
 	public void enterContinue() {
 		wait.until(ExpectedConditions.elementToBeClickable(continues));

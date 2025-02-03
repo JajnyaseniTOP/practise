@@ -27,9 +27,8 @@ public class ATOLoginPage extends MainClass{
 		myGOV.click();
 	}
 	public void sendingEmailAddress() {
-		String user_id=ATO_USER_NAME;
 		wait.until(ExpectedConditions.elementToBeClickable(emailAddress));
-		emailAddress.sendKeys(user_id);
+		emailAddress.sendKeys("divya@fortunaadvisors.com.au");
 	}
 	public byte[] clickOnLoginButton() throws InterruptedException {
 		wait.until(ExpectedConditions.elementToBeClickable(loginButton));

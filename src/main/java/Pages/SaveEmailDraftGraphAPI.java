@@ -57,10 +57,6 @@ public class SaveEmailDraftGraphAPI extends MainClass {
                         String teamName = teamNames.get(rowIndex - 1).trim();
                         
                         String emailRcvr = emailRcvrName.getStringCellValue().trim();
-                        //String[] nameParts = emailRcvr.split("\\s+"); // Split the name by whitespace
-                        //String emailScndWrd = (nameParts.length > 1) ? nameParts[1] : nameParts[0];
-                        
-                        //String emailRcvr = emailRcvrName.getStringCellValue().trim();
 
                         String emailScndWrd="";
                         if (emailRcvr.toLowerCase().contains("trust")) {
@@ -70,7 +66,6 @@ public class SaveEmailDraftGraphAPI extends MainClass {
                             emailScndWrd = "Director(s)\n" + emailRcvr; 
                         }
                         else if (emailRcvr.contains(",")) {
-                            // Extract all words after the comma
                             emailScndWrd = emailRcvr.substring(emailRcvr.indexOf(",") + 1).trim();
                         } 
                         
@@ -198,7 +193,7 @@ public class SaveEmailDraftGraphAPI extends MainClass {
             case "D":
             	return "D-Melvyn";
             default:
-                return "NoInternalTeam"; // Default folder for undefined team names
+            	 return "Others"; // Default folder for undefined team names
         }
     }
 

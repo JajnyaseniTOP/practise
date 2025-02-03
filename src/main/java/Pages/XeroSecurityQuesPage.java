@@ -30,30 +30,30 @@ public class XeroSecurityQuesPage extends MainClass{
 	public void getPageTitle() {
 	}
 	public void answerSecurityQuestions() {
-		if(firstquestion.getText().equals(XERO_SECURITY_QUEST1)) {
+		if(firstquestion.getText().equals("What is your dream job?")) {
 			wait.until(ExpectedConditions.elementToBeClickable(firstanswer));
-			firstanswer.sendKeys(XERO_SECURITY_ANS1);
+			firstanswer.sendKeys("Fortuna");
 		}
-		else if(firstquestion.getText().equals(XERO_SECURITY_QUEST2)) {
+		else if(firstquestion.getText().equals("What is your dream car?")) {
 			wait.until(ExpectedConditions.elementToBeClickable(firstanswer));
-			firstanswer.sendKeys(XERO_SECURITY_ANS2);
+			firstanswer.sendKeys("Fortuna1");
 		}
 		else {
 			wait.until(ExpectedConditions.elementToBeClickable(firstanswer));
-			firstanswer.sendKeys(XERO_SECURITY_ANS3);
+			firstanswer.sendKeys("Fortuna2");
 		}
 
-		if(secondquestion.getText().equals(XERO_SECURITY_QUEST1)) {
+		if(secondquestion.getText().equals("What is your dream job?")) {
 			wait.until(ExpectedConditions.elementToBeClickable(secondanswer));
-			secondanswer.sendKeys(XERO_SECURITY_ANS1);
+			secondanswer.sendKeys("Fortuna");
 		}
-		else if(secondquestion.getText().equals(XERO_SECURITY_QUEST2)) {
+		else if(secondquestion.getText().equals("What is your dream car?")) {
 			wait.until(ExpectedConditions.elementToBeClickable(secondanswer));
-			secondanswer.sendKeys(XERO_SECURITY_ANS2);
+			secondanswer.sendKeys("Fortuna1");
 		}
 		else {
 			wait.until(ExpectedConditions.elementToBeClickable(secondanswer));
-			secondanswer.sendKeys(XERO_SECURITY_ANS3);
+			secondanswer.sendKeys("Fortuna2");
 		}
 	}
 	public void clickSubmitButton() {
