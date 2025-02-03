@@ -217,7 +217,7 @@ public class ClientExcel extends MainClass{
 		}
 	}
 
-	/*====================Adding the client code and email into excel sheet===================================*/
+	/*====================Adding the portal name into excel sheet===================================*/
 
 	public static void addPortalName(String portal) {
 		if (sheet != null) {

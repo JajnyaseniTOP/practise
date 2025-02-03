@@ -1,3 +1,4 @@
+
 package Pages;
 
 import java.io.File;
@@ -136,7 +137,6 @@ public class XeroSearchingTFN extends MainClass {
 			}
 		}
 	}
-
 	private void searchInSecondaryPortalTFN() throws InterruptedException{
 		try {
 			switchportal();
@@ -165,6 +165,7 @@ public class XeroSearchingTFN extends MainClass {
 			wait.until(ExpectedConditions.visibilityOf(clientName));
 			clientName.click();
 			clientFound=true;
+
 		}catch(Exception e) {  
 			System.out.println("client is not found on Xero");
 		}
@@ -234,152 +235,92 @@ public class XeroSearchingTFN extends MainClass {
 	}
 
 	public static String sanitizeFileName(String fileName) {
+		// Define a regex pattern to match special characters \ / : * ? " < > |
 		String specialCharactersPattern = "[\\\\/:*?\"<>|]";
+		// Replace the special characters with a single space
 		return fileName.replaceAll(specialCharactersPattern, " ");
 	}
 
-	public void renameAndMovePdfFilesToDownloadsFolder(String downloadDirK, String downloadDirD) throws InterruptedException{
-		ArrayList<String> pdfFileNames = ClientExcel.readPdfFileNamesFromColumn8(filePath);
-		ArrayList<String> fileNamesColumn7 = ClientExcel.readFileNamesFromColumn7(filePath);
-		ArrayList<String> teamNames = ClientExcel.readTeamNamesFromColumn9(filePath); 
-		ArrayList<String> portalNames = ClientExcel.readPortalColumn(filePath);// Read team names from column 9
+	public void renameAndMovePdfFilesToDownloadsFolder(String downloadDir) throws InterruptedException {
+	    ArrayList<String> pdfFileNames = ClientExcel.readPdfFileNamesFromColumn8(filePath);
+	    ArrayList<String> fileNamesColumn7 = ClientExcel.readFileNamesFromColumn7(filePath);
+	    ArrayList<String> teamNames = ClientExcel.readTeamNamesFromColumn9(filePath);  
+	    ArrayList<String> portalDataNames = ClientExcel.readPortalColumn(filePath);  
 
-		if (pdfFileNames.size() != fileNamesColumn7.size() || pdfFileNames.size() != teamNames.size()) {
-			return;
-		}
+	    if (pdfFileNames.size() != fileNamesColumn7.size() || pdfFileNames.size() != teamNames.size() || pdfFileNames.size() != portalDataNames.size()) {
+	        System.out.println("Size mismatch in lists! Check data.");
+	        return;
+	    }
 
-		File downloadsFolder = new File(downloadDirK + File.separator + "Email_Files_" + currentDate);
-		if (!downloadsFolder.exists()) {
-			boolean created = downloadsFolder.mkdir();
-			if (created) {
-			} else {
-				return;
-			}
-		}
+	    File downloadsFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate);
+	    File downloadsFolderD = new File(downloadDirD + File.separator + "Email_Files_" + currentDate);
+	    downloadsFolder.mkdirs();
+	    downloadsFolderD.mkdirs();
 
-		int cnt = 0;
-		for (String pdfFileName : pdfFileNames) {
-			String fullPath = downloadDirK + File.separator + pdfFileName.trim();
-			File pdfFile = new File(fullPath);
-			Thread.sleep(3000);
-			if (pdfFile.exists()) {
+	    int cnt = 0;
+	    for (String pdfFileName : pdfFileNames) {
+	        System.out.println("Processing file: " + pdfFileName);
 
-				String currentExtension = getFileExtension(pdfFile);
+	        String fullPath = downloadDir + File.separator + pdfFileName.trim();
+	        File pdfFile = new File(fullPath);
+	        Thread.sleep(3000);
+	        if (!pdfFile.exists()) {
+	            System.out.println("File not found: " + fullPath);
+	            continue;
+	        }
 
-				if (cnt < fileNamesColumn7.size()){
-					String newFileName = fileNamesColumn7.get(cnt) + "." + currentExtension;
-					String newFilePath = downloadDirK + File.separator + newFileName;
+	        String currentExtension = getFileExtension(pdfFile);
+	        if (cnt >= fileNamesColumn7.size()) {
+	            System.out.println("Skipping index " + cnt + " due to size mismatch.");
+	            continue;
+	        }
 
-					Thread.sleep(2000);
-					File renamedFile = new File(newFilePath);  
+	        String newFileName = fileNamesColumn7.get(cnt) + "." + currentExtension;
+	        File renamedFile = new File(downloadDir + File.separator + newFileName);
+	        
+	        int fileCount = 1;
+	        while (renamedFile.exists()) {
+	            newFileName = "new_" + fileNamesColumn7.get(cnt) + "_" + fileCount + "." + currentExtension;
+	            renamedFile = new File(downloadDir + File.separator + sanitizeFileName(newFileName));
+	            fileCount++;
+	        }
 
-					int fileCount = 1;
-					while (renamedFile.exists()) {
-						newFileName = "new_" + fileNamesColumn7.get(cnt) + "_" + fileCount + "." + currentExtension;
-						newFileName = sanitizeFileName(newFileName);
-						renamedFile = new File(downloadDirK + File.separator + newFileName);
-						fileCount++;
-					}
+	        String portalName = portalDataNames.get(cnt).replaceAll("\\s+", " ").trim();
+	        System.out.println("Checking portal name: '" + portalName + "' at index " + cnt);
 
-					if (pdfFile.renameTo(renamedFile)) {
+	        String DownloadsDirectory = portalName.equalsIgnoreCase("Keypoint") ? downloadDir : downloadDirD;
+	        System.out.println("Using directory: " + DownloadsDirectory);
 
-						String portalName = portalNames.get(cnt).trim();
-						String teamName = teamNames.get(cnt).trim();
-						File targetFolder;
-						if (portalName.equalsIgnoreCase("keypoint")) {
-						switch (teamName) {
-						case "K":
-							targetFolder = new File(downloadDirK + File.separator + "Email_Files_" + currentDate + File.separator + "K-Lindy");
-							break;
-						case "C":
-						case "C1":
-							targetFolder = new File(downloadDirK + File.separator + "Email_Files_" + currentDate + File.separator + "C-Rebecca");
-							break;
-						case "A1":
-						case "A":
-							targetFolder = new File(downloadDirK + File.separator + "Email_Files_" + currentDate + File.separator + "A-Sian");
-							break;
-						case "B":
-						case "B1":
-							targetFolder = new File(downloadDirK + File.separator + "Email_Files_" + currentDate + File.separator + "B-Rowan");
-							break;
-						case "D":
-							targetFolder = new File(downloadDirK + File.separator + "Email_Files_" + currentDate + File.separator + "D-Melvyn");
-							break;
-						default:
-							targetFolder = new File(downloadDirK + File.separator + "Email_Files_" + currentDate + File.separator + "Others");
-							break;
-						}
+	        if (pdfFile.renameTo(renamedFile)) {
+	            String teamName = teamNames.get(cnt).trim();
+	            File targetFolder;
+	            switch (teamName) {
+	                case "K": targetFolder = new File(DownloadsDirectory + File.separator + "Email_Files_" + currentDate + File.separator + "K-Lindy"); break;
+	                case "C":
+	                case "C1": targetFolder = new File(DownloadsDirectory + File.separator + "Email_Files_" + currentDate + File.separator + "C-Rebecca"); break;
+	                case "A1":
+	                case "A": targetFolder = new File(DownloadsDirectory + File.separator + "Email_Files_" + currentDate + File.separator + "A-Sian"); break;
+	                case "B":
+	                case "B1": targetFolder = new File(DownloadsDirectory + File.separator + "Email_Files_" + currentDate + File.separator + "B-Rowan"); break;
+	                case "D": targetFolder = new File(DownloadsDirectory + File.separator + "Email_Files_" + currentDate + File.separator + "D-Melvyn"); break;
+	                default: targetFolder = new File(DownloadsDirectory + File.separator + "Email_Files_" + currentDate + File.separator + "Others"); break;
+	            }
 
-						if (!targetFolder.exists()) {
-							boolean created = targetFolder.mkdir();
-							if (created) {
-							} else {
-								continue;
-							}
-						}
-
-						File targetFile = new File(targetFolder + File.separator + newFileName);
-						try {
-							Files.move(renamedFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					} else {
-
-						switch (teamName) {
-						case "K":
-							targetFolder = new File(downloadDirD + File.separator + "Email_Files_" + currentDate + File.separator + "K-Lindy");
-							break;
-						case "C":
-						case "C1":
-							targetFolder = new File(downloadDirD + File.separator + "Email_Files_" + currentDate + File.separator + "C-Rebecca");
-							break;
-						case "A1":
-						case "A":
-							targetFolder = new File(downloadDirD + File.separator + "Email_Files_" + currentDate + File.separator + "A-Sian");
-							break;
-						case "B":
-						case "B1":
-							targetFolder = new File(downloadDirD + File.separator + "Email_Files_" + currentDate + File.separator + "B-Rowan");
-							break;
-						case "D":
-							targetFolder = new File(downloadDirD + File.separator + "Email_Files_" + currentDate + File.separator + "D-Melvyn");
-							break;
-						default:
-							targetFolder = new File(downloadDirD + File.separator + "Email_Files_" + currentDate + File.separator + "Others");
-							break;
-						}
-
-						if (!targetFolder.exists()) {
-							boolean created = targetFolder.mkdir();
-							if (created) {
-							} else {
-								continue;
-							}
-						}
-
-						File targetFile = new File(targetFolder + File.separator + newFileName);
-						try {
-							Files.move(renamedFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					
-					}
-					cnt++;
-				} else {
-					break;
-				}
-			} else {
-			}
-		}
-			else {
-				
-			}
-		}
-		
+	            targetFolder.mkdirs();
+	            File targetFile = new File(targetFolder + File.separator + newFileName);
+	            try {
+	                Files.move(renamedFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	                System.out.println("Moved file to: " + targetFile.getAbsolutePath());
+	            } catch (IOException e) {
+	                System.out.println("Failed to move file: " + e.getMessage());
+	            }
+	        } else {
+	            System.out.println("Failed to rename file: " + pdfFile.getAbsolutePath());
+	        }
+	        cnt++;
+	    }
 	}
+
 	private String getFileExtension(File file) {
 		String fileName = file.getName();
 		int dotIndex = fileName.lastIndexOf('.');

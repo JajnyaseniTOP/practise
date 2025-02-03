@@ -66,6 +66,7 @@ public class SaveEmailDraftGraphAPI extends MainClass {
                             emailScndWrd = "Director(s)\n" + emailRcvr; 
                         }
                         else if (emailRcvr.contains(",")) {
+                            // Extract all words after the comma
                             emailScndWrd = emailRcvr.substring(emailRcvr.indexOf(",") + 1).trim();
                         } 
                         
@@ -178,7 +179,7 @@ public class SaveEmailDraftGraphAPI extends MainClass {
     }
 
     private static String determineTeamFolder(String teamName) {
-        switch (teamName) {
+        switch (teamName) { 
             case "A":
             case "A1":
                 return "A-Sian";

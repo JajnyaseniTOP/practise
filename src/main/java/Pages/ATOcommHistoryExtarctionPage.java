@@ -32,8 +32,6 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 	@FindBy(xpath = "//table//tr//td[position()=2]//a")
 	private List<WebElement> links; 
 	
-	//table//tr//td[position()=2]//a
-	
 	@FindBy(xpath = "//tbody/tr[@class=\"table-row\"]")
 	private List<WebElement> commTableHistory;
 	@FindBy(xpath = "//th[@data-header='Name']")
@@ -73,31 +71,22 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 	public void clickAllLinks() {
 	    for (int i = 0; i < links.size(); i++) {
 	        try {
-	            WebElement link = links.get(i); // Fetch the current link dynamically
-
-	            // Scroll into view to ensure visibility
+	            WebElement link = links.get(i);
 	            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", link);
 
-	            // Explicit wait for visibility and clickability
 	            wait.until(ExpectedConditions.visibilityOf(link));
 	            wait.until(ExpectedConditions.elementToBeClickable(link));
 
-	            // Try clicking using Actions
 	            Actions actions = new Actions(driver);
 	            actions.moveToElement(link).pause(500).click().perform();
-	            //System.out.println("Clicked using Actions: " + link.getText());
-
-	            // Wait for download completion and print file name
 	            waitForDownloadCompletion();
 	       
-	            printLatestDownloadedFileName(downloadDirK);
+	            printLatestDownloadedFileName(downloadDir);
 
 	        } catch (Exception e) {
-	            //System.err.println("Actions click failed for: " + links.get(i).getText());
 	            fallbackToJavaScriptClick(links.get(i));
 	        }
 
-	        // Small pause to ensure all actions complete before moving to the next link
 	        pause(3000);
 	    }
 	}
@@ -110,7 +99,7 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 
 	        // Wait for download completion and print file name
 	        waitForDownloadCompletion();
-	        printLatestDownloadedFileName(downloadDirK);
+	        printLatestDownloadedFileName(downloadDir);
 
 	    } catch (Exception e) {
 	        //System.err.println("JavaScript click also failed for: " + element.getText() + " Error: " + e.getMessage());
