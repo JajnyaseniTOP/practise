@@ -26,11 +26,15 @@ public class SaveEmailDraftGraphAPI extends MainClass {
     private static final String PASSWORD = "J7OJb*ZwQD25HpC2KO8*n";
 
     public void saveEmailsAsDraftsFromExcel(String filePath, String downloadsDir) throws IOException {
-        File file = new File(filePath);
+        
+        processEmailsForDownloadDir(filePath, downloadDir);
+        processEmailsForDownloadDir(filePath, downloadDirD);
+    }
+    private void processEmailsForDownloadDir(String filePath, String downloadsDir) throws IOException {
+    	File file = new File(filePath);
         if (!file.exists()) {
             throw new IOException("File not found: " + filePath);
         }
-
         File mainFolder = new File(downloadsDir + File.separator + "Email_Files_" + currentDate);
         if (!mainFolder.exists() || !mainFolder.isDirectory()) {
             throw new IOException("Main folder not found: " + mainFolder.getAbsolutePath());

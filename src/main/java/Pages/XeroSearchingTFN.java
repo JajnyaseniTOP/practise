@@ -174,6 +174,7 @@ public class XeroSearchingTFN extends MainClass {
 			extractClientDetails();
 		}else {
 			handleClientNotFound(clientRealName,subject);
+			ClientExcel.addPortalName("Not found in any portal");
 		}
 	}
 	private void extractClientDetails() {
@@ -251,11 +252,17 @@ public class XeroSearchingTFN extends MainClass {
 	        System.out.println("Size mismatch in lists! Check data.");
 	        return;
 	    }
-
 	    File downloadsFolder = new File(downloadDir + File.separator + "Email_Files_" + currentDate);
 	    File downloadsFolderD = new File(downloadDirD + File.separator + "Email_Files_" + currentDate);
-	    downloadsFolder.mkdirs();
-	    downloadsFolderD.mkdirs();
+
+	    if (!downloadsFolder.exists()) {
+	        downloadsFolder.mkdirs();
+	    }
+
+	    if (!downloadsFolderD.exists()) {
+	        downloadsFolderD.mkdirs();
+	    }
+
 
 	    int cnt = 0;
 	    for (String pdfFileName : pdfFileNames) {
