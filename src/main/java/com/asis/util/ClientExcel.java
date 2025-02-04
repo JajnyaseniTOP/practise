@@ -26,6 +26,7 @@ public class ClientExcel extends MainClass{
 	private static int currentRowNum = 1;
 	private static int currentRowNum2 = 1;
 	private static int currentRowNum3 = 1;
+	private static int currentRowNum4 = 1;
 	//public Set<String> uniqueSubject = new HashSet<String>();
 
 	/*====================Creation of Empty Excel Sheet===================================*/
@@ -34,7 +35,7 @@ public class ClientExcel extends MainClass{
 		workbook = new HSSFWorkbook();
 		sheet = workbook.createSheet("Client Data");
 
-		String[] headers = {"Name", "Client ID", "Subject", "Channel", "Issue Date", "Client Code", "Client Email ID", "File Name", "PDF File","Internal Team"};
+		String[] headers = {"Name", "Client ID", "Subject", "Channel", "Issue Date", "Client Code", "Client Email ID", "File Name", "PDF File","Internal Team","Portal"};
 
 		Row headerRow = sheet.createRow(0); 
 		for (int i = 0; i < headers.length; i++) {
@@ -63,13 +64,13 @@ public class ClientExcel extends MainClass{
 	}
 
 	/*====================Read Of First Column===================================*/
-	 
-	public static ArrayList<String> readFirstColumn(String filePath) {
+
+	public static ArrayList<String> readFirstColumn(String filePath){
 		ArrayList<String> firstColumnData = new ArrayList<>();
- 
+
 		try (FileInputStream fis = new FileInputStream(new File(filePath));
 				Workbook workbook = WorkbookFactory.create(fis)) {
- 
+
 			Sheet sheet = workbook.getSheetAt(0);
 			for (Row row : sheet) {
 				Cell cell = row.getCell(0);
@@ -80,12 +81,37 @@ public class ClientExcel extends MainClass{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		firstColumnData.remove(0);
+		//firstColumnData.remove(0);
 		System.out.println("First colm data " + firstColumnData.size());
-		
+
 		return firstColumnData;
 	}
-	
+	/*====================Read Of Portal Column===================================*/
+
+	public static ArrayList<String> readPortalColumn(String filePath) {
+		ArrayList<String> portalData = new ArrayList<>();
+
+		try (FileInputStream fis = new FileInputStream(new File(filePath));
+				Workbook workbook = WorkbookFactory.create(fis)) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+			for (Row row : sheet) {
+				Cell cell = row.getCell(10);
+				if (cell != null && cell.getCellType() == CellType.STRING) {
+					portalData.add(cell.getStringCellValue());
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		portalData.remove(0);
+		System.out.println("First colm data " + portalData.size());
+
+		return portalData;
+	}
+
+	/*====================Read Of Second Column===================================*/
+
 	public static ArrayList<String> readSecondColumn(String filePath) {
 		ArrayList<String> secondColumnData = new ArrayList<>();
 		try (FileInputStream fis = new FileInputStream(new File(filePath));
@@ -95,17 +121,16 @@ public class ClientExcel extends MainClass{
 			for (Row row : sheet) {
 				Cell cell = row.getCell(1); 
 				String cleanedValue = cell.getStringCellValue().replaceAll("[^0-9]", "");
-                if (!cleanedValue.isEmpty()) {  
-                	System.out.println("client Id: "+ cleanedValue);
-                	secondColumnData.add(cleanedValue);
-                }
+				if (!cleanedValue.isEmpty()) {  
+					System.out.println("client Id: "+ cleanedValue);
+					secondColumnData.add(cleanedValue);
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//secondColumnData.remove(0);
 		System.out.println("First colm data " + secondColumnData.size());
-		
+
 		return secondColumnData;
 	} 
 
@@ -134,19 +159,16 @@ public class ClientExcel extends MainClass{
 				}
 				clientName = formatCommaSeparatedName(clientName);
 				clientName = capitalizeName(clientName);
-				
+
 				clientNames.add(clientName); 
 				saveExcelFile();
 			}
-			
+
 		}
-//		clientNames.remove(0);
 		System.out.println("First colm " + firstColumn.size());
 		System.out.println("Client name size" + clientNames.size());
-//		clientNames.remove(0);
+
 	}
-	
-	
 
 	/*====================Formating of the client name data===================================*/
 
@@ -186,12 +208,29 @@ public class ClientExcel extends MainClass{
 			Cell codeCell = row.createCell(5); 
 			Cell emailCell = row.createCell(6);
 			Cell internalteamCell = row.createCell(9);
-			
+
 			codeCell.setCellValue(clientCode); 
 			emailCell.setCellValue(clientEmail); 
 			internalteamCell.setCellValue(internalTeam);
 			currentRowNum++;
-			
+
+		}
+	}
+
+	/*====================Adding the portal name into excel sheet===================================*/
+
+	public static void addPortalName(String portal) {
+		if (sheet != null) {
+			Row row = sheet.getRow(currentRowNum4);
+			if (row == null) {
+				row = sheet.createRow(currentRowNum4);
+			}
+
+			Cell codeCell = row.createCell(10); 
+
+			codeCell.setCellValue(portal); 
+			currentRowNum4++;
+
 		}
 	}
 
@@ -213,81 +252,77 @@ public class ClientExcel extends MainClass{
 			}
 		}
 	}
+
 	/*====================Writing the Combined data of client name and client code into column of excel===================================*/
-	
-	
+
 	static List<String> uniqueName = new ArrayList<String>();
 	public static void writeCombinedDataToExcel(String clientCodeText, String subject) {
-	if (sheet != null) {
-		Row row = sheet.getRow(currentRowNum2); 
-		if (row == null) {
-			row = sheet.createRow(currentRowNum2);
-		}
-		
-		String combinedData = clientCodeText + " - " + subject;
-		if(uniqueName.contains(combinedData)) {
-			int count=1;
-			for(int i=0;i<uniqueName.size();i++){
-				String fileName = combinedData+"_new"+count;
-				if(!uniqueName.contains(fileName)){
-					combinedData = fileName;
-					uniqueName.add(combinedData);
-					break;
-				}else {
-					count++;
-				}
+		if (sheet != null) {
+			Row row = sheet.getRow(currentRowNum2); 
+			if (row == null) {
+				row = sheet.createRow(currentRowNum2);
 			}
-		}else {
-			uniqueName.add(combinedData);
+
+			String combinedData = clientCodeText + " - " + subject;
+			if(uniqueName.contains(combinedData)) {
+				int count=1;
+				for(int i=0;i<uniqueName.size();i++){
+					String fileName = combinedData+"_new"+count;
+					if(!uniqueName.contains(fileName)){
+						combinedData = fileName;
+						uniqueName.add(combinedData);
+						break;
+					}else {
+						count++;
+					}
+				}
+			}else {
+				uniqueName.add(combinedData);
+			}
+			System.out.println("fileName = " + combinedData);
+			Cell combinedCell = row.createCell(7);
+			combinedCell.setCellValue(combinedData);
+			saveExcelFile();
+			currentRowNum2++;
 		}
-		System.out.println("fileName = " + combinedData);
-		Cell combinedCell = row.createCell(7);
-		combinedCell.setCellValue(combinedData);
-		saveExcelFile();
-		currentRowNum2++;
 	}
-}
 
-	
-	
+	/*====================Read Of Subject data Column===================================*/
+
 	public static void writeSubjectDataToExcelForSpecificRow(int rowNumber, String clientCodeText, String subject) {
-	    if (sheet != null) {
-	        Row row = sheet.getRow(rowNumber);
-	        if (row == null) {
-	            row = sheet.createRow(rowNumber);
-	        }
+		if (sheet != null) {
+			Row row = sheet.getRow(rowNumber);
+			if (row == null) {
+				row = sheet.createRow(rowNumber);
+			}
 
-	       
-	        String combinedData = clientCodeText + " - " + subject;
-	        if (uniqueName.contains(combinedData)) {
-	            int count = 1;
-	            while (true) {
-	                String newSubject = combinedData + "_new" + count;
-	                if (!uniqueName.contains(newSubject)) {
-	                	combinedData = newSubject;
-	                    uniqueName.add(combinedData);
-	                    break;
-	                } else {
-	                    count++;
-	                }
-	            }
-	        } else {
-	            uniqueName.add(combinedData);
-	        }
 
-	        System.out.println("Subject = " + combinedData);
+			String combinedData = clientCodeText + " - " + subject;
+			if (uniqueName.contains(combinedData)) {
+				int count = 1;
+				while (true) {
+					String newSubject = combinedData + "_new" + count;
+					if (!uniqueName.contains(newSubject)) {
+						combinedData = newSubject;
+						uniqueName.add(combinedData);
+						break;
+					} else {
+						count++;
+					}
+				}
+			} else {
+				uniqueName.add(combinedData);
+			}
 
-	        // Write the subject to Column 2
-	        Cell subjectCell = row.createCell(7); 
-	        subjectCell.setCellValue(combinedData);
+			System.out.println("Subject = " + combinedData);
 
-	        // Save changes to the file
-	        saveExcelFile();
-	    }
+			Cell subjectCell = row.createCell(7); 
+			subjectCell.setCellValue(combinedData);
+
+			saveExcelFile();
+		}
 	}
 
-	
-	
 	/*====================Adding the PDF name into excel sheet===================================*/
 
 	public static void addPdfName(String name) {
@@ -327,98 +362,67 @@ public class ClientExcel extends MainClass{
 		}
 		subjectColumnData.remove(0); 
 		System.out.println("Subject colm " + subjectColumnData.size());
-//		subjectColumnData.remove(0); 
 		return subjectColumnData;
 	}
-	
-	
-	/*====================Read Of Portal Column===================================*/
 
-	public static ArrayList<String> readPortalColumn(String filePath) {
-		ArrayList<String> portalData = new ArrayList<>();
+	//---------------------------------------------reading column0(client id)----------------------------------------------	
+	public static Map<Integer, String> readClientsID(String filePath) {
+		Map<Integer, String> clientData = new HashMap<>();
 
 		try (FileInputStream fis = new FileInputStream(new File(filePath));
 				Workbook workbook = WorkbookFactory.create(fis)) {
 
 			Sheet sheet = workbook.getSheetAt(0);
+			int rowIndex = 0;
+
 			for (Row row : sheet) {
-				Cell cell = row.getCell(10);
-				if (cell != null && cell.getCellType() == CellType.STRING) {
-					portalData.add(cell.getStringCellValue());
+				Cell cell6 = row.getCell(6);
+				Cell cell0 = row.getCell(0);
+
+				if (cell6 != null && cell6.getCellType() == CellType.STRING) {
+					String clientsEmailId = cell6.getStringCellValue();
+					if (clientsEmailId.equalsIgnoreCase("client name not found")) {
+						if (cell0 != null && cell0.getCellType() == CellType.STRING) {
+							String clientId = cell0.getStringCellValue();
+							clientData.put(rowIndex, clientId); // Store row number and client ID
+						}
+					}
 				}
+				rowIndex++;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		portalData.remove(0);
-		System.out.println("First colm data " + portalData.size());
 
-		return portalData;
+		System.out.println("Total clients with 'client name not found': " + clientData.size());
+		return clientData;
 	}
-	
-//---------------------------------------------reading column0(client id)----------------------------------------------	
-	 public static Map<Integer, String> readClientsID(String filePath) {
-	        Map<Integer, String> clientData = new HashMap<>();
 
-	        try (FileInputStream fis = new FileInputStream(new File(filePath));
-	             Workbook workbook = WorkbookFactory.create(fis)) {
+	/*====================Read Of collected data Column===================================*/
 
-	            Sheet sheet = workbook.getSheetAt(0);
-	            int rowIndex = 0; // To keep track of the row number
+	public static void writeDataToSpecificRow(int rowNumber, String clientCode, String email, String internalTeam) {
+		try (FileInputStream fis = new FileInputStream(new File(filePath));
+				Workbook workbook = WorkbookFactory.create(fis)) {
 
-	            for (Row row : sheet) {
-	                Cell cell6 = row.getCell(6);
-	                Cell cell0 = row.getCell(0);
+			Sheet sheet = workbook.getSheetAt(0);
+			Row row = sheet.getRow(rowNumber);
 
-	                if (cell6 != null && cell6.getCellType() == CellType.STRING) {
-	                    String clientsEmailId = cell6.getStringCellValue();
-	                    if (clientsEmailId.equalsIgnoreCase("client name not found")) {
-	                        if (cell0 != null && cell0.getCellType() == CellType.STRING) {
-	                            String clientId = cell0.getStringCellValue();
-	                            clientData.put(rowIndex, clientId); // Store row number and client ID
-	                        }
-	                    }
-	                }
-	                rowIndex++;
-	            }
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
+			if (row != null) {
+				row.createCell(5).setCellValue(clientCode);
+				row.createCell(6).setCellValue(email);
+				row.createCell(9).setCellValue(internalTeam); 
+				saveExcelFile();
 
-	        System.out.println("Total clients with 'client name not found': " + clientData.size());
-	        return clientData;
-	 }
-	 
-	 
-	 public static void writeDataToSpecificRow(int rowNumber, String clientCode, String email, String internalTeam) {
-		    try (FileInputStream fis = new FileInputStream(new File(filePath));
-		         Workbook workbook = WorkbookFactory.create(fis)) {
+			}
 
-		        Sheet sheet = workbook.getSheetAt(0);
-		        Row row = sheet.getRow(rowNumber);
-
-		        if (row != null) {
-		            row.createCell(5).setCellValue(clientCode); // Column for client code
-		            row.createCell(6).setCellValue(email); // Column for email
-		            row.createCell(9).setCellValue(internalTeam); // Column for internal team
-		            saveExcelFile();
-		            
-		        }
-
-		        try (FileOutputStream fos = new FileOutputStream(new File(filePath))) {
-		            workbook.write(fos);
-		        }
-		    } catch (IOException e) {
-		        e.printStackTrace();
-		    }
-		    
+			try (FileOutputStream fos = new FileOutputStream(new File(filePath))) {
+				workbook.write(fos);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
-	 
-	 
-	 
-	 
-	 
+	}
 
 	/*====================Replace special character===================================*/
 
@@ -428,7 +432,6 @@ public class ClientExcel extends MainClass{
 		}
 		return subject;
 	}
-
 
 	/*====================Read PDF File Names from Column 7===================================*/
 
@@ -463,7 +466,6 @@ public class ClientExcel extends MainClass{
 		fileNamesColumn7.remove(0);	    
 		return fileNamesColumn7;
 	}
-
 
 	/*====================Renaming the PDF file===================================*/
 
@@ -636,6 +638,7 @@ public class ClientExcel extends MainClass{
 			e.printStackTrace();
 		}
 	}
+	/*====================Read Of Team name Column===================================*/
 
 	public static ArrayList<String> readTeamNamesFromColumn9(String filepath) {
 		ArrayList<String> internalTeamNames = new ArrayList<>();
@@ -656,62 +659,51 @@ public class ClientExcel extends MainClass{
 		internalTeamNames.remove(0);
 
 		return internalTeamNames;
-		
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
-public static void writeUniqueDataToExcel() {
-    if (sheet != null) {
-        Map<String, Integer> nameCountMap = new HashMap<>(); // To track counts of duplicate names
-        int lastRowNum = sheet.getLastRowNum(); // Get the last row with data
+	/*====================Write Unique data Column===================================*/
 
-        for (int rowNum = 0; rowNum <= lastRowNum; rowNum++) {
-            Row row = sheet.getRow(rowNum);
-            if (row != null) {
-                
-                Cell sourceCell = row.getCell(7);
-                if (sourceCell != null) {
-                    String originalName = sourceCell.getStringCellValue();
+	public static void writeUniqueDataToExcel() {
+		if (sheet != null) {
+			Map<String, Integer> nameCountMap = new HashMap<>(); 
+			int lastRowNum = sheet.getLastRowNum(); 
 
-                    // Generate a unique name
-                    String uniqueName = getUniqueName(nameCountMap, originalName);
+			for (int rowNum = 0; rowNum <= lastRowNum; rowNum++) {
+				Row row = sheet.getRow(rowNum);
+				if (row != null) {
 
-                    
-                    Cell targetCell = row.createCell(10); 
-                    targetCell.setCellValue(uniqueName);
-                }
-            }
-        }
+					Cell sourceCell = row.getCell(7);
+					if (sourceCell != null) {
+						String originalName = sourceCell.getStringCellValue();
 
-        // Save the changes to the Excel file
-        saveExcelFile();
-    }
-}
+						// Generate a unique name
+						String uniqueName = getUniqueName(nameCountMap, originalName);
 
-private static String getUniqueName(Map<String, Integer> nameCountMap, String originalName) {
-    if (originalName == null || originalName.trim().isEmpty()) {
-        originalName = "null"; // Handle null or empty filenames
-    }
-    
-    String uniqueName = originalName;
-    if (nameCountMap.containsKey(originalName)) {
-        int count = nameCountMap.get(originalName) + 1;
-        uniqueName = originalName + "_new" + count; // Rename duplicate with _new+count
-        nameCountMap.put(originalName, count);
-    } else {
-        nameCountMap.put(originalName, 0); // First occurrence
-    }
-    return uniqueName;
-}
-	
-	
-	
+
+						Cell targetCell = row.createCell(10); 
+						targetCell.setCellValue(uniqueName);
+					}
+				}
+			}
+			saveExcelFile();
+		}
+	}
+	/*====================Get Unique Name Column===================================*/
+
+	private static String getUniqueName(Map<String, Integer> nameCountMap, String originalName) {
+		if (originalName == null || originalName.trim().isEmpty()) {
+			originalName = "null"; // Handle null or empty filenames
+		}
+
+		String uniqueName = originalName;
+		if (nameCountMap.containsKey(originalName)) {
+			int count = nameCountMap.get(originalName) + 1;
+			uniqueName = originalName + "_new" + count; 
+			nameCountMap.put(originalName, count);
+		} else {
+			nameCountMap.put(originalName, 0); 
+		}
+		return uniqueName;
+	}
 }
