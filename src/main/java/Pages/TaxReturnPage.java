@@ -180,6 +180,7 @@ public class TaxReturnPage extends MainClass {
 					switchportal();
 
 					clickTaxButton();
+					Thread.sleep(3000);
 					clickReturnsButton();
 					clickFilledButton();
 					clickSearchButton(clientName);

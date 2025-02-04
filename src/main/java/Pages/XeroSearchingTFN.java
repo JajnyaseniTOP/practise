@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.List;
-import org.openqa.selenium.By;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
@@ -100,10 +101,22 @@ public class XeroSearchingTFN extends MainClass {
 	public void inputTheClientNameTFN() throws InterruptedException{
 		ClientExcel.readSubjectColumn(filePath);
 		ArrayList<String> client_ID =ClientExcel.readSecondColumn(filePath);
+	    Set<String> specialClientIds = new HashSet<>(Arrays.asList(
+	        "569386575", "25629216879", "629216879", "465817223", "166939483", "66620748870",
+	        "620748870", "76507391186", "978797270", "64247711224", "674305330", "668568821",
+	        "65900948396", "848178201", "69287636643", "678644399", "71662758312", "662758312",
+	        "916615714", "78502154572", "636761191", "53641785711", "641785711", "71738283",
+	        "11680563473", "680563473", "516358281", "26665785544", "665785544", "55668731628",
+	        "80734492", "58107781704","823229331" ));
+	    
 		for (int i = 0; i < client_ID.size(); i++) {
 			clientRealName=firstColumn_realName.get(i);
 			subject = subjectColumnData.get(i);
 			clientIds =client_ID.get(i);
+	        if (specialClientIds.contains(clientIds)){
+	            extractClientDetailsTFN(clientIds);
+	            continue;
+	        }
 			Thread.sleep(3000);
 			try {
 				switchportal2();
@@ -139,6 +152,7 @@ public class XeroSearchingTFN extends MainClass {
 		try {
 			switchportal();
 			Thread.sleep(5000);
+			wait.until(ExpectedConditions.visibilityOf(Clients));
 			Clients.click();
 			allClients_drpDwn.click();
 			allClients.click();
@@ -149,6 +163,7 @@ public class XeroSearchingTFN extends MainClass {
 			Thread.sleep(3000);
 		}
 		catch(Exception e) {
+			wait.until(ExpectedConditions.visibilityOf(Clients));
 			Clients.click();
 			allClients_drpDwn.click();
 			allClients.click();
@@ -172,6 +187,132 @@ public class XeroSearchingTFN extends MainClass {
 			handleClientNotFound(clientRealName,subject);
 		}
 	}
+	
+	
+	private void extractClientDetailsTFN(String clientIds) {
+	    switch (clientIds) {
+	        case "569386575":
+	        case "25629216879":
+	        case "629216879":
+	            emailText = "nina@cedarfoundation.org";
+	            clientCodeText = "HJORCP01";
+	            internal_team = "B1";
+	            break;
+	        case "465817223":
+	            emailText = "shell_and_paul@hotmail.com";
+	            clientCodeText = "DEL0406";
+	            internal_team = "no teamName";
+	            break;
+	        case "166939483":
+	        case "66620748870":
+	        case "620748870":
+	            emailText = "no email found";
+	            clientCodeText = "KIDDCP04";
+	            internal_team = "no teamName";
+	            break;
+	        case "76507391186":
+	            emailText = "admin@karrathacountryclub.com.au";
+	            clientCodeText = "KARRCOUN";
+	            internal_team = "no teamName";
+	            break;
+	        case "978797270":
+	        case "64247711224":
+	            emailText = "no email found";
+	            clientCodeText = "KIDDFT02";
+	            internal_team = "no teamName";
+	            break;
+	        case "674305330":
+	            emailText = "russell.hodson@alldin.com.au";
+	            clientCodeText = "HODSCP07";
+	            internal_team = "A1";
+	            break;
+	        case "668568821":
+	            emailText = "amanda.ridout@hotmail.com";
+	            clientCodeText = "RIDOCP02";
+	            internal_team = "A1";
+	            break;
+	        case "65900948396":
+	            emailText = "admin@shekinahgloryhealthcare.com.au";
+	            clientCodeText = "no client code";
+	            internal_team = "no teamName";
+	            break;
+	        case "848178201":
+	        case "69287636643":
+	            emailText = "kirianabarclay@gmail.com";
+	            clientCodeText = "BARCTR01";
+	            internal_team = "C1";
+	            break;
+	        case "678644399":
+	        case "71662758312":
+	        case "662758312":
+	            emailText = "info@allaspectsceilings.com";
+	            clientCodeText = "BARCCP01";
+	            internal_team = "C1";
+	            break;
+	        case "916615714":
+	        case "78502154572":
+	            emailText = "joe.allen1980@yahoo.com.au";
+	            clientCodeText = "ALLEFTRU";
+	            internal_team = "B";
+	            break;
+	        case "636761191":
+	        case "53641785711":
+	        case "641785711":
+	            emailText = "no email found";
+	            clientCodeText = "KIDDCP05";
+	            internal_team = "C1";
+	            break;
+	        case "71738283":
+	            emailText = "delest@bigpond.com";
+	            clientCodeText = "DEL0206";
+	            internal_team = "C1";
+	            break;
+	        case "11680563473":
+	        case "680563473":
+	            emailText = "no email found";
+	            clientCodeText = "no client code";
+	            internal_team = "D";
+	            break;
+	        case "516358281":
+	        case "26665785544":
+	        case "665785544":
+	            emailText = "richie18thunder@gmail.com";
+	            clientCodeText = "no client code";
+	            internal_team = "no teamName";
+	            break;
+	        case "55668731628":
+	            emailText = "no email found";
+	            clientCodeText = "no client code";
+	            internal_team = "no teamName";
+	            break;
+	        case "80734492":
+	        case "58107781704":
+	            emailText = "alison@abcau.com.au";
+	            clientCodeText = "YULECORP";
+	            internal_team = "A1";
+	            break;
+	        case "823229331":
+	        	emailText = "candiceheapes@bigpond.com";
+	            clientCodeText = "HEA0102";
+	            internal_team = "C1";
+	            break;
+	        default:
+	            emailText = "no email found";
+	            clientCodeText = "no client code";
+	            internal_team = "no teamName";
+	           
+	    }
+
+	    // Printing extracted details
+	    System.out.println("Client ID: " + clientIds);
+	    System.out.println("Email: " + emailText);
+	    System.out.println("Client Code: " + clientCodeText);
+	    System.out.println("Internal Team: " + internal_team);
+
+	    ClientExcel.addClientData(clientCodeText, emailText, internal_team);
+	    ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
+	}
+
 	private void extractClientDetails() {
 		try {
 			wait.until(ExpectedConditions.visibilityOf(clientEmail));

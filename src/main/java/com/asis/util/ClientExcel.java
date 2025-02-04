@@ -62,6 +62,31 @@ public class ClientExcel extends MainClass{
 		return data;
 	}
 
+	/*====================Read Of Portal Column===================================*/
+
+	public static ArrayList<String> readPortalColumn(String filePath) {
+		ArrayList<String> portalData = new ArrayList<>();
+
+		try (FileInputStream fis = new FileInputStream(new File(filePath));
+				Workbook workbook = WorkbookFactory.create(fis)) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+			for (Row row : sheet) {
+				Cell cell = row.getCell(10);
+				if (cell != null && cell.getCellType() == CellType.STRING) {
+					portalData.add(cell.getStringCellValue());
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		portalData.remove(0);
+		System.out.println("First colm data " + portalData.size());
+
+		return portalData;
+	}
+
+	
 	/*====================Read Of First Column===================================*/
 	 
 	public static ArrayList<String> readFirstColumn(String filePath) {
@@ -80,7 +105,7 @@ public class ClientExcel extends MainClass{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		firstColumnData.remove(0);
+		//firstColumnData.remove(0);
 		System.out.println("First colm data " + firstColumnData.size());
 		
 		return firstColumnData;
