@@ -78,14 +78,21 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
     }
 
     private String determineRecipientTitle(String emailRcvr) {
-        if (emailRcvr.toLowerCase().contains("trust")) {
+        if (emailRcvr == null || emailRcvr.isEmpty()) {
+            return ""; // Handle null/empty case gracefully
+        }
+        
+        String lowerCaseEmail = emailRcvr.toLowerCase();
+        
+        if (lowerCaseEmail.contains("trust")) {
             return "Trustee(s)\n" + emailRcvr;
-        } else if (emailRcvr.toLowerCase().contains("pty ltd")) {
+        } else if (lowerCaseEmail.contains("pty ltd")) {
             return "Director(s)\n" + emailRcvr;
         } else if (emailRcvr.contains(",")) {
             return emailRcvr.substring(emailRcvr.indexOf(",") + 1).trim();
+        } else {
+            return emailRcvr;
         }
-        return "";
     }
 
     private String searchFileInSubfolders(File mainFolder, String fileName) {
