@@ -14,7 +14,7 @@ public class DriverManager {
 	public static WebDriver driver;
 
 	public static void setDriver(String browser) {
-		String workspacePath ="C:" + File.separator + "ATO Email files";
+		String workspacePath ="K:" + File.separator + "ATO Email files";
 		if(browser == "Chrome") {
 			Map<String, Object> prefs = new HashMap<>();
 			prefs.put("download.default_directory", workspacePath); 
