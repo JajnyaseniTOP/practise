@@ -32,11 +32,11 @@ public class ATOSelectingDatePage extends MainClass{
 	private WebElement resultPerPage;
 	@FindBy(xpath="//option[contains(text(),'100')]")
 	private WebElement pages100;
-    LocalDate currentDate = LocalDate.now();
-    LocalDate previousDate = currentDate.minusDays(0);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    String formattedDate = previousDate.format(formatter);
-	
+	LocalDate currentDate = LocalDate.now();
+	LocalDate previousDate = currentDate.minusDays(5);
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	String formattedDate = previousDate.format(formatter);
+
 	public ATOSelectingDatePage(){
 		PageFactory.initElements(DriverManager.getDriver(), this); 
 	}
@@ -47,12 +47,12 @@ public class ATOSelectingDatePage extends MainClass{
 	public void selectDate() {		
 		wait.until(ExpectedConditions.elementToBeClickable(chooseDates));
 		chooseDates.click();
-		
+
 		wait.until(ExpectedConditions.elementToBeClickable(from));
 		from.sendKeys(formattedDate);
 		wait.until(ExpectedConditions.elementToBeClickable(to));
 		to.sendKeys(formattedDate);
-		
+
 	}
 	public void clickSMS() {
 		wait.until(ExpectedConditions.elementToBeClickable(sms));
@@ -67,9 +67,9 @@ public class ATOSelectingDatePage extends MainClass{
 			wait.until(ExpectedConditions.elementToBeClickable(pages100));
 			pages100.click();
 		}catch(Exception e) {
-			
+
 		}
-		
+
 	}
 	public void clickPageSearchButton() {
 		wait.until(ExpectedConditions.elementToBeClickable(resultPerPage));
