@@ -33,9 +33,9 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 
 	@FindBy(xpath = "//table//tr//td[position()=2]//a")
 	private List<WebElement> links; 
-	
+
 	//table//tr//td[position()=2]//a
-	
+
 	@FindBy(xpath = "//tbody/tr[@class=\"table-row\"]")
 	private List<WebElement> commTableHistory;
 	@FindBy(xpath = "//th[@data-header='Name']")
@@ -72,82 +72,68 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 		return ACTIVITY_STATEMENT_DATA;
 	}
 
-
 	public void clickAllLinks() {
-	    while (true) {
-	        // Re-fetch links on each page to avoid stale elements
-	        List<WebElement> currentLinks = links;
-
-	        for (int i = 0; i < currentLinks.size(); i++) {
-	            try {
-	                WebElement link = currentLinks.get(i);
-
-	                // Scroll into view to ensure visibility
-	                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", link);
-
-	                wait.until(ExpectedConditions.visibilityOf(link));
-	                wait.until(ExpectedConditions.elementToBeClickable(link));
-
-	                // Click using Actions class
-	                Actions actions = new Actions(driver);
-	                actions.moveToElement(link).pause(500).click().perform();
-
-	                // Wait for download completion and print file name
-	                waitForDownloadCompletion();
-	                printLatestDownloadedFileName(downloadDir);
-
-	            } catch (Exception e) {
-	                fallbackToJavaScriptClick(currentLinks.get(i));
-	            }
-
-	            pause(3000); // Small pause before clicking the next link
-	        }
-
-	        // Check if Next Page button is available and clickable
+	    for (int i = 0; i < links.size(); i++) {
 	        try {
-	            wait.until(ExpectedConditions.elementToBeClickable(next));
-	            next.click();
-	            pause(3000); // Small delay to allow page transition
-	        } catch (TimeoutException | NoSuchElementException e) {
-	            break; // Exit loop if Next Page button is not found or not clickable
+	            WebElement link = links.get(i); 
+	            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", link);
+	            wait.until(ExpectedConditions.visibilityOf(link));
+	            wait.until(ExpectedConditions.elementToBeClickable(link));
+	            Actions actions = new Actions(driver);
+	            actions.moveToElement(link).pause(500).click().perform();
+	            waitForDownloadCompletion();
+	            printLatestDownloadedFileName(downloadDir);
+	        } catch (Exception e) {
+	            fallbackToJavaScriptClick(links.get(i));
 	        }
+	        pause(3000);
+	        
 	    }
+	    nextPage();
+	    
 	}
-
-
-	// Fallback to JavaScript click
+	public void nextPage(){
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(next));
+			next.click();
+			wait.until(ExpectedConditions.visibilityOf((WebElement) links));
+			clickAllLinks();
+		}catch(Exception e) {
+			System.out.println("no next button");
+		}
+	}
 	private void fallbackToJavaScriptClick(WebElement element) {
-	    try {
-	        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-	        //System.out.println("Clicked using JavaScript: " + element.getText());
+		try {
+			((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+			//System.out.println("Clicked using JavaScript: " + element.getText());
 
-	        // Wait for download completion and print file name
-	        waitForDownloadCompletion();
-	        printLatestDownloadedFileName(downloadDir);
+			// Wait for download completion and print file name
+			waitForDownloadCompletion();
+			printLatestDownloadedFileName(downloadDir);
 
-	    } catch (Exception e) {
-	        //System.err.println("JavaScript click also failed for: " + element.getText() + " Error: " + e.getMessage());
-	    }
+		} catch (Exception e) {
+			//System.err.println("JavaScript click also failed for: " + element.getText() + " Error: " + e.getMessage());
+		}
 	}
 
 	// Custom wait method for download completion
 	private void waitForDownloadCompletion() throws InterruptedException {
-	    Thread.sleep(3000); // Simulate file download wait; adjust timing or use proper checks
+		Thread.sleep(3000); // Simulate file download wait; adjust timing or use proper checks
 	}
 
 	// Pause method for reusability
 	private void pause(int milliseconds) {
-	    try {
-	        Thread.sleep(milliseconds);
-	    } catch (InterruptedException e) {
-	        Thread.currentThread().interrupt();
-	    }
+		try {
+			Thread.sleep(milliseconds);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 	}
 
 
 
 	public void printLatestDownloadedFileName(String downloadDir) throws InterruptedException {
-	    Thread.sleep(3000);
+		Thread.sleep(3000);
 		File dir = new File(downloadDir);
 		File[] files = dir.listFiles();
 

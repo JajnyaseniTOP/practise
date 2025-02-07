@@ -22,6 +22,7 @@ public class ATOClickLinkSteps {
 	public void user_click_on_list_of_link_having_notice_of_assessment() throws InterruptedException {
 		filePage.extractCommTableStatement();
 		filePage.clickAllLinks();
+		//filePage.nextPage();
 		filePage.closeBrowser();
 	}
 }

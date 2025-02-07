@@ -114,10 +114,10 @@ public class XeroSearchingTFN extends MainClass {
 	    
 		for (int i = 0; i < client_ID.size(); i++) {
 			
-			clientRealName=firstColumn_realName.get(i);
+			clientRealName=firstColumn.get(i);
 			subject = subjectColumnData.get(i);
 			clientIds =client_ID.get(i);
-			
+			Thread.sleep(3000);
 	        if (specialClientIds.contains(clientIds)){
 	            extractClientDetailsTFN(clientIds);// add portal name in excel->pending
 	            
@@ -194,6 +194,7 @@ public class XeroSearchingTFN extends MainClass {
 			extractClientDetails();
 		}else {
 			handleClientNotFound(clientRealName,subject);
+			ClientExcel.addPortalName("Not Found");
 		}
 	}
 	
@@ -206,11 +207,13 @@ public class XeroSearchingTFN extends MainClass {
 	            emailText = "nina@cedarfoundation.org";
 	            clientCodeText = "HJORCP01";
 	            internal_team = "B1";
+	            portalname="Keypoint";
 	            break;
 	        case "465817223":
 	            emailText = "shell_and_paul@hotmail.com";
 	            clientCodeText = "DEL0406";
 	            internal_team = "no teamName";
+	            portalname="Keypoint";
 	            break;
 	        case "166939483":
 	        case "66620748870":
@@ -218,22 +221,27 @@ public class XeroSearchingTFN extends MainClass {
 	            emailText = "no email found";
 	            clientCodeText = "KIDDCP04";
 	            internal_team = "no teamName";
+	            portalname="Keypoint";
 	            break;
 	        case "76507391186":
+	        case "94687976":	
 	            emailText = "admin@karrathacountryclub.com.au";
 	            clientCodeText = "KARRCOUN";
 	            internal_team = "no teamName";
+	            portalname="Keypoint";
 	            break;
 	        case "978797270":
 	        case "64247711224":
 	            emailText = "no email found";
 	            clientCodeText = "KIDDFT02";
 	            internal_team = "no teamName";
+	            portalname="Keypoint";
 	            break;
 	        case "674305330":
 	            emailText = "russell.hodson@alldin.com.au";
 	            clientCodeText = "HODSCP07";
 	            internal_team = "A1";
+	            portalname="Keypoint";
 	            break;
 	        case "668568821":
 	            emailText = "amanda.ridout@hotmail.com";
