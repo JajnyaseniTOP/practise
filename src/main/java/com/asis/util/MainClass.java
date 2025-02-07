@@ -18,7 +18,7 @@ public class MainClass {
 	public MainClass() {
         this.driver = DriverManager.getDriver(); // Ensure DriverManager.getDriver() returns a valid WebDriver instance
     }
-	public WebDriver driver;
+	public static WebDriver driver;
 	public static String currentDate = LocalDate.now().toString();
 	public static String downloadDir = "K:" + File.separator + "ATO Email files"+ File.separator;
 	public static String downloadDirD = "E:" + File.separator + "ATO Email files"+ File.separator;
@@ -30,19 +30,19 @@ public class MainClass {
 	public static String filePath = "ClientData.xls"; 
 	public static String name;
 
-	public static ArrayList<String> firstColumn = ClientExcel.readFirstColumn(filePath);
-	public static ArrayList<String> firstColumn_realName = ClientExcel.readFirstColumn(filePath);
+	public static ArrayList<String> firstColumn = new ArrayList<>();
+	public static ArrayList<String> firstColumn_realName = new ArrayList<>();
 	
 
 	public static ArrayList<String> clientNames = new ArrayList<>();
 	public static ArrayList<String> fileNames = new ArrayList<>();
 	public static List<String> clientCodes = new ArrayList<>();
 	public static List<String> clientEmails = new ArrayList<>();
-	//public static ArrayList<String> client_ID = new ArrayList<>();
 	
-	public static ArrayList<String> subjectColumnData = ClientExcel.readSubjectColumn(filePath);
-	public static ArrayList<String> pdfFileNames = ClientExcel.readPdfFileNamesFromColumn8(filePath);
-	public static ArrayList<String> fileNamesColumn7 = ClientExcel.readFileNamesFromColumn7(filePath);
+	
+	public static ArrayList<String> subjectColumnData = new ArrayList<>();
+	public static ArrayList<String> pdfFileNames = new ArrayList<>();
+	public static ArrayList<String> fileNamesColumn7 = new ArrayList<>();
 
 	public static String ATO_USER_NAME="";
 	public static String USERNAME="";

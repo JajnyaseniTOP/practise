@@ -114,10 +114,10 @@ public class XeroSearchingTFN extends MainClass {
 	    
 		for (int i = 0; i < client_ID.size(); i++) {
 			
-			clientRealName=firstColumn_realName.get(i);
+			clientRealName=firstColumn.get(i);
 			subject = subjectColumnData.get(i);
 			clientIds =client_ID.get(i);
-			
+			Thread.sleep(3000);
 	        if (specialClientIds.contains(clientIds)){
 	            extractClientDetailsTFN(clientIds);// add portal name in excel->pending
 	            
@@ -194,6 +194,7 @@ public class XeroSearchingTFN extends MainClass {
 			extractClientDetails();
 		}else {
 			handleClientNotFound(clientRealName,subject);
+			ClientExcel.addPortalName("Not found in any portal");
 		}
 	}
 	
@@ -206,11 +207,13 @@ public class XeroSearchingTFN extends MainClass {
 	            emailText = "nina@cedarfoundation.org";
 	            clientCodeText = "HJORCP01";
 	            internal_team = "B1";
+	            portalname="Keypoint";
 	            break;
 	        case "465817223":
 	            emailText = "shell_and_paul@hotmail.com";
 	            clientCodeText = "DEL0406";
 	            internal_team = "no teamName";
+	            portalname="Keypoint";
 	            break;
 	        case "166939483":
 	        case "66620748870":
@@ -218,38 +221,45 @@ public class XeroSearchingTFN extends MainClass {
 	            emailText = "no email found";
 	            clientCodeText = "KIDDCP04";
 	            internal_team = "no teamName";
+	            portalname="Keypoint";
 	            break;
 	        case "76507391186":
 	            emailText = "admin@karrathacountryclub.com.au";
 	            clientCodeText = "KARRCOUN";
 	            internal_team = "no teamName";
+	            portalname="Keypoint";
 	            break;
 	        case "978797270":
 	        case "64247711224":
 	            emailText = "no email found";
 	            clientCodeText = "KIDDFT02";
 	            internal_team = "no teamName";
+	            portalname="Keypoint";
 	            break;
 	        case "674305330":
 	            emailText = "russell.hodson@alldin.com.au";
 	            clientCodeText = "HODSCP07";
 	            internal_team = "A1";
+	            portalname="Keypoint";
 	            break;
 	        case "668568821":
 	            emailText = "amanda.ridout@hotmail.com";
 	            clientCodeText = "RIDOCP02";
 	            internal_team = "A1";
+	            portalname="Keypoint";
 	            break;
 	        case "65900948396":
 	            emailText = "admin@shekinahgloryhealthcare.com.au";
 	            clientCodeText = "no client code";
 	            internal_team = "no teamName";
+	            portalname="Keypoint";
 	            break;
 	        case "848178201":
 	        case "69287636643":
 	            emailText = "kirianabarclay@gmail.com";
 	            clientCodeText = "BARCTR01";
 	            internal_team = "C1";
+	            portalname="Keypoint";
 	            break;
 	        case "678644399":
 	        case "71662758312":
@@ -257,12 +267,14 @@ public class XeroSearchingTFN extends MainClass {
 	            emailText = "info@allaspectsceilings.com";
 	            clientCodeText = "BARCCP01";
 	            internal_team = "C1";
+	            portalname="Keypoint";
 	            break;
 	        case "916615714":
 	        case "78502154572":
 	            emailText = "joe.allen1980@yahoo.com.au";
 	            clientCodeText = "ALLEFTRU";
 	            internal_team = "B";
+	            portalname="Keypoint";
 	            break;
 	        case "636761191":
 	        case "53641785711":
@@ -270,17 +282,20 @@ public class XeroSearchingTFN extends MainClass {
 	            emailText = "no email found";
 	            clientCodeText = "KIDDCP05";
 	            internal_team = "C1";
+	            portalname="Keypoint";
 	            break;
 	        case "71738283":
 	            emailText = "delest@bigpond.com";
 	            clientCodeText = "DEL0206";
 	            internal_team = "C1";
+	            portalname="Keypoint";
 	            break;
 	        case "11680563473":
 	        case "680563473":
 	            emailText = "no email found";
 	            clientCodeText = "no client code";
 	            internal_team = "D";
+	            portalname="Business";
 	            break;
 	        case "516358281":
 	        case "26665785544":
@@ -288,17 +303,20 @@ public class XeroSearchingTFN extends MainClass {
 	            emailText = "richie18thunder@gmail.com";
 	            clientCodeText = "no client code";
 	            internal_team = "no teamName";
+	            portalname="Business";
 	            break;
 	        case "55668731628":
 	            emailText = "no email found";
 	            clientCodeText = "no client code";
 	            internal_team = "no teamName";
+	            portalname="Business";
 	            break;
 	        case "80734492":
 	        case "58107781704":
 	            emailText = "alison@abcau.com.au";
 	            clientCodeText = "YULECORP";
 	            internal_team = "A1";
+	            portalname="Business";
 	            break;
 	        case "823229331":
 	        	emailText = "candiceheapes@bigpond.com";
@@ -310,6 +328,7 @@ public class XeroSearchingTFN extends MainClass {
 	            emailText = "no email found";
 	            clientCodeText = "no client code";
 	            internal_team = "no teamName";
+	            portalname="Not found in any portal";
 	           
 	    }
 
@@ -323,6 +342,7 @@ public class XeroSearchingTFN extends MainClass {
 	    ClientExcel.addClientData(clientCodeText, emailText, internal_team);
 	    ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
 	    ClientExcel.addPortalName(portalname);
+	    ClientExcel.saveExcelFile();
 	}
 
 	private void extractClientDetails() {
@@ -357,6 +377,9 @@ public class XeroSearchingTFN extends MainClass {
 			wait.until(ExpectedConditions.visibilityOf(clientCode));
 			if (clientCode.isDisplayed()) {
 				clientCodeText = clientCode.getText().trim();
+			}
+			if(clientCode.getText().trim().contains("-")) {
+				clientCodeText = clientRealName;
 			}
 		} catch (Exception e) {
 			clientCodeText = "no client code";

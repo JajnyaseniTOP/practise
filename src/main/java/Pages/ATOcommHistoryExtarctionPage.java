@@ -74,43 +74,34 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 
 
 	public void clickAllLinks() {
-	    while (true) {
-	        // Re-fetch links on each page to avoid stale elements
-	        List<WebElement> currentLinks = links;
-
-	        for (int i = 0; i < currentLinks.size(); i++) {
-	            try {
-	                WebElement link = currentLinks.get(i);
-
-	                // Scroll into view to ensure visibility
-	                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", link);
-
-	                wait.until(ExpectedConditions.visibilityOf(link));
-	                wait.until(ExpectedConditions.elementToBeClickable(link));
-
-	                // Click using Actions class
-	                Actions actions = new Actions(driver);
-	                actions.moveToElement(link).pause(500).click().perform();
-
-	                // Wait for download completion and print file name
-	                waitForDownloadCompletion();
-	                printLatestDownloadedFileName(downloadDir);
-
-	            } catch (Exception e) {
-	                fallbackToJavaScriptClick(currentLinks.get(i));
-	            }
-
-	            pause(3000); // Small pause before clicking the next link
-	        }
-
-	        // Check if Next Page button is available and clickable
+	    for (int i = 0; i < links.size(); i++) {
 	        try {
-	            wait.until(ExpectedConditions.elementToBeClickable(next));
-	            next.click();
-	            pause(3000); // Small delay to allow page transition
-	        } catch (TimeoutException | NoSuchElementException e) {
-	            break; // Exit loop if Next Page button is not found or not clickable
+	            WebElement link = links.get(i); // Fetch the current link dynamically
+
+	            // Scroll into view to ensure visibility
+	            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", link);
+
+	            // Explicit wait for visibility and clickability
+	            wait.until(ExpectedConditions.visibilityOf(link));
+	            wait.until(ExpectedConditions.elementToBeClickable(link));
+
+	            // Try clicking using Actions
+	            Actions actions = new Actions(driver);
+	            actions.moveToElement(link).pause(500).click().perform();
+	            //System.out.println("Clicked using Actions: " + link.getText());
+
+	            // Wait for download completion and print file name
+	            waitForDownloadCompletion();
+	       
+	            printLatestDownloadedFileName(downloadDir);
+
+	        } catch (Exception e) {
+	            //System.err.println("Actions click failed for: " + links.get(i).getText());
+	            fallbackToJavaScriptClick(links.get(i));
 	        }
+
+	        // Small pause to ensure all actions complete before moving to the next link
+	        pause(3000);
 	    }
 	}
 

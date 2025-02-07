@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -27,7 +28,7 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
 
     public static String downloadDirE = "E:" + File.separator + "ATO Email files" + File.separator;
     public static String downloadDirK = "K:" + File.separator + "ATO Email files" + File.separator;
-
+    
     public void saveEmailsAsDraftsFromExcel(String filePath) throws IOException {
         List<String> portalTypes = ClientExcel.readPortalColumn(filePath);
         List<String> teamNames = ClientExcel.readTeamNamesFromColumn9(filePath);
@@ -42,15 +43,17 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
                     Cell emailCell = row.getCell(6);
                     Cell fileNameCell = row.getCell(7);
                     Cell emailRcvrName = row.getCell(0);
+                    Cell specificSubject = row.getCell(2);
 
-                    if (emailCell != null && fileNameCell != null) {
+                    if (emailCell != null && fileNameCell != null){
                         String email = emailCell.getStringCellValue().trim();
                         String fileName = fileNameCell.getStringCellValue().trim();
                         String subject = fileName;
-                        String teamName = teamNames.get(rowIndex - 1).trim();
+                        String specificSub = specificSubject.getStringCellValue().trim();
+                        String teamName = teamNames.get(rowIndex-1).trim();
                         String emailRcvr = emailRcvrName.getStringCellValue().trim();
                         String emailScndWrd = determineRecipientTitle(emailRcvr);
-                        String portalType = portalTypes.get(rowIndex - 1).trim(); // Get portal type for this row
+                        String portalType = portalTypes.get(rowIndex-1).trim(); 
 
                         // Determine the correct folder based on portal type
                         File mainFolder;
@@ -66,7 +69,7 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
                             String filePathToSearch = searchFileInSubfolders(mainFolder, fileName);
                             File fileToAttach = new File(filePathToSearch);
                             if (fileToAttach.exists()) {
-                                saveEmailAsDraft(email, subject, filePathToSearch, teamName, emailScndWrd, mainFolder);
+                                saveEmailAsDraft(email, subject, filePathToSearch, teamName, emailScndWrd, mainFolder,specificSub);
                             }
                         }
                     }
@@ -112,7 +115,7 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
         return email != null && email.contains("@") && !email.contains(" ") && !email.isEmpty();
     }
 
-    private static void saveEmailAsDraft(String email, String subject, String attachmentPath, String teamName, String emailRcvrNm, File mainFolder) {
+    private static void saveEmailAsDraft(String email, String subject, String attachmentPath, String teamName, String emailRcvrNm, File mainFolder,String content) {
         Properties properties = new Properties();
         properties.put("mail.smtp.host", SMTP_HOST);
         properties.put("mail.smtp.port", SMTP_PORT);
@@ -128,10 +131,38 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
         try {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(USERNAME));
+            
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
             message.setSubject(subject);
-
             Multipart multipart = new MimeMultipart();
+            
+            
+           // Determine CC recipient based on teamName if content matches validContents
+            List<String> validContents = Arrays.asList(
+                "Notification of a mistake in your income tax return",
+                "Penalty warning - Lodgment",
+                "Lodgment-Overdue-Final warning",
+                "Taxable payments annual report - Second reminder to lodge",
+                "ABN - Application refused",
+                "ABN - Cancellation advice",
+                "Debt - Referral notification - Debt collection agency",
+                "Registration confirmation - Fuel tax credit",
+                "Lodgment-Overdue-Lodge now",
+                "ABN - Registered, replaced or reinstated",
+                "Failure to lodge Activity Statement or GST Payment Slip",
+                "Penalty notification - Failure to lodge",
+                "Lodgment-Overdue-Reminder",
+                "Confirming your payment plan"
+            );
+
+            if (validContents.stream().anyMatch(item -> item.equalsIgnoreCase(content))) {
+                String ccEmail = determineCcEmail(teamName);
+                if (ccEmail != null) {
+                    message.addRecipient(Message.RecipientType.CC, new InternetAddress(ccEmail));
+                }
+            }
+            
+            
             
             // Set the email body with the provided template
             String emailBody = "Dear " + emailRcvrNm + " ,\n\n" +
@@ -143,15 +174,11 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
                 "Kind Regards,\n" +
                 "Natalie Nicolaou\n" +
                 "Administrator";
-            
+             
             BodyPart bodyPart = new MimeBodyPart();
-            
-            
-            
-            
             bodyPart.setText(emailBody);
             multipart.addBodyPart(bodyPart);
-
+            
             if (attachmentPath != null && !attachmentPath.isEmpty()){
                 File attachmentFile = new File(attachmentPath);
                 if (attachmentFile.exists()) {
@@ -193,6 +220,27 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
             	return "D-Melvyn";
             default:
             	 return "Others"; // Default folder for undefined team names
+        }
+    }
+    
+    private static String determineCcEmail(String teamName) {
+        switch (teamName.trim()) {
+            case "A":
+            case "A1":
+                return "sian@fortunaadvisors.com.au";
+            case "B":
+            case "B1":
+                return "rowan@fortunaadvisors.com.au";
+            case "C":
+            case "C1":
+                return "rebecca@fortunaadvisors.com.au";
+            case "D":
+            case "D1":
+                return "melvyn@fortunaadvisors.com.au";
+            case "K":
+                return "lindy@fortunaadvisors.com.au";
+            default:
+                return null;
         }
     }
     

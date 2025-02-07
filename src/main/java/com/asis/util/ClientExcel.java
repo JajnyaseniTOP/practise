@@ -65,7 +65,7 @@ public class ClientExcel extends MainClass{
 
 	/*====================Read Of First Column===================================*/
 
-	public static ArrayList<String> readFirstColumn(String filePath){
+	public static ArrayList<String> readFirstColumn(String filePath) {
 		ArrayList<String> firstColumnData = new ArrayList<>();
 
 		try (FileInputStream fis = new FileInputStream(new File(filePath));
@@ -81,9 +81,9 @@ public class ClientExcel extends MainClass{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//firstColumnData.remove(0);
+		firstColumnData.remove(0);
 		System.out.println("First colm data " + firstColumnData.size());
-
+		saveExcelFile();
 		return firstColumnData;
 	}
 	/*====================Read Of Portal Column===================================*/
@@ -215,6 +215,7 @@ public class ClientExcel extends MainClass{
 			currentRowNum++;
 
 		}
+		saveExcelFile();
 	}
 
 	/*====================Adding the portal name into excel sheet===================================*/
@@ -232,6 +233,7 @@ public class ClientExcel extends MainClass{
 			currentRowNum4++;
 
 		}
+		saveExcelFile();
 	}
 
 	/*====================Saving the Excel===================================*/
@@ -362,7 +364,9 @@ public class ClientExcel extends MainClass{
 		}
 		subjectColumnData.remove(0); 
 		System.out.println("Subject colm " + subjectColumnData.size());
+		saveExcelFile();
 		return subjectColumnData;
+		
 	}
 
 	//---------------------------------------------reading column0(client id)----------------------------------------------	
@@ -393,7 +397,7 @@ public class ClientExcel extends MainClass{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		saveExcelFile();
 		System.out.println("Total clients with 'client name not found': " + clientData.size());
 		return clientData;
 	}
@@ -462,7 +466,7 @@ public class ClientExcel extends MainClass{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		saveExcelFile();
 		fileNamesColumn7.remove(0);	    
 		return fileNamesColumn7;
 	}
@@ -541,7 +545,7 @@ public class ClientExcel extends MainClass{
 			e.printStackTrace();
 		}
 		pdfFileNames.remove(0);
-
+		saveExcelFile();
 		return pdfFileNames;
 	}
 
