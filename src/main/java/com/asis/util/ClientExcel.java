@@ -62,6 +62,42 @@ public class ClientExcel extends MainClass{
 		saveExcelFile();
 		return data;
 	}
+	
+	public static ArrayList<ArrayList<String>> writeDataToExcel2(ArrayList<ArrayList<String>> data) {
+	    if (sheet == null) {
+	        return data;
+	    }
+	    int lastFilledRow = getLastFilledRowInColumn1(sheet);
+	    int rowNum = lastFilledRow + 1; 
+
+	    for (ArrayList<String> rowData : data) {
+	        Row row = sheet.createRow(rowNum++);
+	        int colNum = 0;
+	        for (String cellData : rowData) {
+	            Cell cell = row.createCell(colNum++);
+	            cell.setCellValue(cellData);
+	        }
+	    }
+
+	    saveExcelFile(); // Save the file
+	    return data;
+	}
+
+	public static int getLastFilledRowInColumn1(Sheet sheet) {
+	    int lastFilledRow = -1; 
+	    for (int i = sheet.getLastRowNum(); i >= 0; i--) {
+	        Row row = sheet.getRow(i);
+	        if (row != null) { 
+	            Cell cell = row.getCell(0); // Column 1 (Index 0)
+	            if (cell != null && cell.getCellType() != CellType.BLANK) {
+	                lastFilledRow = i; // Found the last filled row
+	                break;
+	            }
+	        }
+	    }
+
+	    return lastFilledRow;
+	}
 
 	/*====================Read Of First Column===================================*/
 
