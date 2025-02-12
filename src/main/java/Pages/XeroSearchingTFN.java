@@ -1,3 +1,4 @@
+
 package Pages;
 
 import java.io.File;
@@ -110,7 +111,7 @@ public class XeroSearchingTFN extends MainClass {
 	        "65900948396", "848178201", "69287636643", "678644399", "71662758312", "662758312",
 	        "916615714", "78502154572", "636761191", "53641785711", "641785711", "71738283",
 	        "11680563473", "680563473", "516358281", "26665785544", "665785544", "55668731628",
-	        "80734492", "58107781704","823229331" ));
+	        "80734492", "58107781704","823229331","63679209888","35883565289"));
 	    
 		for (int i = 0; i < client_ID.size(); i++) {
 			
@@ -324,6 +325,19 @@ public class XeroSearchingTFN extends MainClass {
 	            internal_team = "C1";
 	            portalname="Keypoint";
 	            break;
+	        case "63679209888":
+	        	emailText = "Jamie.Poole@cmscepcor.com";
+	            clientCodeText = "CMSCCP01";
+	            internal_team = "B1";
+	            portalname="Keypoint";
+	            break;  
+	        case "35883565289":
+	        	emailText = "bjramsay27@gmail.com";
+	            clientCodeText = "RAMSBRON";
+	            internal_team = "A";
+	            portalname="Keypoint";
+	            break; 
+	            
 	        default:
 	            emailText = "no email found";
 	            clientCodeText = "no client code";
