@@ -79,27 +79,24 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 		return ACTIVITY_STATEMENT_DATA2;
 	}
 
-	public void clickAllLinks() throws InterruptedException {
-		wait.until(ExpectedConditions.elementToBeClickable(next2));
-		next2.click();
-		Thread.sleep(5000);
-
-		for (int i = 0; i < links.size(); i++) {
-			try {
-				WebElement link = links.get(i);
-				((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", link);
-				wait.until(ExpectedConditions.visibilityOf(link));
-				wait.until(ExpectedConditions.elementToBeClickable(link));
-				Actions actions = new Actions(driver);
-				actions.moveToElement(link).pause(500).click().perform();
-				waitForDownloadCompletion();
-				printLatestDownloadedFileName(downloadDir);
-			} catch (Exception e) {
-				//System.err.println("Actions click failed for: " + links.get(i).getText());
-				//fallbackToJavaScriptClick(links.get(i));
-			}
-			pause(3000);
-		}
+	public void clickAllLinks() {
+	    for (int i = 0; i < links.size(); i++) {
+	        try {
+	            WebElement link = links.get(i);	           
+	            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", link);	           
+	            wait.until(ExpectedConditions.visibilityOf(link));
+	            wait.until(ExpectedConditions.elementToBeClickable(link));	           
+	            Actions actions = new Actions(driver);
+	            actions.moveToElement(link).pause(500).click().perform();
+	            //System.out.println("Clicked using Actions: " + link.getText());	           
+	            waitForDownloadCompletion();	       
+	            printLatestDownloadedFileName(downloadDir);
+	        } catch (Exception e) {
+	            //System.err.println("Actions click failed for: " + links.get(i).getText());
+	            //fallbackToJavaScriptClick(links.get(i));
+	        }	      
+	        pause(3000);
+	    }
 	}
 
 	public void clickNextButton() throws InterruptedException{

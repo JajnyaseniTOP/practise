@@ -7,7 +7,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
@@ -110,10 +113,11 @@ public class XeroSearchingTFN extends MainClass {
 	        "65900948396", "848178201", "69287636643", "678644399", "71662758312", "662758312",
 	        "916615714", "78502154572", "636761191", "53641785711", "641785711", "71738283",
 	        "11680563473", "680563473", "516358281", "26665785544", "665785544", "55668731628",
-	        "80734492", "58107781704","823229331","63679209888","35883565289"));
+	        "80734492", "58107781704","823229331"));
 	    
 		for (int i = 0; i < client_ID.size(); i++) {
-			
+			client = clientNames.get(i);
+			wordCount = client.trim().isEmpty() ? 0 : client.trim().split("\\s+").length;
 			clientRealName=firstColumn.get(i);
 			subject = subjectColumnData.get(i);
 			clientIds =client_ID.get(i);
@@ -151,51 +155,159 @@ public class XeroSearchingTFN extends MainClass {
 				clientFound=true;
 				ClientExcel.addPortalName("Keypoint");
 				extractClientDetails();
-			}catch(Exception e) {
-				searchInSecondaryPortalTFN();
+			}catch(Exception e){
+				searchByNameInKeypoint(client);
 			}
 		}
 	}
+	
+	private void searchByNameInKeypoint(String client) throws InterruptedException {
+		clickOnSearchButton();
+		inputBox.clear();
+		inputBox.sendKeys(client);
+		Thread.sleep(3000);
+		
+		 boolean clientFound = false;
+			try {
+				List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+
+				for (WebElement ele : elements) {
+					String elementText = ele.getText();
+					String editedWebElementText = elementText.toLowerCase().trim();
+
+					if (elementText.trim().equalsIgnoreCase(client.trim())) {
+						System.out.println("Match found in equalsIgnoreCase condition.");
+						Thread.sleep(3000);
+						ele.click();
+						clientFound = true;
+						break;
+					} else if (editedWebElementText.contains(client.toLowerCase().trim())) {
+						System.out.println("Match found in contains condition.");
+						Thread.sleep(3000);
+						ele.click();
+						clientFound = true;
+						break;
+					} 
+				}
+				
+				if (!clientFound && client.toLowerCase().contains("and")) {
+					clientFound = searchClientWithAnd(client.toLowerCase());
+				}
+				// If client not found and contains a dot
+				if (!clientFound && client.contains(".")){
+					clientFound = searchClientWithoutDot(client.toLowerCase());
+				}
+				if(!clientFound && wordCount>=3) {
+					clientFound=searchClientByTrimming(client.toLowerCase());
+				}
+				if (clientFound) {
+					extractClientDetails();
+					ClientExcel.addPortalName("Keypoint");
+				}else {
+					searchInSecondaryPortalTFN();
+				}
+	}catch(Exception e){
+		e.printStackTrace();
+	}
+}
+	
+	private void searchByNameInBusiness(String client)throws InterruptedException{
+		clickOnSearchButton();
+		inputBox.clear();
+		inputBox.sendKeys(client);
+		Thread.sleep(3000);
+		
+		 boolean clientFound = false;
+			try {
+				List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+
+				for (WebElement ele : elements) {
+					String elementText = ele.getText();
+					String editedWebElementText = elementText.toLowerCase().trim();
+
+					if (elementText.trim().equalsIgnoreCase(client.trim())) {
+						System.out.println("Match found in equalsIgnoreCase condition.");
+						Thread.sleep(3000);
+						ele.click();
+						clientFound = true;
+						break;
+					} else if (editedWebElementText.contains(client.toLowerCase().trim())) {
+						System.out.println("Match found in contains condition.");
+						Thread.sleep(3000);
+						ele.click();
+						clientFound = true;
+						break;
+					} 
+				}
+				
+				if (!clientFound && client.toLowerCase().contains("and")) {
+					clientFound = searchClientWithAnd(client.toLowerCase());
+				}
+				// If client not found and contains a dot
+				if (!clientFound && client.contains(".")){
+					clientFound = searchClientWithoutDot(client.toLowerCase());
+				}
+				if(!clientFound && wordCount>=3) {
+					clientFound=searchClientByTrimming(client.toLowerCase());
+				}
+				if (clientFound) {
+					extractClientDetails();
+					ClientExcel.addPortalName("Business");
+				}else {
+					handleClientNotFound(clientRealName,subject);
+					ClientExcel.addPortalName("Not found in any portal");
+				}
+	}catch(Exception e){
+		e.printStackTrace();
+	}
+		
+		
+	}
+	
 	private void searchInSecondaryPortalTFN() throws InterruptedException{
-		try {
-			switchportal();
-			Thread.sleep(5000);
-			wait.until(ExpectedConditions.visibilityOf(Clients));
-			Clients.click();
-			allClients_drpDwn.click();
-			allClients.click();
-			ClientsSearchBox.click();
-			ClientsSearchBox.clear();
-			ClientsSearchBox.sendKeys(clientIds);
-			clicksearchButton.click();
-			Thread.sleep(3000);
-		}
-		catch(Exception e) {
-			wait.until(ExpectedConditions.visibilityOf(Clients));
-			Clients.click();
-			allClients_drpDwn.click();
-			allClients.click();
-			ClientsSearchBox.click();
-			ClientsSearchBox.clear();
-			ClientsSearchBox.sendKeys(clientIds);
-			clicksearchButton.click();
-			Thread.sleep(3000);
-		}
-		boolean clientFound = false;
-		try {
-			wait.until(ExpectedConditions.visibilityOf(clientName));
-			clientName.click();
-			clientFound=true;
-		}catch(Exception e) {  
-			System.out.println("client is not found on Xero");
-		}
-		if(clientFound) {
-			ClientExcel.addPortalName("Business");
-			extractClientDetails();
-		}else {
-			handleClientNotFound(clientRealName,subject);
-			ClientExcel.addPortalName("Not found in any portal");
-		}
+		
+			try {
+				switchportal();
+				Thread.sleep(5000);
+				wait.until(ExpectedConditions.visibilityOf(Clients));
+				Clients.click();
+				allClients_drpDwn.click();
+				allClients.click();
+				ClientsSearchBox.click();
+				ClientsSearchBox.clear();
+				ClientsSearchBox.sendKeys(clientIds);
+				clicksearchButton.click();
+				Thread.sleep(3000);
+			}
+			catch(Exception e) {
+				wait.until(ExpectedConditions.visibilityOf(Clients));
+				Clients.click();
+				allClients_drpDwn.click();
+				allClients.click();
+				ClientsSearchBox.click();
+				ClientsSearchBox.clear();
+				ClientsSearchBox.sendKeys(clientIds);
+				clicksearchButton.click();
+				Thread.sleep(3000);
+			}
+			boolean clientFound = false;
+			try {
+				wait.until(ExpectedConditions.visibilityOf(clientName));
+				clientName.click();
+				clientFound=true;
+			}catch(Exception e) {  
+				System.out.println("client is not found on Xero");
+			}
+			if(clientFound) {
+				extractClientDetails();
+				ClientExcel.addPortalName("Business");				
+			}else {
+				searchByNameInBusiness(client);
+//				handleClientNotFound(clientRealName,subject);
+//				ClientExcel.addPortalName("Not found in any portal");
+			}
+		
+		
 	}
 	
 	
@@ -411,7 +523,76 @@ public class XeroSearchingTFN extends MainClass {
 		ClientExcel.addClientData(clientCodeText, emailText, internal_team);
 		ClientExcel.writeCombinedDataToExcel(clientCodeText, subject);
 	}
+	private boolean searchClientByTrimming(String clientName) throws InterruptedException {
+	    boolean clientFound = false;
+	    int lastSpaceIndex = clientName.lastIndexOf(" ");
 
+	    if (lastSpaceIndex == -1) {
+	        return false; // No words to trim
+	    }
+
+	    // Remove only the last word
+	    String modifiedClientName = clientName.substring(0, lastSpaceIndex).trim();
+
+	    // Search with the last word removed
+	    inputBox.clear();
+	    inputBox.sendKeys(modifiedClientName);
+	    Thread.sleep(3000);
+
+	    List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+	    for (WebElement ele : elements) {
+	        String elementText = ele.getText().trim();
+	        if (elementText.equalsIgnoreCase(modifiedClientName) || elementText.toLowerCase().contains(modifiedClientName.toLowerCase())) {
+	            System.out.println(modifiedClientName + " found by removing the last word.");
+	            Thread.sleep(3000);
+	            ele.click();
+	            clientFound = true;
+	            break; // Stop searching once found
+	        }
+	    }
+
+	    return clientFound; // Return true if found, otherwise false
+	} 
+	private boolean searchClientWithoutDot(String clientName) throws InterruptedException {
+		boolean clientFound = false;
+		String clientWithoutDot = clientName.replace(".", "").trim();
+		inputBox.clear();
+		inputBox.sendKeys(clientWithoutDot);
+		Thread.sleep(3000);
+
+		List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+		for (WebElement ele : elements) {
+			String elementText = ele.getText().trim();
+			if (elementText.equalsIgnoreCase(clientWithoutDot) || elementText.toLowerCase().contains(clientWithoutDot.toLowerCase())) {
+				System.out.println(client+" it is found in contains .and replace  method");
+				Thread.sleep(3000);
+				ele.click();
+				clientFound = true;
+				break;
+			}
+		}
+		return clientFound;
+	}
+	private boolean searchClientWithAnd(String clientName) throws InterruptedException {
+		boolean clientFound = false;
+		String clientWithAnd = clientName.replace("and", "&").trim();
+		inputBox.clear();
+		inputBox.sendKeys(clientWithAnd);
+		Thread.sleep(3000);
+
+		List<WebElement> elements = DriverManager.getDriver().findElements(By.xpath("//a"));
+		for (WebElement ele : elements) {
+			String elementText = ele.getText().trim();
+			if (elementText.equalsIgnoreCase(clientWithAnd) || elementText.toLowerCase().contains(clientWithAnd.toLowerCase())) {
+				System.out.println(client+" it is found in contains and replace with & method");
+				Thread.sleep(3000);
+				ele.click();
+				clientFound = true;
+				break;
+			}
+		}
+		return clientFound;
+	}
 	private void handleClientNotFound(String clientName,String subject) throws InterruptedException {
 		Thread.sleep(3000);
 		ClientExcel.addClientData("client name not found", "client name not found", "no teamName");
