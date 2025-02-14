@@ -377,6 +377,43 @@ public class ClientExcel extends MainClass{
 			currentRowNum3++;
 		}
 	}
+	public static ArrayList<ArrayList<String>> addPdfName2(ArrayList<ArrayList<String>> data) {
+	    if (sheet == null) {
+	        return data;
+	    }
+	    int lastFilledRow = getLastFilledRowInColumn2(sheet);
+	    int rowNum = lastFilledRow + 1; 
+
+	    for (ArrayList<String> rowData : data) {
+	        Row row = sheet.createRow(rowNum++);
+	        int colNum = 8;
+	        for (String cellData : rowData) {
+	            Cell cell = row.createCell(colNum++);
+	            cell.setCellValue(cellData);
+	        }
+	    }
+
+	    saveExcelFile(); // Save the file
+	    return data;
+	}
+
+	public static int getLastFilledRowInColumn2(Sheet sheet) {
+	    int lastFilledRow = -1; 
+	    for (int i = sheet.getLastRowNum(); i >= 0; i--) {
+	        Row row = sheet.getRow(i);
+	        if (row != null) { 
+	            Cell cell = row.getCell(8); // Column 1 (Index 0)
+	            if (cell != null && cell.getCellType() != CellType.BLANK) {
+	                lastFilledRow = i; // Found the last filled row
+	                break;
+	            }
+	        }
+	    }
+
+	    return lastFilledRow;
+	}
+
+	
 
 	/*====================Read Of Subject Column===================================*/
 

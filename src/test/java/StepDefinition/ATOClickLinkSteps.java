@@ -9,7 +9,7 @@ public class ATOClickLinkSteps {
 	
 	@Given("The user navigates through 100 pages")
 	public void user_click_on_pages() throws InterruptedException {
-		filePage.extractCommTableStatement();
+//		filePage.extractCommTableStatement();
 		filePage.clickNextButton();
 //		filePage.clickAllLinks();
 	

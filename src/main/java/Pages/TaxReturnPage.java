@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -22,7 +24,9 @@ import Driver_manager.DriverManager;
 
 public class TaxReturnPage extends MainClass {
 	public static String clientIds;
-	
+	public static String cellText;
+	public static HashMap<String, String> extractedData = new HashMap<>();
+
 	@FindBy(xpath="//button[contains(text(),'Tax')]")
 	private static WebElement tax;
 	@FindBy(xpath="//a[contains(text(),'Returns')]")
@@ -54,6 +58,10 @@ public class TaxReturnPage extends MainClass {
 	private static WebElement clickPortal;
 	@FindBy(xpath = "//input[@value='Connect']")
 	private static WebElement clickConnect;
+	@FindBy(xpath = "//tbody[@id='gridview-1050-body']")
+	private static WebElement tabel;
+
+	//span[contains(text(),'Period End')]
 
 	public static  void switchportal() throws InterruptedException {
 		Thread.sleep(3000);
@@ -151,7 +159,25 @@ public class TaxReturnPage extends MainClass {
 			//			System.out.println("PDF Not Found: " + pdfFileName);
 		}
 	}
+	public static void accessTableRowsAndColumns() {
+		wait.until(ExpectedConditions.visibilityOf(tabel));
 
+		List<WebElement> rows = tabel.findElements(By.xpath(".//tr"));        
+		for (WebElement row : rows) {
+			List<WebElement> cells = row.findElements(By.xpath(".//td"));            
+			//            if (cells.size() == 6) {
+			for (int i = 0; i < cells.size(); i++) {
+				cellText = cells.get(6).getText();
+				//                    System.out.println("Column " + (i + 1) + ": " + cellText);        
+				System.out.println("Column " + cellText); 
+				//                }
+			}
+			//                else {
+			//                System.out.println("Row does not have 6 columns.");
+			//            }
+
+		}
+	}
 	public static void processAllNoticesOfAssessment(String filePath, String downloadDir) throws InterruptedException{
 		ClientExcel.clientNamesRemoval();
 		ArrayList<String> client_ID =ClientExcel.readSecondColumn(filePath);
@@ -174,11 +200,15 @@ public class TaxReturnPage extends MainClass {
 				clickFilledButton();
 				clickSearchButton(clientIds);
 				try {
-					clickAddButton();
-					String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
-					searchAndExtractPdfData(filePath, downloadDir, pdfFileName);
-					Thread.sleep(10000);
-					clickCancelButton();
+					if(extractedData.get("Year").equals(cellText)) {
+						clickAddButton();
+						Thread.sleep(10000);
+						String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
+						searchAndExtractPdfData(filePath, downloadDir, pdfFileName);
+						clickCancelButton();
+					}			
+					
+
 				} catch (Exception e) {
 					switchportal();
 
@@ -187,11 +217,14 @@ public class TaxReturnPage extends MainClass {
 					clickFilledButton();
 					clickSearchButton(clientIds);
 					try {
-						clickAddButton();
-						String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
-						searchAndExtractPdfData(filePath, downloadDir, pdfFileName);
-						Thread.sleep(10000);
-						clickCancelButton();
+						if(extractedData.get("Year").equals(cellText)) {
+							clickAddButton();
+							Thread.sleep(10000);
+							String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
+							searchAndExtractPdfData(filePath, downloadDir, pdfFileName);
+							clickCancelButton();
+						}
+						
 					} catch (Exception e1) {
 
 					}
@@ -207,7 +240,7 @@ public class TaxReturnPage extends MainClass {
 
 	public static HashMap<String, String> readPdfFile(String pdfFilePath) {
 		File pdfFile = new File(pdfFilePath);
-		HashMap<String, String> extractedData = new HashMap<>();
+
 
 		if (pdfFilePath.toLowerCase().endsWith(".html")) {
 			//			System.out.println("Found HTML file. Skipping: " + pdfFilePath);
