@@ -75,28 +75,38 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 				ACTIVITY_STATEMENT_DATA2.add(tdRowData);
 			}
 		}
+		System.out.println(ACTIVITY_STATEMENT_DATA2);
 		ClientExcel.writeDataToExcel2(ACTIVITY_STATEMENT_DATA2);
 		return ACTIVITY_STATEMENT_DATA2;
 	}
 
-	public void clickAllLinks() {
-	    for (int i = 0; i < links.size(); i++) {
-	        try {
-	            WebElement link = links.get(i);	           
-	            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", link);	           
-	            wait.until(ExpectedConditions.visibilityOf(link));
-	            wait.until(ExpectedConditions.elementToBeClickable(link));	           
-	            Actions actions = new Actions(driver);
-	            actions.moveToElement(link).pause(500).click().perform();
-	            //System.out.println("Clicked using Actions: " + link.getText());	           
-	            waitForDownloadCompletion();	       
-	            printLatestDownloadedFileName(downloadDir);
-	        } catch (Exception e) {
-	            //System.err.println("Actions click failed for: " + links.get(i).getText());
-	            //fallbackToJavaScriptClick(links.get(i));
-	        }	      
-	        pause(3000);
-	    }
+	public void clickAllLinks() throws InterruptedException {
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(next2));
+			next2.click();
+			
+		}catch(Exception e) {
+			
+		}		
+		Thread.sleep(5000);
+		extractCommTableStatement2();
+		for (int i = 0; i < links.size(); i++) {
+			try {
+				WebElement link = links.get(i);
+				((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", link);
+				wait.until(ExpectedConditions.visibilityOf(link));
+				wait.until(ExpectedConditions.elementToBeClickable(link));
+				Actions actions = new Actions(driver);
+				actions.moveToElement(link).pause(500).click().perform();
+				waitForDownloadCompletion();
+//				extractCommTableStatement();
+				printLatestDownloadedFileName2(downloadDir);
+			} catch (Exception e) {
+				//System.err.println("Actions click failed for: " + links.get(i).getText());
+				//fallbackToJavaScriptClick(links.get(i));
+			}
+			pause(3000);
+		}
 	}
 
 	public void clickNextButton() throws InterruptedException{
@@ -108,14 +118,16 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 			Actions actions = new Actions(driver);
 			actions.moveToElement(next).pause(500).click().perform();
 			Thread.sleep(3000);	
-			wait.until(ExpectedConditions.elementToBeClickable(next2));
-			next2.click();
-			actions.moveToElement(next).pause(500).click().perform();		
+			//			wait.until(ExpectedConditions.elementToBeClickable(next2));
+			//			next2.click();
+			//			actions.moveToElement(next).pause(500).click().perform();		
 			try {
+				Thread.sleep(2000);
 				wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath("//table//tr//td[position()=2]//a"), 0));
+				
 
-			
 				List<WebElement> newLinks = driver.findElements(By.xpath("//table//tr//td[position()=2]//a"));
+				extractCommTableStatement();
 				for (int i = 0; i < newLinks.size(); i++) {
 					try {
 						WebElement link = newLinks.get(i);
@@ -126,9 +138,9 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 						actions1.moveToElement(link).pause(500).click().perform();
 						waitForDownloadCompletion();
 						printLatestDownloadedFileName(downloadDir);
-						extractCommTableStatement();
-						clickAllLinks();
-						extractCommTableStatement2();
+//						extractCommTableStatement();
+//						clickAllLinks();
+						
 					} catch (Exception e) {
 						fallbackToJavaScriptClick(newLinks.get(i));
 					}
@@ -136,18 +148,34 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 				}
 			}
 			catch(Exception e1) {
-				clickAllLinks();
-				extractCommTableStatement();
+//				clickAllLinks();
+//				extractCommTableStatement();
 			}
 		}
 		catch (Exception e) {
-			clickAllLinks();
-			extractCommTableStatement();
-//			fallbackToJavaScriptClick(next);
+//			clickAllLinks();
+//			extractCommTableStatement();
+			//			fallbackToJavaScriptClick(next);
 		}
 		pause(3000);
 	}
+	public void printLatestDownloadedFileName2(String downloadDir) throws InterruptedException {
+		Thread.sleep(3000);
+		File dir = new File(downloadDir);
+		File[] files = dir.listFiles();
 
+		if (files != null && files.length > 0) {
+			File latestFile = files[0];
+			for (File file : files) {
+				if (file.lastModified() > latestFile.lastModified()) {
+					latestFile = file;
+				}
+			}
+			name = latestFile.getName();
+			ClientExcel.addPdfName(name);
+		} else {
+		}
+	}
 	private void fallbackToJavaScriptClick(WebElement element) {
 		try {
 			((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);

@@ -2,12 +2,15 @@ package Pages;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -20,6 +23,24 @@ import com.asis.util.MainClass;
 import Driver_manager.DriverManager;
 
 public class TaxReturnPage extends MainClass {
+	public static String clientIds;
+	public static String cellText;
+	public static HashMap<String, String> extractedData = new HashMap<>();
+	
+	@FindBy(xpath="//div[@id='ext-gen1353']//span[@class='value']/text()")
+	private static WebElement variance1;
+	@FindBy(xpath="//div[@id='ext-gen1373']//span[@class='value']/text()")
+	private static WebElement variance2;
+	
+	@FindBy(xpath="//div[@id='ext-gen1285']")
+	private static WebElement acceptedDropdown;
+	
+	@FindBy(xpath="//div[@id='combo-1102-boundlist-listEl']//li[text()='Pending']")
+	private static WebElement pending;
+	
+	@FindBy(xpath="//div[@id='combo-1102-boundlist-listEl']//li[text()='Accepted']")
+	private static WebElement accepted;
+	
 	@FindBy(xpath="//button[contains(text(),'Tax')]")
 	private static WebElement tax;
 	@FindBy(xpath="//a[contains(text(),'Returns')]")
@@ -40,7 +61,7 @@ public class TaxReturnPage extends MainClass {
 	private static WebElement taxableIncome;
 	@FindBy(xpath="//input[@name='PayableRefundable']")
 	private static WebElement payableRefundable;
-	
+
 	@FindBy(xpath="//span[contains(text(),'Fortuna Unit Trust t/as Keypoi…')]")
 	private static WebElement switchPortal_keypoint;
 	@FindBy(xpath="//span[contains(text(),'Fortuna Accountants & Business…')]")
@@ -51,6 +72,10 @@ public class TaxReturnPage extends MainClass {
 	private static WebElement clickPortal;
 	@FindBy(xpath = "//input[@value='Connect']")
 	private static WebElement clickConnect;
+	@FindBy(xpath = "//tbody[@id='gridview-1050-body']")
+	private static WebElement tabel;
+
+	//span[contains(text(),'Period End')]
 
 	public static  void switchportal() throws InterruptedException {
 		Thread.sleep(3000);
@@ -148,9 +173,28 @@ public class TaxReturnPage extends MainClass {
 			//			System.out.println("PDF Not Found: " + pdfFileName);
 		}
 	}
+	public static void accessTableRowsAndColumns() {
+		wait.until(ExpectedConditions.visibilityOf(tabel));
 
+		List<WebElement> rows = tabel.findElements(By.xpath(".//tr"));        
+		for (WebElement row : rows) {
+			List<WebElement> cells = row.findElements(By.xpath(".//td"));            
+			//            if (cells.size() == 6) {
+			for (int i = 0; i < cells.size(); i++) {
+				cellText = cells.get(6).getText();
+				//                    System.out.println("Column " + (i + 1) + ": " + cellText);        
+				System.out.println("Column " + cellText); 
+				//                }
+			}
+			//                else {
+			//                System.out.println("Row does not have 6 columns.");
+			//            }
+
+		}
+	}
 	public static void processAllNoticesOfAssessment(String filePath, String downloadDir) throws InterruptedException{
 		ClientExcel.clientNamesRemoval();
+		ArrayList<String> client_ID =ClientExcel.readSecondColumn(filePath);
 		//		System.out.println("client name in tax method before " + clientNames.size());
 		subjectColumnData = ClientExcel.readSubjectColumn(filePath);
 		boolean found = false; 
@@ -164,105 +208,141 @@ public class TaxReturnPage extends MainClass {
 				found = true; 
 				switchportal2();
 				clientName = clientNames.get(i).trim();
-				//				System.out.println("Processing Client: " + clientName);
+				clientIds =client_ID.get(i);
 				clickTaxButton();
 				clickReturnsButton();
 				clickFilledButton();
-				clickSearchButton(clientName);
+				clickSearchButton(clientIds);
 				try {
-					clickAddButton();
 					String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
 					searchAndExtractPdfData(filePath, downloadDir, pdfFileName);
-					Thread.sleep(10000);
-					clickCancelButton();
+					if(extractedData.get("Year").equals(cellText)) {
+						clickAddButton();
+						Thread.sleep(10000);
+						int var1=Integer.parseInt(variance1.getText());
+						double var2 = Double.parseDouble(variance2.getText());
+						if(var1==0 & var2<=2.00){
+							ClientExcel.addVariance("sendEmail");//should send to the respective client 
+							acceptedDropdown.click();
+							accepted.click();
+						}else {
+							ClientExcel.addVariance("EmailToManager");//should send to the respective manager only
+							acceptedDropdown.click();
+							pending.click();
+						}
+						clickCancelButton();
+					}
+
 				} catch (Exception e) {
 					switchportal();
 
 					clickTaxButton();
 					clickReturnsButton();
 					clickFilledButton();
-					clickSearchButton(clientName);
+					clickSearchButton(clientIds);
 					try {
-						clickAddButton();
 						String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
 						searchAndExtractPdfData(filePath, downloadDir, pdfFileName);
-						Thread.sleep(10000);
-						clickCancelButton();
+						if(extractedData.get("Year").equals(cellText)) {
+							clickAddButton();
+							Thread.sleep(10000);
+							int var1=Integer.parseInt(variance1.getText());
+							double var2 = Double.parseDouble(variance2.getText());
+							if(var1==0 & var2<=2.00){
+								ClientExcel.addVariance("sendEmail");//should send to the respective client 
+								acceptedDropdown.click();
+								accepted.click();
+							}else {
+								ClientExcel.addVariance("EmailToManager");//should send to the respective manager only
+								acceptedDropdown.click();
+								pending.click();
+							}
+							clickCancelButton();
+						}
+						
 					} catch (Exception e1) {
 
 					}
 
 				}
 			}
-				if (!found) {
-					// System.out.println("No 'Notice of Assessment' found in the subject column.");
+			if (!found) {
+				// System.out.println("No 'Notice of Assessment' found in the subject column.");
 
-				}
 			}
 		}
+	}
 
-		public static HashMap<String, String> readPdfFile(String pdfFilePath) {
-			File pdfFile = new File(pdfFilePath);
-			HashMap<String, String> extractedData = new HashMap<>();
+	public static HashMap<String, String> readPdfFile(String pdfFilePath) {
+		File pdfFile = new File(pdfFilePath);
 
-			if (pdfFilePath.toLowerCase().endsWith(".html")) {
-				//			System.out.println("Found HTML file. Skipping: " + pdfFilePath);
-				return extractedData;
-			}
 
-			try (PDDocument document = PDDocument.load(pdfFile)) {
-				if (!document.isEncrypted()) {
-					PDFTextStripper pdfStripper = new PDFTextStripper();
-					String pdfText = pdfStripper.getText(document);
-
-					Pattern datePattern = Pattern.compile("Date of issue\\s*(\\d{2} \\w+ \\d{4})");
-					Matcher dateMatcher = datePattern.matcher(pdfText);
-					if (dateMatcher.find()) {
-						String dateOfIssue = dateMatcher.group(1);
-						extractedData.put("Date of Issue", dateOfIssue);
-					}
-					else {
-						extractedData.put("Date of Issue", "0.0");
-					}
-
-					Pattern refPattern = Pattern.compile("Our reference\\s*(\\d{3} \\d{3} \\d{3} \\d{4})");
-					Matcher refMatcher = refPattern.matcher(pdfText);
-					if (refMatcher.find()) {
-						String referenceNumber = refMatcher.group(1);
-						extractedData.put("Reference Number", referenceNumber);
-					}
-					else {
-						extractedData.put("Reference Number", "0.0");
-					}
-
-					Pattern incomePattern = Pattern.compile("Your taxable income is \\$([\\d,]+)");
-					Matcher incomeMatcher = incomePattern.matcher(pdfText);
-					if (incomeMatcher.find()) {
-						String taxableIncome = incomeMatcher.group(1).replace(",", "");
-						extractedData.put("Taxable Income", taxableIncome);
-					}
-					else {
-						extractedData.put("Taxable Income", "0.0");
-					}
-
-					Pattern resultPattern = Pattern.compile("Result of this notice\\s+(\\S+ \\S+)");
-					Matcher resultMatcher = resultPattern.matcher(pdfText);
-					if (resultMatcher.find()) {
-						String resultAmount = resultMatcher.group(1);
-						extractedData.put("Result", resultAmount);
-					} else {
-						extractedData.put("Result", "0.0");
-					}
-
-					//				System.out.println("Extracted Data: " + extractedData);
-				} else {
-					//				System.out.println("The PDF is encrypted. Cannot read.");
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
+		if (pdfFilePath.toLowerCase().endsWith(".html")) {
+			//			System.out.println("Found HTML file. Skipping: " + pdfFilePath);
 			return extractedData;
 		}
 
+		try (PDDocument document = PDDocument.load(pdfFile)) {
+			if (!document.isEncrypted()) {
+				PDFTextStripper pdfStripper = new PDFTextStripper();
+				String pdfText = pdfStripper.getText(document);
+
+				Pattern datePattern = Pattern.compile("Date of issue\\s*(\\d{2} \\w+ \\d{4})");
+				Matcher dateMatcher = datePattern.matcher(pdfText);
+				if (dateMatcher.find()) {
+					String dateOfIssue = dateMatcher.group(1);
+					extractedData.put("Date of Issue", dateOfIssue);
+				}
+				else {
+					extractedData.put("Date of Issue", "0.0");
+				}
+
+				Pattern refPattern = Pattern.compile("Our reference\\s*(\\d{3} \\d{3} \\d{3} \\d{4})");
+				Matcher refMatcher = refPattern.matcher(pdfText);
+				if (refMatcher.find()) {
+					String referenceNumber = refMatcher.group(1);
+					extractedData.put("Reference Number", referenceNumber);
+				}
+				else {
+					extractedData.put("Reference Number", "0.0");
+				}
+
+				Pattern incomePattern = Pattern.compile("Your taxable income is \\$([\\d,]+)");
+				Matcher incomeMatcher = incomePattern.matcher(pdfText);
+				if (incomeMatcher.find()) {
+					String taxableIncome = incomeMatcher.group(1).replace(",", "");
+					extractedData.put("Taxable Income", taxableIncome);
+				}
+				else {
+					extractedData.put("Taxable Income", "0.0");
+				}
+
+				Pattern resultPattern = Pattern.compile("Result of this notice\\s+(\\S+ \\S+)");
+				Matcher resultMatcher = resultPattern.matcher(pdfText);
+				if (resultMatcher.find()) {
+					String resultAmount = resultMatcher.group(1);
+					extractedData.put("Result", resultAmount);
+				} else {
+					extractedData.put("Result", "0.0");
+				}
+
+				Pattern yearPattern = Pattern.compile("Notice of assessment - year ended\\s*(\\d{2} \\w+ \\d{4})");
+				Matcher yearMatcher = yearPattern.matcher(pdfText);
+				if (yearMatcher.find()) {
+					String yearAmount = yearMatcher.group(1);
+					extractedData.put("Year", yearAmount);
+					System.out.println("Year: " + yearAmount);
+				} else {
+					extractedData.put("Year", "0.0");  
+				}
+			} else {
+				System.out.println("The PDF is encrypted. Cannot read.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return extractedData;
 	}
+
+}

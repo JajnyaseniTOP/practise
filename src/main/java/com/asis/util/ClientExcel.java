@@ -27,6 +27,7 @@ public class ClientExcel extends MainClass{
 	private static int currentRowNum2 = 1;
 	private static int currentRowNum3 = 1;
 	private static int currentRowNum4 = 1;
+	private static int currentRowNum5 = 1;
 	//public Set<String> uniqueSubject = new HashSet<String>();
 
 	/*====================Creation of Empty Excel Sheet===================================*/
@@ -35,7 +36,7 @@ public class ClientExcel extends MainClass{
 		workbook = new HSSFWorkbook();
 		sheet = workbook.createSheet("Client Data");
 
-		String[] headers = {"Name", "Client ID", "Subject", "Channel", "Issue Date", "Client Code", "Client Email ID", "File Name", "PDF File","Internal Team","Portal"};
+		String[] headers = {"Name", "Client ID", "Subject", "Channel", "Issue Date", "Client Code", "Client Email ID", "File Name", "PDF File","Internal Team","Portal","Variance"};
 
 		Row headerRow = sheet.createRow(0); 
 		for (int i = 0; i < headers.length; i++) {
@@ -144,6 +145,45 @@ public class ClientExcel extends MainClass{
 		System.out.println("First colm data " + portalData.size());
 
 		return portalData;
+	}
+	
+	
+	public static void addVariance(String sendEmail) {
+		if (sheet != null) {
+			Row row = sheet.getRow(currentRowNum5);
+			if (row == null) {
+				row = sheet.createRow(currentRowNum5);
+			}
+ 
+			Cell codeCell = row.createCell(11);
+ 
+			codeCell.setCellValue(sendEmail);
+			currentRowNum5++;
+ 
+		}
+		saveExcelFile();
+	}
+	
+	public static ArrayList<String> readVariance(String filePath) {
+		ArrayList<String> varainceData = new ArrayList<>();
+ 
+		try (FileInputStream fis = new FileInputStream(new File(filePath));
+				Workbook workbook = WorkbookFactory.create(fis)) {
+ 
+			Sheet sheet = workbook.getSheetAt(0);
+			for (Row row : sheet) {
+				Cell cell = row.getCell(11);
+				if (cell != null && cell.getCellType() == CellType.STRING) {
+					varainceData.add(cell.getStringCellValue());
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		varainceData.remove(0);
+		System.out.println("varaince coumn data" + varainceData.size());
+ 
+		return varainceData;
 	}
 
 	/*====================Read Of Second Column===================================*/
@@ -377,6 +417,43 @@ public class ClientExcel extends MainClass{
 			currentRowNum3++;
 		}
 	}
+	public static ArrayList<ArrayList<String>> addPdfName2(ArrayList<ArrayList<String>> data) {
+	    if (sheet == null) {
+	        return data;
+	    }
+	    int lastFilledRow = getLastFilledRowInColumn2(sheet);
+	    int rowNum = lastFilledRow + 1; 
+
+	    for (ArrayList<String> rowData : data) {
+	        Row row = sheet.createRow(rowNum++);
+	        int colNum = 8;
+	        for (String cellData : rowData) {
+	            Cell cell = row.createCell(colNum++);
+	            cell.setCellValue(cellData);
+	        }
+	    }
+
+	    saveExcelFile(); // Save the file
+	    return data;
+	}
+
+	public static int getLastFilledRowInColumn2(Sheet sheet) {
+	    int lastFilledRow = -1; 
+	    for (int i = sheet.getLastRowNum(); i >= 0; i--) {
+	        Row row = sheet.getRow(i);
+	        if (row != null) { 
+	            Cell cell = row.getCell(8); // Column 1 (Index 0)
+	            if (cell != null && cell.getCellType() != CellType.BLANK) {
+	                lastFilledRow = i; // Found the last filled row
+	                break;
+	            }
+	        }
+	    }
+
+	    return lastFilledRow;
+	}
+
+	
 
 	/*====================Read Of Subject Column===================================*/
 

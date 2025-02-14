@@ -44,13 +44,17 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
                     Cell fileNameCell = row.getCell(7);
                     Cell emailRcvrName = row.getCell(0);
                     Cell specificSubject = row.getCell(2);
-
+                    Cell variances = row.getCell(11);
+                    			
                     if (emailCell != null && fileNameCell != null){
-                        String email = emailCell.getStringCellValue().trim();
+                        String email = emailCell.getStringCellValue().trim();                        
                         String fileName = fileNameCell.getStringCellValue().trim();
                         String subject = fileName;
-                        String specificSub = specificSubject.getStringCellValue().trim();
+                        
                         String teamName = teamNames.get(rowIndex-1).trim();
+                        String variance =variances.getStringCellValue().trim();
+                        String specificSub = specificSubject.getStringCellValue().trim(); 
+                        
                         String emailRcvr = emailRcvrName.getStringCellValue().trim();
                         String emailScndWrd = determineRecipientTitle(emailRcvr);
                         String portalType = portalTypes.get(rowIndex-1).trim(); 
@@ -69,7 +73,7 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
                             String filePathToSearch = searchFileInSubfolders(mainFolder, fileName);
                             File fileToAttach = new File(filePathToSearch);
                             if (fileToAttach.exists()) {
-                                saveEmailAsDraft(email, subject, filePathToSearch, teamName, emailScndWrd, mainFolder,specificSub);
+                                saveEmailAsDraft(email, subject, filePathToSearch, teamName, emailScndWrd, mainFolder,specificSub,variance);
                             }
                         }
                     }
@@ -115,24 +119,29 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
         return email != null && email.contains("@") && !email.contains(" ") && !email.isEmpty();
     }
 
-    private static void saveEmailAsDraft(String email, String subject, String attachmentPath, String teamName, String emailRcvrNm, File mainFolder,String content) {
+    private static void saveEmailAsDraft(String email, String subject, String attachmentPath, String teamName, String emailRcvrNm, File mainFolder,String content,String variance){
         Properties properties = new Properties();
         properties.put("mail.smtp.host", SMTP_HOST);
         properties.put("mail.smtp.port", SMTP_PORT);
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
-
         Session session = Session.getInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(USERNAME, PASSWORD);
             }
         });
-
         try {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(USERNAME));
-            
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+            if(content.toLowerCase().contains("notice of assessment")) {
+            	if("EmailToManager".equalsIgnoreCase(variance)) {
+            		 String varianceEmail  = determineCcEmail(teamName);
+            		 message.addRecipient(Message.RecipientType.TO, new InternetAddress(varianceEmail));
+            	}        	
+            	
+            }else {
+            	 message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+            }         
             message.setSubject(subject);
             Multipart multipart = new MimeMultipart();
             
@@ -152,7 +161,11 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
                 "Failure to lodge Activity Statement or GST Payment Slip",
                 "Penalty notification - Failure to lodge",
                 "Lodgment-Overdue-Reminder",
-                "Confirming your payment plan"
+                "Confirming your payment plan",
+                "Statement of account - Refund cheque",
+                "Superannuation - Excess concessional contributions - Determination advice",
+                "Superannuation - Excess non-concessional contributions – Determination"
+                
             );
 
             if (validContents.stream().anyMatch(item -> item.equalsIgnoreCase(content))) {
