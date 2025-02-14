@@ -193,6 +193,7 @@ public class TaxReturnPage extends MainClass {
 		}
 	}
 	public static void processAllNoticesOfAssessment(String filePath, String downloadDir) throws InterruptedException{
+		
 		ClientExcel.clientNamesRemoval();
 		ArrayList<String> client_ID =ClientExcel.readSecondColumn(filePath);
 		//		System.out.println("client name in tax method before " + clientNames.size());
@@ -261,7 +262,7 @@ public class TaxReturnPage extends MainClass {
 						}
 						
 					} catch (Exception e1) {
-
+						ClientExcel.addVariance("TaxnotFound");
 					}
 
 				}
@@ -326,7 +327,7 @@ public class TaxReturnPage extends MainClass {
 					extractedData.put("Result", "0.0");
 				}
 
-				Pattern yearPattern = Pattern.compile("Notice of assessment - year ended\\s*(\\d{2} \\w+ \\d{4})");
+				Pattern yearPattern = Pattern.compile("Tax period ending\\s*(\\d{2} \\w+ \\d{4})");
 				Matcher yearMatcher = yearPattern.matcher(pdfText);
 				if (yearMatcher.find()) {
 					String yearAmount = yearMatcher.group(1);

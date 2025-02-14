@@ -84,12 +84,13 @@ public class ATOcommHistoryExtarctionPage extends MainClass {
 		try {
 			wait.until(ExpectedConditions.elementToBeClickable(next2));
 			next2.click();
+			extractCommTableStatement2();
 			
 		}catch(Exception e) {
-			
+			extractCommTableStatement();
 		}		
 		Thread.sleep(5000);
-		extractCommTableStatement2();
+
 		for (int i = 0; i < links.size(); i++) {
 			try {
 				WebElement link = links.get(i);
