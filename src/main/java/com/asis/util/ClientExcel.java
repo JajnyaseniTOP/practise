@@ -27,7 +27,7 @@ public class ClientExcel extends MainClass{
 	private static int currentRowNum2 = 1;
 	private static int currentRowNum3 = 1;
 	private static int currentRowNum4 = 1;
-	private static int currentRowNum5 = 1;
+	
 	//public Set<String> uniqueSubject = new HashSet<String>();
 
 	/*====================Creation of Empty Excel Sheet===================================*/
@@ -148,17 +148,17 @@ public class ClientExcel extends MainClass{
 	}
 	
 	
-	public static void addVariance(String sendEmail) {
+	public static void addVariance(int rowNum, String sendEmail) {
 		if (sheet != null) {
-			Row row = sheet.getRow(currentRowNum5);
+			Row row = sheet.getRow(rowNum);
 			if (row == null) {
-				row = sheet.createRow(currentRowNum5);
+				row = sheet.createRow(rowNum);
 			}
  
 			Cell codeCell = row.createCell(11);
  
 			codeCell.setCellValue(sendEmail);
-			currentRowNum5++;
+		
  
 		}
 		saveExcelFile();

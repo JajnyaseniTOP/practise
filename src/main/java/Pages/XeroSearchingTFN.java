@@ -134,6 +134,7 @@ public class XeroSearchingTFN extends MainClass {
 				Clients.click();
 				allClients_drpDwn.click();
 				allClients.click();
+				Thread.sleep(4000);
 				ClientsSearchBox.click();
 				ClientsSearchBox.clear();
 				ClientsSearchBox.sendKeys(clientIds);
@@ -141,6 +142,12 @@ public class XeroSearchingTFN extends MainClass {
 				Thread.sleep(3000);
 			}
 			catch (Exception e) {
+				wait.until(ExpectedConditions.visibilityOf(Clients));
+				Clients.click();
+				allClients_drpDwn.click();
+				allClients.click();
+				Thread.sleep(4000);
+				wait.until(ExpectedConditions.visibilityOf(ClientsSearchBox));
 				ClientsSearchBox.click();
 				ClientsSearchBox.clear();
 				ClientsSearchBox.sendKeys(clientIds);

@@ -2,6 +2,7 @@ package Pages;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,11 +12,13 @@ import java.util.regex.Pattern;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.asis.util.ClientExcel;
 import com.asis.util.MainClass;
@@ -26,21 +29,22 @@ public class TaxReturnPage extends MainClass {
 	public static String clientIds;
 	public static String cellText;
 	public static HashMap<String, String> extractedData = new HashMap<>();
-	
-	@FindBy(xpath="//div[@id='ext-gen1353']//span[@class='value']/text()")
+
+	@FindBy(xpath="(//div[@class='base-labelable-value noaForm--displayNumber--displayField']/span[@class='value'])[2]")
 	private static WebElement variance1;
-	@FindBy(xpath="//div[@id='ext-gen1373']//span[@class='value']/text()")
+	@FindBy(xpath="(//div[@class='base-labelable-value noaForm--displayNumber--displayField']/span[@class='value'])[4]")
 	private static WebElement variance2;
-	
-	@FindBy(xpath="//div[@id='ext-gen1285']")
-	private static WebElement acceptedDropdown;
-	
-	@FindBy(xpath="//div[@id='combo-1102-boundlist-listEl']//li[text()='Pending']")
+
+	@FindBy(xpath="(//td[contains(@class, 'x-trigger-cell')]//div[contains(@class, 'x-form-arrow-trigger') and @role='button'])[3]")
+	private static WebElement Dropdown;
+
+
+	@FindBy(xpath="//li[text()='Pending'][ancestor::div[contains(@class, 'x-boundlist')]]")
 	private static WebElement pending;
-	
-	@FindBy(xpath="//div[@id='combo-1102-boundlist-listEl']//li[text()='Accepted']")
+
+	@FindBy(xpath="//li[text()='Accepted'][ancestor::div[contains(@class, 'x-boundlist')]]")
 	private static WebElement accepted;
-	
+
 	@FindBy(xpath="//button[contains(text(),'Tax')]")
 	private static WebElement tax;
 	@FindBy(xpath="//a[contains(text(),'Returns')]")
@@ -102,10 +106,19 @@ public class TaxReturnPage extends MainClass {
 		PageFactory.initElements(DriverManager.getDriver(), this); 
 	}
 
-	public static void clickTaxButton() {
-		wait.until(ExpectedConditions.elementToBeClickable(tax));
-		tax.click();
+	public static void clickTaxButton(){
+	    try {
+	        // Wait for the modal mask to disappear
+	        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+	        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("x-mask")));	        
+	        wait.until(ExpectedConditions.elementToBeClickable(tax));
+	        tax.click();
+	        System.out.println("Clicked on Tax button successfully");
+	    } catch (Exception e) {
+	        System.out.println("Error clicking Tax button: " + e.getMessage());
+	    }
 	}
+
 	public static void clickAddButton() {
 		wait.until(ExpectedConditions.elementToBeClickable(add));
 		add.click();
@@ -123,8 +136,20 @@ public class TaxReturnPage extends MainClass {
 		wait.until(ExpectedConditions.elementToBeClickable(filled));
 		filled.click();
 	}
+	public static void var1get() {
+		wait.until(ExpectedConditions.visibilityOf(variance1));
+		System.out.println("Variance1 element type: " + variance1.getClass().getName());
+		System.out.println("Variance1 Type: " + variance1.getText());
+	}
 
-	public static void clickSearchButton(String clientName) {
+
+	public static void var2get() {
+		wait.until(ExpectedConditions.visibilityOf(variance2));
+		System.out.println("Variance2 element type: " + variance2.getClass().getName());
+		System.out.println("Variance2 Type: " + variance2.getText());
+	}
+
+	public static void clickSearchButton(String clientName){
 		wait.until(ExpectedConditions.elementToBeClickable(search));
 		search.click();
 		search.sendKeys(clientName);
@@ -193,7 +218,7 @@ public class TaxReturnPage extends MainClass {
 		}
 	}
 	public static void processAllNoticesOfAssessment(String filePath, String downloadDir) throws InterruptedException{
-		
+
 		ClientExcel.clientNamesRemoval();
 		ArrayList<String> client_ID =ClientExcel.readSecondColumn(filePath);
 		//		System.out.println("client name in tax method before " + clientNames.size());
@@ -205,7 +230,7 @@ public class TaxReturnPage extends MainClass {
 			subject = subjectColumnData.get(i).trim();
 			//found = true; 
 
-			if (subject.toLowerCase().startsWith("notice of assessment")) {
+			if (subject.toLowerCase().startsWith("notice of assessment")){
 				found = true; 
 				switchportal2();
 				clientName = clientNames.get(i).trim();
@@ -215,57 +240,114 @@ public class TaxReturnPage extends MainClass {
 				clickFilledButton();
 				clickSearchButton(clientIds);
 				try {
+					clickAddButton();
 					String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
 					searchAndExtractPdfData(filePath, downloadDir, pdfFileName);
 					if(extractedData.get("Year").equals(cellText)) {
-						clickAddButton();
-						Thread.sleep(10000);
-						int var1=Integer.parseInt(variance1.getText());
-						double var2 = Double.parseDouble(variance2.getText());
-						if(var1==0 & var2<=2.00){
-							ClientExcel.addVariance("sendEmail");//should send to the respective client 
-							acceptedDropdown.click();
-							accepted.click();
-						}else {
-							ClientExcel.addVariance("EmailToManager");//should send to the respective manager only
-							acceptedDropdown.click();
+						Thread.sleep(10000);					
+						String estimatedVariance1 = variance1.getText().replace(",", "").trim();   
+						String estimatedVariance2 = variance2.getText().replace(",", "").trim();
+						double var1 = Double.parseDouble(estimatedVariance1);
+						double var2 = Double.parseDouble(estimatedVariance2);
+	
+						System.out.println("Variance 1: " + var1);
+						System.out.println("Variance 2: " + var2);
+	
+						if (var1 == 0 && var2 <= 2.00) {
+							ClientExcel.addVariance(i + 1, "sendEmail"); // Send to the respective client
+							System.out.println("It is in try block " + " var1  is 0 and var2 is bellow 2 dollar");
+							JavascriptExecutor js = (JavascriptExecutor) driver;
+							js.executeScript("arguments[0].scrollIntoView(true);", Dropdown);
+	
+							// Explicit wait for dropdown to be clickable
+							wait.until(ExpectedConditions.elementToBeClickable(Dropdown)).click();
+							System.out.println("It is in try block "+ "Dropdown clicked");
+							Thread.sleep(2000);
+							wait.until(ExpectedConditions.elementToBeClickable(accepted));						
+							accepted.click(); 
+							System.out.println("It is in try block " + " Accepted");
+						} else {
+							ClientExcel.addVariance(i + 1, "EmailToManager"); // Send to the respective manager only
+							System.out.println("It is in try block " + "var1 is not 0 ");
+							JavascriptExecutor js = (JavascriptExecutor) driver;
+							js.executeScript("arguments[0].scrollIntoView(true);", Dropdown);
+	
+							// Explicit wait for dropdown to be clickable
+							wait.until(ExpectedConditions.elementToBeClickable(Dropdown)).click();
+							System.out.println("It is in try block "+"Dropdown clicked");
+							Thread.sleep(2000);
+							System.out.println("It is in try block " + "Pending");
+							wait.until(ExpectedConditions.elementToBeClickable(pending));
 							pending.click();
+							
+						}try {
+							Thread.sleep(3000);
+							clickCancelButton();
 						}
-						clickCancelButton();
-					}
+						catch(Exception e1) {
+							Thread.sleep(3000);
+							clickCancelButton();
+						}
+				}
 
-				} catch (Exception e) {
+				} 
+			catch (Exception e) {
+				System.out.println("It is in catch block");
 					switchportal();
-
+					Thread.sleep(3000);
 					clickTaxButton();
 					clickReturnsButton();
 					clickFilledButton();
 					clickSearchButton(clientIds);
 					try {
+						clickAddButton();
 						String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
 						searchAndExtractPdfData(filePath, downloadDir, pdfFileName);
-						if(extractedData.get("Year").equals(cellText)) {
-							clickAddButton();
+						if(extractedData.get("Year").equals(cellText)) {						
 							Thread.sleep(10000);
-							int var1=Integer.parseInt(variance1.getText());
-							double var2 = Double.parseDouble(variance2.getText());
+							String estimatedVariance1 = variance1.getText().replace(",", "").trim();   
+							String estimatedVariance2 = variance2.getText().replace(",", "").trim();
+							double var1 = Double.parseDouble(estimatedVariance1);
+							double var2 = Double.parseDouble(estimatedVariance2);
 							if(var1==0 & var2<=2.00){
-								ClientExcel.addVariance("sendEmail");//should send to the respective client 
-								acceptedDropdown.click();
-								accepted.click();
+								ClientExcel.addVariance(i + 1, "sendEmail"); // Send to the respective client
+								System.out.println("It is in try block " + " var1  is 0 and var2 is bellow 2 dollar");
+								JavascriptExecutor js = (JavascriptExecutor) driver;
+								js.executeScript("arguments[0].scrollIntoView(true);", Dropdown);
+	
+								// Explicit wait for dropdown to be clickable
+								wait.until(ExpectedConditions.elementToBeClickable(Dropdown)).click();
+								System.out.println("It is in catch block "+ "Dropdown clicked");
+								Thread.sleep(2000);
+								wait.until(ExpectedConditions.elementToBeClickable(accepted));						
+								accepted.click(); 
+								System.out.println("It is in catch block " + " Accepted");
 							}else {
-								ClientExcel.addVariance("EmailToManager");//should send to the respective manager only
-								acceptedDropdown.click();
+								ClientExcel.addVariance(i + 1, "EmailToManager"); // Send to the respective manager only
+								System.out.println("It is in try block " + "var1 is not 0 ");
+								JavascriptExecutor js = (JavascriptExecutor) driver;
+								js.executeScript("arguments[0].scrollIntoView(true);", Dropdown);
+	
+								// Explicit wait for dropdown to be clickable
+								wait.until(ExpectedConditions.elementToBeClickable(Dropdown)).click();
+								System.out.println("It is in catch block "+"Dropdown clicked");
+								Thread.sleep(2000);
+								System.out.println("It is in catch block " + "Pending");
+								wait.until(ExpectedConditions.elementToBeClickable(pending));
 								pending.click();
 							}
+							Thread.sleep(3000);
 							clickCancelButton();
-						}
-						
+					}						
 					} catch (Exception e1) {
-						ClientExcel.addVariance("TaxnotFound");
+						ClientExcel.addVariance(i+1,"NoTaxToFill");
 					}
 
 				}
+				
+			}else {
+				ClientExcel.addVariance(i+1,"NoTaxToFill");
+				found = false;
 			}
 			if (!found) {
 				// System.out.println("No 'Notice of Assessment' found in the subject column.");
