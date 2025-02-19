@@ -240,10 +240,11 @@ public class TaxReturnPage extends MainClass {
 				clickFilledButton();
 				clickSearchButton(clientIds);
 				try {
-					clickAddButton();
+					
 					String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
 					searchAndExtractPdfData(filePath, downloadDir, pdfFileName);
 					if(extractedData.get("Year").equals(cellText)) {
+						clickAddButton();
 						Thread.sleep(10000);					
 						String estimatedVariance1 = variance1.getText().replace(",", "").trim();   
 						String estimatedVariance2 = variance2.getText().replace(",", "").trim();
@@ -300,10 +301,11 @@ public class TaxReturnPage extends MainClass {
 					clickFilledButton();
 					clickSearchButton(clientIds);
 					try {
-						clickAddButton();
+						
 						String pdfFileName = ClientExcel.readPdfFileNamesFromColumn8(filePath).get(i).trim();
 						searchAndExtractPdfData(filePath, downloadDir, pdfFileName);
-						if(extractedData.get("Year").equals(cellText)) {						
+						if(extractedData.get("Year").equals(cellText)) {
+							clickAddButton();
 							Thread.sleep(10000);
 							String estimatedVariance1 = variance1.getText().replace(",", "").trim();   
 							String estimatedVariance2 = variance2.getText().replace(",", "").trim();

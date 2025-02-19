@@ -169,9 +169,16 @@ public class XeroSearchingTFN extends MainClass {
 	}
 	
 	private void searchByNameInKeypoint(String client) throws InterruptedException {
+		
 		clickOnSearchButton();
 		inputBox.clear();
-		inputBox.sendKeys(client);
+		if(client.toLowerCase().startsWith("the trustee for")){
+			 client = client.replaceFirst("(?i)^the trustee for\\s*", "");
+			 inputBox.sendKeys(client);
+		}else {
+			inputBox.sendKeys(client);
+		}
+		
 		Thread.sleep(3000);
 		
 		 boolean clientFound = false;
