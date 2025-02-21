@@ -402,11 +402,19 @@ public class TaxReturnPage extends MainClass {
 					extractedData.put("Taxable Income", "0.0");
 				}
 
-				Pattern resultPattern = Pattern.compile("Result of this notice\\s+(\\S+ \\S+)");
+				Pattern resultPattern = Pattern.compile("Outcome of this notice\\s+\\$([0-9,]+\\.\\d{2})\\s+(CR|DR)");
 				Matcher resultMatcher = resultPattern.matcher(pdfText);
 				if (resultMatcher.find()) {
-					String resultAmount = resultMatcher.group(1);
-					extractedData.put("Result", resultAmount);
+					String amountStr = resultMatcher.group(1).replace(",", "");
+					String type = resultMatcher.group(2);
+
+					double resultAmount = Double.parseDouble(amountStr);
+					if ("CR".equals(type)) {
+						resultAmount = -resultAmount; 
+					}
+
+					extractedData.put("Result", String.valueOf(resultAmount));
+					System.out.println(resultAmount);
 				} else {
 					extractedData.put("Result", "0.0");
 				}

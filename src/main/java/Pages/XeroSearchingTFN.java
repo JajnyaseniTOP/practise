@@ -228,7 +228,12 @@ public class XeroSearchingTFN extends MainClass {
 	private void searchByNameInBusiness(String client)throws InterruptedException{
 		clickOnSearchButton();
 		inputBox.clear();
-		inputBox.sendKeys(client);
+		if(client.toLowerCase().startsWith("the trustee for")){
+			 client = client.replaceFirst("(?i)^the trustee for\\s*", "");
+			 inputBox.sendKeys(client);
+		}else {
+			inputBox.sendKeys(client);
+		}
 		Thread.sleep(3000);
 		
 		 boolean clientFound = false;
@@ -521,7 +526,7 @@ public class XeroSearchingTFN extends MainClass {
 				clientCodeText = clientRealName;
 			}
 		} catch (Exception e) {
-			clientCodeText = "no client code";
+			clientCodeText = clientRealName;
 			System.out.println("Client code is not there.");
 		}
 
@@ -529,6 +534,9 @@ public class XeroSearchingTFN extends MainClass {
 			wait.until(ExpectedConditions.visibilityOf(internalTeam));
 			if (internalTeam.isDisplayed()) {
 				internal_team = internalTeam.getText().trim();
+			}
+			if(internalTeam.getText().trim().contains("-")) {
+				internal_team = "no teamName";
 			}
 		} catch (Exception e) {
 			internal_team = "no teamName";
@@ -598,7 +606,7 @@ public class XeroSearchingTFN extends MainClass {
 		for (WebElement ele : elements) {
 			String elementText = ele.getText().trim();
 			if (elementText.equalsIgnoreCase(clientWithAnd) || elementText.toLowerCase().contains(clientWithAnd.toLowerCase())) {
-				System.out.println(client+" it is found in contains and replace with & method");
+				System.out.println(client  +" it is found in contains and replace with & method");
 				Thread.sleep(3000);
 				ele.click();
 				clientFound = true;
