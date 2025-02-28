@@ -25,8 +25,8 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
     private static final String USERNAME = "toptechautomation@theoutsourcepro.com.au";
     private static final String PASSWORD = "J7OJb*ZwQD25HpC2KO8*n";
 
-    public static String downloadDirE = "E:" + File.separator + "ATO Email files" + File.separator;
-    public static String downloadDirK = "K:" + File.separator + "ATO Email files" + File.separator;
+    public static String downloadDirE = "D:" + File.separator + "ATO Email files" + File.separator;
+    public static String downloadDirK = "C:" + File.separator + "ATO Email files" + File.separator;
 
     public void saveEmailsAsDraftsFromExcel(String filePath) throws IOException {
         List<String> portalTypes = ClientExcel.readPortalColumn(filePath);
