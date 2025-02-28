@@ -207,13 +207,13 @@ public class TaxReturnPage extends MainClass {
 			//            if (cells.size() == 6) {
 			for (int i = 0; i < cells.size(); i++) {
 				cellText = cells.get(6).getText();
-				//                    System.out.println("Column " + (i + 1) + ": " + cellText);        
+				//System.out.println("Column " + (i + 1) + ": " + cellText);        
 				System.out.println("Column " + cellText); 
 				//                }
 			}
-			//                else {
-			//                System.out.println("Row does not have 6 columns.");
-			//            }
+			//else {
+			//System.out.println("Row does not have 6 columns.");
+			//      }
 
 		}
 	}

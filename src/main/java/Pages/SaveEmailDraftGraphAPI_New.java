@@ -134,13 +134,16 @@ public class SaveEmailDraftGraphAPI_New extends MainClass {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(USERNAME));
             if(content.toLowerCase().contains("notice of assessment")) {
-            	if("EmailToManager".equalsIgnoreCase(variance)) {
-            		 String varianceEmail  = determineCcEmail(teamName);
-            		 message.addRecipient(Message.RecipientType.TO, new InternetAddress(varianceEmail));
-            	}        	
+            	String varianceEmail  = determineCcEmail(teamName);
+            	if("sendEmail".equalsIgnoreCase(variance)) {            		 
+                	 message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+            	}else{
+              		 message.addRecipient(Message.RecipientType.TO, new InternetAddress(varianceEmail));
+            	}
             	
             }else {
-            	 message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+           	 	message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+
             }         
             message.setSubject(subject);
             Multipart multipart = new MimeMultipart();
